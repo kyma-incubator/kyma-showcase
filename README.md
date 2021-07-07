@@ -1,23 +1,21 @@
-# Project Title
-
-Modify the project title and insert the name of your project. Use Heading 1 (H1).
+# Kyma Showcase
 
 ## Overview
 
-Provide a description of the project's functionality.
+Kyma Showcase about object-recognition relying on GCP API and Lambda Workflow.
 
 ## Prerequisites
 
-List the requirements to run the project.
+TODO: List the requirements to run the project.
 
 ## Installation
 
-Explain the steps to install your project. Include the instructions or provide links to the related documentation.
+TODO: Explain the steps to install your project. Include the instructions or provide links to the related documentation.
 
 ## Usage
 
-Explain how to use the project. You can create multiple subsections. Include the instructions or provide links to the related documentation.
+TODO: Explain how to use the project. You can create multiple subsections. Include the instructions or provide links to the related documentation.
 
 ## Development
 
-Add instructions on how to develop the project. It must be clear what to do and how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
+TODO: Add instructions on how to develop the project. It must be clear what to do and how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
