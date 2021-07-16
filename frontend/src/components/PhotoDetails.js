@@ -11,10 +11,6 @@ const Wrapper = styled.div`
   max-width: 100%;
   margin: 0 auto;
   height: 100vh; //max-content
-
-  @media screen and (max-width: 900px) {
-    background-color: #2556c6;
-  }
 `;
 
 const Header = styled.header`
@@ -54,7 +50,7 @@ const ImageArea = styled.div`
 `;
 
 const Img = styled.img`
-  max-height: 90%;
+  max-height: 87%;
   max-width: 100%;
 `;
 
@@ -74,7 +70,9 @@ const Ul = styled.ul`
 
 const Li = styled.li``;
 
-const H2 = styled.h2``;
+const H2 = styled.h2`
+  margin: 2%;
+`;
 
 const H4 = styled.h4``;
 
