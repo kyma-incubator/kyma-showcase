@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import { GlobalStyle } from '../assets//GlobalStyle';
+import React from "react";
+import styled from "styled-components";
+import { GlobalStyle } from "../assets//GlobalStyle";
 
 const Wrapper = styled.div`
   display: flex;
