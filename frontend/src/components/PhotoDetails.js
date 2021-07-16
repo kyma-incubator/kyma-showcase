@@ -58,6 +58,17 @@ const Return = styled.button`
   }
 `;
 
+const ImageArea = styled.div`
+  text-align: center;
+  //border: 1px solid black;
+  max-height: 50%;
+`;
+
+const Img = styled.img`
+  max-height: 90%;
+  max-width: 100%;
+`;
+
 const Footer = styled.footer`
   position: fixed;
   left: 0;
@@ -85,10 +96,10 @@ const PhotoDetails = () => (
           <Logo src={kymaLogo} alt="Kyma Logo" />
         </a>
       </Header>
-      <image>
+      <ImageArea>
         <h2>Image title</h2>
-        <img src={imageURL} alt="here will be" />
-      </image>
+        <Img src={imageURL} alt="here will be" />
+      </ImageArea>
       <div>
         <ul>
           Objects
