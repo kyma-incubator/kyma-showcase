@@ -69,6 +69,24 @@ const Img = styled.img`
   max-width: 100%;
 `;
 
+const Details = styled.div`
+  //border: 1px solid black;
+  width: 70%;
+  padding: 0;
+  margin: 0;
+  text-align: center;
+`;
+
+const Ul = styled.ul`
+  list-style: none;
+`;
+
+const Li = styled.li``;
+
+const H2 = styled.h2``;
+
+const H4 = styled.h4``;
+
 const Footer = styled.footer`
   position: fixed;
   left: 0;
@@ -97,30 +115,30 @@ const PhotoDetails = () => (
         </a>
       </Header>
       <ImageArea>
-        <h2>Image title</h2>
+        <H2>Image title</H2>
         <Img src={imageURL} alt="here will be" />
       </ImageArea>
-      <div>
-        <ul>
+      <Details>
+        <Ul>
           Objects
-          <li>obj1</li>
-        </ul>
-        <ul>
+          <Li>obj1</Li>
+        </Ul>
+        <Ul>
           Labels
-          <li>lbl1</li>
-        </ul>
-      </div>
+          <Li>lbl1</Li>
+        </Ul>
+      </Details>
       <NavBar>
         <Return id="return" onClick={handleClick}>
           Home Page
         </Return>
       </NavBar>
       <Footer>
-        <h4>
+        <H4>
           Procject by Raccoons
           <br />
           2021
-        </h4>
+        </H4>
       </Footer>
     </Wrapper>
   </>
