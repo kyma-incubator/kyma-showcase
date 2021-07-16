@@ -29,14 +29,6 @@ const Logo = styled.img`
   //background-color: white;
 `;
 
-const NavBar = styled.nav`
-  height: 40px;
-  width: 100%;
-  margin: 0;
-  padding: 0;
-  //border: 1px solid black;
-`;
-
 const Return = styled.button`
   border-radius: 25px;
   font-size: 18px;
@@ -44,14 +36,11 @@ const Return = styled.button`
   padding: 4px 18px;
   line-height: 46px;
   transition: background-color 0.2s ease-out 0s;
-  text-decoration: none;
   cursor: pointer;
   border: 2px solid rgb(0, 119, 225);
   background-color: rgb(0, 119, 225);
   color: rgb(255, 255, 255);
   height: 40px;
-  left: 46%;
-  position: absolute;
   &:hover {
     background-color: #025eb3;
     border: 2px solid #025eb3;
@@ -75,6 +64,8 @@ const Details = styled.div`
   padding: 0;
   margin: 0;
   text-align: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
 `;
 
 const Ul = styled.ul`
@@ -128,11 +119,9 @@ const PhotoDetails = () => (
           <Li>lbl1</Li>
         </Ul>
       </Details>
-      <NavBar>
-        <Return id="return" onClick={handleClick}>
-          Home Page
-        </Return>
-      </NavBar>
+      <Return id="return" onClick={handleClick}>
+        Home Page
+      </Return>
       <Footer>
         <H4>
           Procject by Raccoons
