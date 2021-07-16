@@ -3,7 +3,19 @@ import styled from "styled-components";
 import { GlobalStyle } from "../assets//GlobalStyle";
 import kymaLogo from "../img/KymaLogo.png";
 
+const Wrapper = styled.div`
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 1200px;
+  max-width: 100%;
+  margin: 0 auto;
+  height: 100vh; //max-content
 
+  @media screen and (max-width: 900px) {
+    background-color: #2556c6;
+  }
+`;
 
 const imageURL = "https://cataas.com/cat/says/work";
 const kymaURL = "https://kyma-project.io/";
@@ -15,6 +27,7 @@ function handleClick() {
 const PhotoDetails = () => (
   <>
     <GlobalStyle />
+    <Wrapper>
       <header>
         <a href={kymaURL}>
           <img src={kymaLogo} alt="Kyma Logo" />
@@ -46,6 +59,7 @@ const PhotoDetails = () => (
           2021
         </h4>
       </footer>
+    </Wrapper>
   </>
 );
 
