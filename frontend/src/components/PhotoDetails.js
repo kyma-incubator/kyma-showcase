@@ -17,6 +17,29 @@ const Wrapper = styled.div`
   }
 `;
 
+const Header = styled.header`
+  height: 50px;
+  width: 100%;
+  //border: 1px solid black;
+  //background-color: #63a2ff;
+`;
+
+const Logo = styled.img`
+  height: 100%;
+  //background-color: white;
+`;
+
+const Footer = styled.footer`
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  border-top: 1px solid black;
+  text-align: center;
+  background-color: #0e74de;
+  color: white;
+`;
+
 const imageURL = "https://cataas.com/cat/says/work";
 const kymaURL = "https://kyma-project.io/";
 
@@ -28,11 +51,11 @@ const PhotoDetails = () => (
   <>
     <GlobalStyle />
     <Wrapper>
-      <header>
+      <Header>
         <a href={kymaURL}>
-          <img src={kymaLogo} alt="Kyma Logo" />
+          <Logo src={kymaLogo} alt="Kyma Logo" />
         </a>
-      </header>
+      </Header>
       <image>
         <h2>Image title</h2>
         <img src={imageURL} alt="here will be" />
@@ -52,13 +75,13 @@ const PhotoDetails = () => (
           Home Page
         </button>
       </nav>
-      <footer>
+      <Footer>
         <h4>
           Procject by Raccoons
           <br />
           2021
         </h4>
-      </footer>
+      </Footer>
     </Wrapper>
   </>
 );
