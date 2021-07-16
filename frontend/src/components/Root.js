@@ -13,7 +13,7 @@ const Wrapper = styled.div`
   max-width: 100%;
   margin: 0 auto;
   min-height: 100vh;
-  background-color: #2556c6;
+  background-color: ${theme.colors.primary};
 `;
 
 const Root = () => (

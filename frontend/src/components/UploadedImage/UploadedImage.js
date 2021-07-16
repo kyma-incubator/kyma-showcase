@@ -10,7 +10,6 @@ const ImageDetailsTitle = styled.p`
   text-align: center;
 `;
 
-
 const UploadedImage = styled.div`
   display: flex;
   flex-direction: column;
@@ -18,12 +17,12 @@ const UploadedImage = styled.div`
   width: 100%;
   padding-top: 1%;
   border-radius: 5%;
-  background-color: #6cdfa3; //zielony
+  background-color: ${({ theme }) => theme.colors.secondary};
   cursor: pointer;
 `;
 const imageURL3 = 'https://cataas.com/cat/says/hell';
 
-const UploadedImageBox = ({props}) => (
+const UploadedImageBox = ({ props }) => (
   <UploadedImage>
     <Image src={imageURL3} />
     <ImageDetailsTitle>Details title</ImageDetailsTitle>

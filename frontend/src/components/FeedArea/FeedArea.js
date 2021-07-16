@@ -7,7 +7,7 @@ const FeedArea = styled.main`
   align-items: center;
   margin: 30px 50px;
   border-radius: 30px;
-  background-color: white;
+  background-color: ${({ theme }) => theme.colors.white};
   width: 90%;
 `;
 
