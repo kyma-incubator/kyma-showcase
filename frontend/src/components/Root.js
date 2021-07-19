@@ -1,7 +1,10 @@
 import React from 'react';
-import styled from 'styled-components';
-import { GlobalStyle } from '../assets//GlobalStyle';
-
+import styled, { ThemeProvider } from 'styled-components';
+import { GlobalStyle } from 'assets/styles/GlobalStyle';
+import { theme } from 'assets/styles/theme';
+import { UploadImageArea } from 'components/UploadImageArea/UploadImageArea';
+import Feed from 'components/FeedArea/FeedArea';
+import { Header } from 'components/Header/Header';
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -9,63 +12,19 @@ const Wrapper = styled.div`
   width: 1200px;
   max-width: 100%;
   margin: 0 auto;
-  height: 100vh; //max-content
-  background-color: #2556c6;
-
-  @media screen and (min-width: 900px) {
-    background-color: red;
-  }
-`;
-
-const UploadImageArea = styled.section`
-  margin: 30px 50px;
-  border-radius: 30px;
-  background-color: white;
-  width: 90%;
-  height: 30%;
-`;
-
-const FeedArea = styled.section`
-  display: flex;
-  flex-direction: column;
-  margin: 30px 50px;
-  border-radius: 30px;
-  background-color: white;
-  width: 90%;
-  height: 60%;
-`;
-
-const FeedTitleArea = styled.div`
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  height: 10%;
-  background-color: #2556c6;
-  border: 5px solid white;
-  border-top-left-radius: 30px;
-  border-top-right-radius: 30px;
-`;
-
-const FeedTitle = styled.h2`
-  letter-spacing: 3px;
-  font-size: 20px;
-  text-transform: uppercase;
-  color: white;
-  text-align: center;
+  min-height: 100vh;
+  background-color: ${theme.colors.primary};
 `;
 
 const Root = () => (
-  <>
+  <ThemeProvider theme={theme}>
     <GlobalStyle />
     <Wrapper>
-      <UploadImageArea></UploadImageArea>
-      <FeedArea>
-        <FeedTitleArea>
-          <FeedTitle>Feed</FeedTitle>
-        </FeedTitleArea>
-      </FeedArea>
+      <Header />
+      <UploadImageArea />
+      <Feed></Feed>
     </Wrapper>
-  </>
+  </ThemeProvider>
 );
 
 export default Root;
