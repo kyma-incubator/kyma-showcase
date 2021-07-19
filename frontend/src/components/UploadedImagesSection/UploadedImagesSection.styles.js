@@ -10,7 +10,7 @@ export const UploadedImagesSection = styled.section`
   margin-bottom: 20px;
   justify-content: center;
 
-  @media screen and (max-width: 900px) {
+  @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
   }
 `;

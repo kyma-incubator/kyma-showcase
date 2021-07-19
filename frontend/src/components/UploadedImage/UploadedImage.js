@@ -3,12 +3,12 @@ import {
   Image,
 } from 'components/UploadedImage/UploadedImage.styles';
 
-const imageURL3 = 'https://cataas.com/cat/says/hell';
-
-const UploadedImageBox = () => (
+const UploadedImageBox = ({ url }) => (
   <UploadedImage>
-    <Image src={imageURL3} />
-    <p>Details title</p>
+    <Image>
+      <img src={url} alt="cat"></img>
+      <p>Photo details</p>
+    </Image>
   </UploadedImage>
 );
 

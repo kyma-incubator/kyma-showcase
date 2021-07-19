@@ -5,4 +5,5 @@ export const Header = styled.header`
   width: 80%;
   height: 100px;
   background-color: ${({ theme }) => theme.colors.white};
-`;
+
+`
