@@ -1,19 +1,4 @@
-import styled from "styled-components";
-
-const Details = styled.div`
-  width: 70%;
-  padding: 0;
-  margin: 0;
-  text-align: center;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-`;
-
-const Ul = styled.ul`
-  list-style: none;
-`;
-
-const Li = styled.li``;
+import {Details, Ul, Li} from "./ImageDetailsStyle";
 
 const ImageDetails = () => (
   <Details>
