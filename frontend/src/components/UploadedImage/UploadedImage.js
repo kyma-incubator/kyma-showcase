@@ -14,7 +14,8 @@ const UploadedImage = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 100%;
+  max-width: 100%;
+  max-height: 100%;
   padding-top: 1%;
   border-radius: 5%;
   background-color: ${({ theme }) => theme.colors.secondary};

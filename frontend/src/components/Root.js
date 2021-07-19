@@ -5,6 +5,7 @@ import { theme } from 'assets/styles/theme';
 import { UploadImageArea } from 'components/UploadImageArea/UploadImageArea';
 import Feed from 'components/FeedArea/FeedArea';
 import { Header } from 'components/Header/Header';
+
 const Wrapper = styled.div`
   display: flex;
   align-items: center;
