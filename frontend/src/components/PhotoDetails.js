@@ -50,7 +50,7 @@ const ImageArea = styled.div`
 `;
 
 const Img = styled.img`
-  max-height: 87%;
+  max-height: 88%;
   max-width: 100%;
 `;
 
