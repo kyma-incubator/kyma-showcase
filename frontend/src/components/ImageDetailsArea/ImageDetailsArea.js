@@ -1,4 +1,4 @@
-import { ImageArea, Img, H2 } from "./ImageDetailsAreaStyle.js";
+import { ImageArea, Img, H2 } from "./ImageDetailsArea.styles.js";
 
 const imageURL = "https://cataas.com/cat/says/work";
 

@@ -1,4 +1,4 @@
-import { FooterSection, H4 } from "./FooterStyle";
+import { FooterSection, H4 } from "./Footer.styles";
 
 const Footer = () => (
   <FooterSection>

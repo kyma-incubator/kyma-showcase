@@ -1,4 +1,4 @@
-import { HeaderSection, Logo } from "./HeaderStyle";
+import { HeaderSection, Logo } from "./Header.styles";
 import kymaLogo from "img/KymaLogo.png";
 
 const kymaURL = "https://kyma-project.io/";

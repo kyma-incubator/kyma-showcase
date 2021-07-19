@@ -1,4 +1,4 @@
-import {Details, Ul, Li} from "./ImageDetailsStyle";
+import {Details, Ul, Li} from "./ImageDetails.styles";
 
 const ImageDetails = () => (
   <Details>
