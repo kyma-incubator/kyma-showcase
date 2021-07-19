@@ -1,8 +1,26 @@
-import styled from 'styled-components';
+import styled from "styled-components";
+import kymaLogo from "img/KymaLogo.png";
 
-export const Header = styled.header`
-  margin-top: 2%;
-  width: 80%;
-  height: 100px;
-  background-color: ${({ theme }) => theme.colors.white};
+const kymaURL = "https://kyma-project.io/";
+
+const HeaderNav = styled.header`
+  height: 50px;
+  width: 100%;
+  background-color: white;
 `;
+
+const Logo = styled.img`
+  height: 100%;
+`;
+
+const Header = () => (
+  <>
+    <HeaderNav>
+      <a href={kymaURL}>
+        <Logo src={kymaLogo} alt="Kyma Logo" />
+      </a>
+    </HeaderNav>
+  </>
+);
+
+export default Header;
