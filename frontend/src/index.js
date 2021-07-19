@@ -5,7 +5,7 @@ import PhotoDetails from "./components/PhotoDetails";
 
 ReactDOM.render(
   <React.StrictMode>
-    <PhotoDetails />
+    <Root />
   </React.StrictMode>,
   document.getElementById("root")
 );
