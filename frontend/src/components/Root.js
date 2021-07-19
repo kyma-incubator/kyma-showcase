@@ -1,10 +1,11 @@
-import React from 'react';
-import styled, { ThemeProvider } from 'styled-components';
-import { GlobalStyle } from 'assets/styles/GlobalStyle';
-import { theme } from 'assets/styles/theme';
-import { UploadImageArea } from 'components/UploadImageArea/UploadImageArea';
-import Feed from 'components/FeedArea/FeedArea';
-import { Header } from 'components/Header/Header';
+import React from "react";
+import styled, { ThemeProvider } from "styled-components";
+import { GlobalStyle } from "assets/styles/GlobalStyle";
+import { theme } from "assets/styles/theme";
+import { UploadImageArea } from "components/UploadImageArea/UploadImageArea";
+import Feed from "components/FeedArea/FeedArea";
+import Header from "components/Header/Header";
+import Footer from "./Footer/Footer";
 
 const Wrapper = styled.div`
   display: flex;
@@ -24,6 +25,7 @@ const Root = () => (
       <Header />
       <UploadImageArea />
       <Feed></Feed>
+      <Footer />
     </Wrapper>
   </ThemeProvider>
 );
