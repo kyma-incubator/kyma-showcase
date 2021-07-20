@@ -76,6 +76,8 @@ func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var x Image
 
+	//999 only for GET.
+
 	if params["id"] == "999" {
 		keys := allKeys()
 		for _, key := range keys {
@@ -86,21 +88,20 @@ func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 				fmt.Fprintf(w, "json = %s\n", fromDB)
 			}
 		}
+	} else {
+		fromDB, err := getFromDB(params["id"])
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		err = json.Unmarshal([]byte(fromDB.(string)), &x)
+		if err != nil {
+			fmt.Println(err)
+		}
+
+		fmt.Fprintf(w, "json = %s\n", fromDB)
+		fmt.Fprintf(w, "json URL = %s,  json GCP = %s\n", x.URL, x.GCP)
 	}
-
-	fromDB, err := getFromDB(params["id"])
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = json.Unmarshal([]byte(fromDB.(string)), &x)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Fprintf(w, "json = %s\n", fromDB)
-	fmt.Fprintf(w, "json URL = %s,  json GCP = %s\n", x.URL, x.GCP)
-
 }
 
 func main() {
@@ -109,8 +110,8 @@ func main() {
 
 		router := mux.NewRouter()
 
-		router.HandleFunc("/{id}", dbGetHandler).Methods("GET")
-		router.HandleFunc("/{id}", dbPostHandler).Methods("POST")
+		router.HandleFunc("/get/{id}", dbGetHandler).Methods("GET")
+		router.HandleFunc("/add/{id}", dbPostHandler).Methods("POST")
 
 		fmt.Printf("Starting server at port 8081\n")
 		http.ListenAndServe(":8081", router)
