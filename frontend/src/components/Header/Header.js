@@ -12,5 +12,4 @@ const Header = () => (
     </HeaderSection>
   </>
 );
-
 export default Header;
