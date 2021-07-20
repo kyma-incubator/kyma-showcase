@@ -76,7 +76,7 @@ func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var x Image
 
-	//999 only for GET
+	//999 only for GET.
 
 	if params["id"] == "999" {
 		keys := allKeys()
