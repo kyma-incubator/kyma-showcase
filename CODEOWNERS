@@ -21,7 +21,14 @@
 # Examples
 
 # These are the default owners for the whole content of the repository, including the content for which no owners are specified in the file.
-* @global-owner1 globalowner@example.com @org/team-name
+
+* @Lyczeq jakub.lyczko1@gmail.com @kyma-incubator/Kyma-Showcase
+* @mvshao r.fok74@gmail.com @kyma-incubator/Kyma-Showcase
+* @mwisnia97 mwisnia97@gmail.com @kyma-incubator/Kyma-Showcase
+* @hanngos hanngos10@gmail.com @kyma-incubator/Kyma-Showcase
+* @Kaktusowy500 k.lewand500@gmail.com @kyma-incubator/Kyma-Showcase
+* @Cortey andrewpank6@gmail.com @kyma-incubator/Kyma-Showcase
+
 # The following rule indicates that if a pull request affects folder1 at the root of the repository and any content in that folder, only this owner is requested for a review.
 /folder1/ @testuser1
 # When you use the following pattern, you specify that @testuser2 is responsible for the review of any file in folder2, excluding subfolders located therein.
