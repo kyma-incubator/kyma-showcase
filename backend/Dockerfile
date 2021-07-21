@@ -5,8 +5,12 @@ WORKDIR /build
 RUN go build -o main .
 
 FROM alpine
-RUN adduser -S -D -H -h /app appuser 
-USER appuser
+#RUN adduser -S -D -H -h /app appuser 
+#-D Don't assign password
+#-H Don't create home directory
+#-S
+#-h 
+#USER appuser
 COPY --from=builder /build/main /app/
 WORKDIR /app
 EXPOSE 8081
