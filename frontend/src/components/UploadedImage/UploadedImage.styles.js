@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const UploadedImage = styled.div`
+export const UploadedImage = styled.article`
   display: flex;
   flex-direction: column;
   align-items: center;
