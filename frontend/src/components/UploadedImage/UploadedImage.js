@@ -1,12 +1,13 @@
 import {
   UploadedImage,
   Image,
-} from 'components/UploadedImage/UploadedImage.styles';
+} from "components/UploadedImage/UploadedImage.styles";
+import { Link } from "react-router-dom";
 
 const UploadedImageBox = ({ url }) => (
   <UploadedImage>
     <Image>
-      <img src={url} alt="cat"></img>
+    <Link to="/ImageDetails"><img src={url} alt="cat" /></Link>
       <p>Photo details</p>
     </Image>
   </UploadedImage>
