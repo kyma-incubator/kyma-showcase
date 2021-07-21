@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const Details = styled.div`
+export const Details = styled.section`
   width: 70%;
   padding: 0;
   margin: 2%;
