@@ -25,6 +25,7 @@ var (
 type Image struct {
 	URL string `json:"url"`
 	GCP string `json:"GCP"`
+	Img string `json:"Img"`
 }
 
 func connectToRedis() *redis.Client {
@@ -75,13 +76,19 @@ func allKeys() []string {
 }
 
 func dbPostHandler(w http.ResponseWriter, r *http.Request) {
+	var img Image
+	err := json.NewDecoder(r.Body).Decode(&img)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	params := mux.Vars(r)
 
 	if /*r.Method == "POST" */ params["id"] == "999" {
 		fmt.Println("json =method POST is not supported for all keys!")
 	} else {
-		j, err := json.Marshal(Image{URL: params["id"], GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
+		j, err := json.Marshal(img) //key: url | value: {url:"...", GCP:"..."}
 		if err != nil {
 			fmt.Println(err)
 		}
@@ -93,7 +100,7 @@ func dbPostHandler(w http.ResponseWriter, r *http.Request) {
 
 func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
-	var x Image
+	var img Image
 
 	//999 only for GET.
 	//jeśli error to ma nic nie robić
@@ -115,13 +122,13 @@ func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Println(err)
 	}
 
-	err = json.Unmarshal([]byte(fromDB.(string)), &x)
+	err = json.Unmarshal([]byte(fromDB.(string)), &img)
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	fmt.Fprintf(w, "json = %s\n", fromDB)
-	fmt.Fprintf(w, "json URL = %s,  json GCP = %s\n", x.URL, x.GCP)
+	fmt.Fprintf(w, "json URL = %s,  json GCP = %s, json image = %s\n", img.URL, img.GCP, img.Img)
 
 }
 
