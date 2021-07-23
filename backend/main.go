@@ -1,25 +1,22 @@
 package main
 
 import (
-	"context"
-	"encoding/base64"
-	"encoding/json"
-	"errors"
+	//"encoding/base64"
+	//"errors"
 	"fmt"
-	_ "image/jpeg"
-	_ "image/png"
-	"io"
-	"io/ioutil"
+	//_ "image/jpeg"
+	//_ "image/png"
+	//"io"
+	//"io/ioutil"
 	"net/http"
 	"os"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/gorilla/mux"
 )
 
-var (
-	connection = connectToRedis()
+/*var (
 	ctx        = context.Background()
+	connection = connectToRedis()
 )
 
 type Image struct {
@@ -77,15 +74,16 @@ func allKeys() []string {
 
 func dbPostHandler(w http.ResponseWriter, r *http.Request) {
 	var img Image
+
 	err := json.NewDecoder(r.Body).Decode(&img)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
-	}
+	} //add content-type check
 
 	params := mux.Vars(r)
 
-	if /*r.Method == "POST" */ params["id"] == "999" {
+	if params["id"] == "999" {
 		fmt.Println("json =method POST is not supported for all keys!")
 	} else {
 		j, err := json.Marshal(img) //key: url | value: {url:"...", GCP:"..."}
@@ -131,113 +129,148 @@ func dbGetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "json URL = %s,  json GCP = %s, json image = %s\n", img.URL, img.GCP, img.Img)
 
 }
+*/
+// func toBase64(b []byte) string {
+// 	return base64.StdEncoding.EncodeToString(b)
+// }
 
-func toBase64(b []byte) string {
-	return base64.StdEncoding.EncodeToString(b)
-}
+// func fromBase64(s string) ([]byte, error) {
+// 	return base64.StdEncoding.DecodeString(s)
+// }
 
-func fromBase64(s string) ([]byte, error) {
-	return base64.StdEncoding.DecodeString(s)
-}
+// func loadImg(fileName string) (string, error) {
+// 	bytes, err := ioutil.ReadFile(fileName)
 
-func loadImg(fileName string) (string, error) {
-	bytes, err := ioutil.ReadFile(fileName)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+
+// 	//imageType := http.DetectContentType(bytes)
+// 	//var imgString string
+
+// 	//czy to ma leciec do GCP???
+// 	// switch imageType {
+// 	// case "image/jpeg":
+// 	// 	imgString += "data:image/jpeg;base64," //czy trzeba te znaczniki dodawać przy wyslaniu do GCP??
+// 	// case "image/png":
+// 	// 	imgString += "data:image/png;base64,"
+// 	// }
+
+// 	imgString := toBase64(bytes)
+
+// 	return imgString, err
+// }
+
+// func saveImg(imgString string, outFile string) {
+
+// 	img, _ := fromBase64(imgString)
+// 	err := ioutil.WriteFile(outFile, img, 0666)
+// 	if err != nil {
+// 		fmt.Println(err)
+// 	}
+// }
+
+// func downloadFile(URL, fileName string) error {
+// 	//Get the response bytes from the url
+// 	response, err := http.Get(URL)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer response.Body.Close()
+
+// 	if response.StatusCode != 200 {
+// 		return errors.New("received non 200 response code")
+// 	}
+// 	//Create a empty file
+// 	file, err := os.Create(fileName)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	defer file.Close()
+
+// 	//Write the bytes to the fiel
+// 	_, err = io.Copy(file, response.Body)
+// 	if err != nil {
+// 		return err
+// 	}
+// 	return nil
+// }
+
+/*func errorCheck(err error){
+
+}*/
+
+func initAPIHandler() (Handler, error) {
+	database := NewDatabaseConnection(os.Getenv("REDIS_URL"), os.Getenv("REDIS_PASSWORD"))
+	err := database.Connect()
 
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error connecting to db")
+		return Handler{}, err
 	}
 
-	//imageType := http.DetectContentType(bytes)
-	//var imgString string
+	apiHandler := NewHandler(database)
 
-	//czy to ma leciec do GCP???
-	// switch imageType {
-	// case "image/jpeg":
-	// 	imgString += "data:image/jpeg;base64," //czy trzeba te znaczniki dodawać przy wyslaniu do GCP??
-	// case "image/png":
-	// 	imgString += "data:image/png;base64,"
-	// }
-
-	imgString := toBase64(bytes)
-
-	return imgString, err
-}
-
-func saveImg(imgString string, outFile string) {
-
-	img, _ := fromBase64(imgString)
-	err := ioutil.WriteFile(outFile, img, 0666)
-	if err != nil {
-		fmt.Println(err)
-	}
-}
-
-func downloadFile(URL, fileName string) error {
-	//Get the response bytes from the url
-	response, err := http.Get(URL)
-	if err != nil {
-		return err
-	}
-	defer response.Body.Close()
-
-	if response.StatusCode != 200 {
-		return errors.New("Received non 200 response code")
-	}
-	//Create a empty file
-	file, err := os.Create(fileName)
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	//Write the bytes to the fiel
-	_, err = io.Copy(file, response.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
+	return apiHandler, nil
 }
 
 func main() {
 
-	if connection != nil {
-		inFile := "image.png"
-		err := downloadFile("https://i.pinimg.com/originals/54/9b/11/549b114dad455ae154295ecad1d05f71.png", inFile)
-		if err != nil {
-			fmt.Println(err)
-		}
-		img, err := loadImg(inFile)
-		if err != nil {
-			fmt.Println(err)
-		}
+	handler, err := initAPIHandler()
 
-		j, err := json.Marshal(Image{URL: img, GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		insertToDB("id", string(j))
-
-		imgFromDB, err := getFromDB("id")
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		var x Image
-		err = json.Unmarshal([]byte(imgFromDB.(string)), &x)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		saveImg(x.URL, "outFile.png")
-
-		router := mux.NewRouter()
-
-		router.HandleFunc("/get/{id}", dbGetHandler).Methods("GET")
-		router.HandleFunc("/post/{id}", dbPostHandler).Methods("POST")
-
-		fmt.Printf("Starting server at port 8081\n")
-		http.ListenAndServe(":8081", router)
+	if err != nil {
+		os.Exit(1)
 	}
+	//stworzyc obiekt database -> connection -> sprawdzic erorr osobna funkcja
+	//handler powinine zwracac odpowiednie kody bledu, np. 500 internal serv. err
+
+	// database := NewDatabaseConnection(os.Getenv("REDIS_URL"), os.Getenv("REDIS_PASSWORD"))
+
+	//if errorCheck(database.Connect) !=
+
+	// err := database.Connect()
+	// if err != nil {
+	// 	return //?
+	// } else {
+	// 	//...
+	// }
+
+	/*inFile := "image.png"
+	err := downloadFile("https://i.pinimg.com/originals/54/9b/11/549b114dad455ae154295ecad1d05f71.png", inFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+	img, err := loadImg(inFile)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	j, err := json.Marshal(Image{URL: img, GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	insertToDB("id", string(j), connection)
+
+	imgFromDB, err := getFromDB("id", connection)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var x Image
+	err = json.Unmarshal([]byte(imgFromDB.(string)), &x)
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	saveImg(x.URL, "outFile.png")*/
+
+	router := mux.NewRouter()
+
+	router.HandleFunc("/get/{id}", handler.DBGetHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", handler.DBPostHandler).Methods("POST")
+
+	fmt.Printf("Starting server at port 8081\n")
+	http.ListenAndServe(":8081", router)
+
 }
