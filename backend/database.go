@@ -3,8 +3,9 @@ package main
 import (
 	"context"
 	"errors"
-	"fmt"
+	//"fmt"
 	"github.com/go-redis/redis/v8"
+	log "github.com/sirupsen/logrus"
 )
 
 type Database struct {
@@ -22,64 +23,59 @@ func NewDatabaseConnection(address, password string) Database {
 	}
 }
 
-func (d Database) Connect() error {
+func (d *Database) Connect() error { //niejawnie wykonac Connect (?) w innej metodzie, na razie zostawic
+	if d.connection != nil {
+		//return errors.New("connection already exists")
+		return nil //ta opcja
+	}
+
 	d.connection = redis.NewClient(&redis.Options{
 		Addr:     d.address,
 		Password: d.password,
 		DB:       0,
 	})
 
-	fmt.Printf("%s, %s\n", d.address, d.password)
-	fmt.Println(d.connection)
 	if err := d.connection.Ping(d.ctx).Err(); err != nil {
 		return err
 	}
-	pong, err := d.connection.Ping(d.ctx).Result()
-	fmt.Printf("pong %s, err %s\n", pong, err)
-	//d.connection = rdb
 	return nil
 }
 
 func (d Database) InsertToDB(key string, value string) error {
 	if d.connection == nil {
-		return errors.New("Connection not initalized1")
+		return errors.New("connection not initialized")
 	}
-
 	_, err := d.connection.Set(d.ctx, key, value, 0).Result()
-	if err != nil {
-		fmt.Println(err)
-	}
 	return err
 }
 
 func (d Database) GetFromDB(key string) (interface{}, error) {
 	if d.connection == nil {
-		return nil, errors.New("Connection not initalized2")
+		return nil, errors.New("connection not initialized")
 	}
 
-	val, err := d.connection.Get(d.ctx, key).Result()
+	val, err := d.connection.Get(d.ctx, key).Result() ///zwracanie errorów -> gdy jest error to nie zwraca wartości?!
 
 	switch {
 	case err == redis.Nil:
-		fmt.Printf("%s key does not exist", key)
+		log.Printf("%s key does not exist", key)
 	case err != nil:
-		fmt.Println(err)
+		log.Println(err)
 	case val == "":
-		fmt.Println("value is empty")
+		log.Println("value is empty")
 	}
-
 	return val, err
 }
 
 func (d Database) GetAllKeys() ([]string, error) {
 	if d.connection == nil {
-		return nil, errors.New("Connection not initalized3")
+		return nil, errors.New("connection not initialized")
 	}
 
 	keys, err := d.connection.Keys(d.ctx, "*").Result()
-
 	if err != nil {
 		return nil, err
 	}
+
 	return keys, nil
 }
