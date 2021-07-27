@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"github.com/gorilla/mux"
+	"strings"
 
 	//"encoding/json"
 	"fmt"
@@ -29,18 +30,12 @@ func NewHandler(dbManager DBManager) Handler {
 	}
 }
 
-/*func ErrorHandler (w http.ResponseWriter, r *http.Request){
-	w.WriteHeader(500)
-}*/
-
 func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	if r.Method != http.MethodPost {
 		w.WriteHeader(405)
 		return
 	}
-	////////////////////////
-
 
 	params := mux.Vars(r)
 
@@ -61,7 +56,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		}
 		h.dbManager.InsertToDB(params["id"], string(jsonImg))
 	}
-
 }
 
 func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +64,6 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	////////////////////////////
 	params := mux.Vars(r)
 	var img Image
 
@@ -102,5 +95,38 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
 		fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key,  img.URL, img.GCP, img.IMG)
 	}
+}
 
+func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
+	if r.Method != http.MethodGet {
+		w.WriteHeader(405)
+		return
+	}
+
+	result := "["
+
+	keys, err := h.dbManager.GetAllKeys()
+	if err != nil{
+		log.Println(err)
+	}
+
+	for _,key := range keys{
+		fromDB, err := h.dbManager.GetFromDB(key)
+		if err != nil{
+			log.Println(err)
+		}
+		result += fromDB.(string)
+		result+=","
+	}
+	result = strings.TrimSuffix(result,",")
+	result+="]"
+	/*err = json.NewDecoder(r.Body).Decode(&result)
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resultJSON, err := json.Marshal(result)
+	fmt.Fprintf(w,string(resultJSON))*/
+	fmt.Fprintf(w,result)
 }

@@ -30,7 +30,6 @@ func main() {
 	handler, err := initAPIHandler()
 	if err != nil {
 		os.Exit(1)
-		//router.HandleFunc("/",ErrorHandler) //500
 	}
 
 	///v1/health --> dla k8s
@@ -38,8 +37,9 @@ func main() {
 
 	//zaprojektowanie API na sucho przed implementajca
 
-	router.HandleFunc("/get/{id}", handler.DBGetHandler).Methods("GET")
-	router.HandleFunc("/post/{id}", handler.DBPostHandler).Methods("POST")
+	router.HandleFunc("/v1/photo/{id}", handler.DBGetHandler).Methods("GET") // get certain image
+	router.HandleFunc("/v1/photo", handler.DBGetAllHandler).Methods("GET") //get all images
+	router.HandleFunc("/v1/photo/{id}", handler.DBPostHandler).Methods("POST") // add photo to database
 
 	port := os.Getenv("PORT")
 	if port == "" {
