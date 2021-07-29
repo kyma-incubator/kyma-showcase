@@ -1,0 +1,5 @@
+{
+    "semicolon": true,
+    "singleQuote": true,
+    "printWidth": 150
+}
