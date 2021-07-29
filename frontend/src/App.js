@@ -13,7 +13,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/ImageDetails" component={ImageDetails} />
+          <Route exact path="/ImageDetails/:cityName" component={ImageDetails} />
         </Switch>
       </Router>
     </ThemeProvider>
