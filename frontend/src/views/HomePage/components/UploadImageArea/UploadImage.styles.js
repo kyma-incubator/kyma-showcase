@@ -8,6 +8,7 @@ export const StyledUploadImage = styled.section`
   margin: 30px 50px;
   border-radius: 30px;
   background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid black;
   
   width: 90%;
   height: 25vh;

@@ -1,6 +1,6 @@
 import { ImageArea, Img, H2 } from "./ImageDetailsArea.styles.js";
 
-const imageURL = "https://cataas.com/cat/says/work";
+const imageURL = "https://cataas.com/cat/says/Gliwice";
 
 const ImageDetailsArea = () => (
   <ImageArea>

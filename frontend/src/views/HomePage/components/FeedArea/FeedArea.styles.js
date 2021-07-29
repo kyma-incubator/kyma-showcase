@@ -8,6 +8,7 @@ export const FeedArea = styled.main`
   border-radius: 30px;
   background-color: ${({ theme }) => theme.colors.white};
   width: 90%;
+  border: 1px solid black;
 `;
 
 export const FeedTitleArea = styled.div`

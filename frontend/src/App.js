@@ -1,8 +1,8 @@
 import React from "react";
 import { ThemeProvider } from "styled-components";
 import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
-import Home from "./components/HomePage/Home";
-import PhotoDetails from "components/PhotoDetailsPage/PhotoDetails";
+import Home from "views/HomePage/HomePage";
+import ImageDetails from "views/ImageDetailsPage/ImageDetailsPage";
 import { GlobalStyle } from "assets/styles/GlobalStyle";
 import { theme } from "assets/styles/theme";
 
@@ -13,7 +13,7 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/ImageDetails" component={PhotoDetails} />
+          <Route exact path="/ImageDetails" component={ImageDetails} />
         </Switch>
       </Router>
     </ThemeProvider>
