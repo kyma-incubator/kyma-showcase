@@ -1,5 +1,5 @@
 import React from "react";
-import { Wrapper, Button } from "./ImageDetailsPage.styles";
+import { Wrapper, Button } from "assets/styles/style";
 import Header from "components/Header/Header";
 import Footer from "components/Footer/Footer";
 import ImageDetailsArea from "views/ImageDetailsPage/components/ImageDetailsArea/ImageDetailsArea";

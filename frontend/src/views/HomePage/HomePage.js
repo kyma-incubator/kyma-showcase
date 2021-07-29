@@ -2,7 +2,7 @@ import UploadImage from 'views/HomePage/components/UploadImageArea/UploadImage';
 import Feed from 'views/HomePage/components/FeedArea/FeedArea';
 import Header from 'components/Header/Header';
 import Footer from 'components/Footer/Footer';
-import { Wrapper } from './HomePage.styles'
+import { Wrapper } from 'assets/styles/style';
 
 const Home = () => {
   return (
