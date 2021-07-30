@@ -7,13 +7,12 @@ export const StyledUploadImage = styled.section`
   justify-content: space-around;
   margin: 30px 50px;
   border-radius: 30px;
-  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid black;
   
   width: 90%;
   height: 25vh;
   p {
     text-align: center;
-    color: ${({ theme }) => theme.colors.black};
     font-size: 20px;
   }
 

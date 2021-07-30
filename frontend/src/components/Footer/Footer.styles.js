@@ -12,3 +12,9 @@ export const FooterSection = styled.footer`
   background-color: #0e74de;
   color: white;
 `;
+
+export const Logo = styled.img`
+  height: 44px;
+  background-color: white;
+  padding: 3px;
+`;
