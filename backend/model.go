@@ -1,6 +1,5 @@
 package main
 
-
 type Image struct {
 	URL string `json:"url"`
 	GCP string `json:"gcp"`
