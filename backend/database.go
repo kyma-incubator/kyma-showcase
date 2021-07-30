@@ -5,7 +5,6 @@ import (
 	"errors"
 	//"fmt"
 	"github.com/go-redis/redis/v8"
-	log "github.com/sirupsen/logrus"
 )
 
 type Database struct {
@@ -58,11 +57,11 @@ func (d Database) GetFromDB(key string) (interface{}, error) {
 
 	switch {
 	case err == redis.Nil:
-		log.Printf("%s key does not exist", key)
+		err = errors.New("key"+key+"does not exist")
 	case err != nil:
-		log.Println(err)
+		err = errors.New("func get error")
 	case val == "":
-		log.Println("value is empty")
+		err = errors.New("for key "+key+ " value is empty")
 	}
 	return val, err
 }

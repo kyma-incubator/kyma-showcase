@@ -14,6 +14,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockery --name=DBManager
 type DBManager interface {
 	InsertToDB(key string, value string) error
 	GetFromDB(key string) (interface{}, error)
@@ -98,24 +99,29 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
-	if r.Method != http.MethodGet {
-		w.WriteHeader(405)
-		return
-	}
 
 	result := "["
 
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil{
 		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
 	}
 
 	for _,key := range keys{
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil{
 			log.Println(err)
+			http.Error(w,err.Error(),http.StatusNotFound)
 		}
-		result += fromDB.(string)
+		dataJSON, ok := fromDB.(string) //moze zwrocic nil i err
+		if !ok{
+			log.Println("")
+			http.Error(w,err.Error(),http.StatusInternalServerError)
+			return
+		}
+		result += dataJSON
 		result+=","
 	}
 	result = strings.TrimSuffix(result,",")
