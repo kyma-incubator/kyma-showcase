@@ -1,10 +1,10 @@
 package main
 
 import (
-	"net/http"
-	"os"
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
+	"net/http"
+	"os"
 )
 
 func initAPIHandler() (Handler, error) {
@@ -42,7 +42,7 @@ func main() {
 		//todo return?? To samo co z REDIS_URL
 	}
 
-	log.Info("Starting server at port %s\n", port)
+	log.Info("Starting server at port " + port + "\n")
 	err = http.ListenAndServe(":"+port, router)
 	if err != nil {
 		log.Fatalf("Starting server at port %s failed!", port)
