@@ -3,7 +3,6 @@ package main
 import (
 	"net/http"
 	"os"
-
 	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 )
@@ -48,4 +47,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("Starting server at port %s failed!", port)
 	}
+	log.Printf("Starting server at port %s\n", port)
+	err = http.ListenAndServe(":"+port, router)
 }
