@@ -121,9 +121,11 @@ func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
 			log.Println(err)
 			http.Error(w,err.Error(),http.StatusNotFound)
 		}
-		dataJSON, ok := fromDB.(string) //moze zwrocic nil i err
+
+		dataJSON, ok := fromDB.(string) //moze zwrocic nil i false(bool)
 		if !ok{
-			log.Println("")
+			err = errors.New("DBGETALLHANDLER: get non-string from DB")
+			log.Println(err)
 			http.Error(w,err.Error(),http.StatusInternalServerError)
 			return
 		}

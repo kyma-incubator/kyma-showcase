@@ -53,19 +53,20 @@ func TestDBGetAllHandler(t *testing.T) {
 	})
 
 	//TODO
-	/*t.Run("should return 500 code when is error during type assertion", func(t *testing.T) {
+	t.Run("should return 500 code when is error during type assertion", func(t *testing.T) {
 		//given
 		req, err := http.NewRequest("GET", "v1/images", nil)
 		require.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
 		testSubject := NewHandler(&dbManagerMock)
-		//dbManagerMock.On("").Return(nil,false)
+		dbManagerMock.On("GetAllKeys").Return([]string{"1"}, nil)
+		dbManagerMock.On("GetFromDB", "1").Return(100, nil)
 		
 		//when
 		testSubject.DBGetAllHandler(recorder,req)
 		
 		//then
 		assert.Equal(t,http.StatusInternalServerError,recorder.Code)
-	})*/
+	})
 }
