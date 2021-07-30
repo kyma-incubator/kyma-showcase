@@ -2,13 +2,15 @@ package main
 
 import (
 	"encoding/json"
+	"github.com/gorilla/mux"
+	"strings"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
+//go:generate mockery --name=DBManager
 type DBManager interface {
 	InsertToDB(key string, value string) error
 	GetFromDB(key string) (interface{}, error)
@@ -77,10 +79,9 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
 	fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
-
 }
 
-func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
+/*func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
 
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
@@ -89,6 +90,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	for _, key := range keys {
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil {
@@ -99,5 +101,44 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
 			fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
 		}
 	}
-	w.WriteHeader(http.StatusOK)
+  	w.WriteHeader(http.StatusOK)
+}*/
+
+func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
+
+	result := "["
+
+	keys, err := h.dbManager.GetAllKeys()
+	if err != nil{
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+
+	for _,key := range keys{
+		fromDB, err := h.dbManager.GetFromDB(key)
+		if err != nil{
+			log.Println(err)
+			http.Error(w,err.Error(),http.StatusNotFound)
+		}
+		dataJSON, ok := fromDB.(string) //moze zwrocic nil i err
+		if !ok{
+			log.Println("")
+			http.Error(w,err.Error(),http.StatusInternalServerError)
+			return
+		}
+		result += dataJSON
+		result+=","
+	}
+	result = strings.TrimSuffix(result,",")
+	result+="]"
+	/*err = json.NewDecoder(r.Body).Decode(&result)
+	if err != nil{
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	resultJSON, err := json.Marshal(result)
+	fmt.Fprintf(w,string(resultJSON))*/
+	fmt.Fprintf(w,result)
 }
