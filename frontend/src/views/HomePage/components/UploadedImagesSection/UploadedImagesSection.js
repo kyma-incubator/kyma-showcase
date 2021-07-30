@@ -4,6 +4,7 @@ import { UploadedImagesSection } from 'views/HomePage/components/UploadedImagesS
 const imageURL1 = 'https://cataas.com/cat/says/Gliwice';
 const imageURL2 = 'https://cataas.com/cat/says/Warsaw';
 const imageURL3 = 'https://cataas.com/cat/says/Munich';
+
 const ImagesSection = () => (
   <UploadedImagesSection>
     <UploadedImageBox url={imageURL1} cityName={'Gliwice'} />

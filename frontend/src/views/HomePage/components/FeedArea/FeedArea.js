@@ -6,7 +6,7 @@ const Feed = () => (
     <FeedTitleArea>
       <h2>Feed</h2>
     </FeedTitleArea>
-    <ImagesSection/>
+    <ImagesSection />
   </FeedArea>
 );
 

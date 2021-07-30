@@ -1,7 +1,4 @@
-import {
-  UploadedImage,
-  Image,
-} from 'views/HomePage/components/UploadedImage/UploadedImage.styles';
+import { UploadedImage, Image } from 'views/HomePage/components/UploadedImage/UploadedImage.styles';
 import { Link } from 'react-router-dom';
 
 const UploadedImageBox = ({ url, cityName }) => {
