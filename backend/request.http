@@ -1,0 +1,16 @@
+POST http://localhost:8081/v1/images/1
+Content-Type: application/json
+
+{"url":"raccoon.com", "GCP":"image.png","Img":"image1.png"}
+
+###
+
+POST http://localhost:8081/v1/images/2
+Content-Type: application/json
+
+{"url":"raccoon.com", "GCP":"image.png","Img":"image2.png"}
+
+###
+
+GET http://localhost:8081/v1/images
+Content-Type: application/json
