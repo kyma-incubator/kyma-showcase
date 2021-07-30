@@ -1,25 +1,24 @@
 package main
 
 import (
-	"github.com/gorilla/mux"
-	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 )
 
 func initAPIHandler() (Handler, error) {
 	address := os.Getenv("REDIS_URL")
 	if address == "" {
-		address = "redis:6379"
+		log.Info("Failed to read REDIS_URL from .env file, using a default value instead")
+		address = "redis:6379" //todo Czy pozwalać programowi kontynuować? Czy lepiej przerwać?
 	}
 
 	database := NewDatabaseConnection(address,os.Getenv("REDIS_PASSWORD"))
 	err := database.Connect()
 	if err != nil {
-		log.Println(err)
 		return Handler{}, err
 	}
-
 	apiHandler := NewHandler(database)
 	return apiHandler, nil
 }
@@ -29,21 +28,24 @@ func main() {
 
 	handler, err := initAPIHandler()
 	if err != nil {
-		os.Exit(1)
+		log.Fatalf("Error connecting to database: %s", err)
 	}
 
-	///v1/health --> dla k8s
-	// sciezka /wersjonowane[v1]/rejestracja-metadanych[metadata]/services
-
-	//zaprojektowanie API na sucho przed implementajca
-
-	router.HandleFunc("/v1/photo/{id}", handler.DBGetHandler).Methods("GET") // get certain image
-	router.HandleFunc("/v1/photo", handler.DBGetAllHandler).Methods("GET") //get all images
-	router.HandleFunc("/v1/photo/{id}", handler.DBPostHandler).Methods("POST") // add photo to database
+	router.HandleFunc("/v1/images", handler.DBGetAllHandler).Methods("GET")
+	router.HandleFunc("/v1/images/{id}", handler.DBGetHandler).Methods("GET")
+	router.HandleFunc("/v1/images/{id}", handler.DBPostHandler).Methods("POST")
 
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8081"
+		log.Info("Failed to read PORT from .env file, using a default value instead")
+		//todo return?? To samo co z REDIS_URL
+	}
+
+	log.Info("Starting server at port %s\n", port)
+	err = http.ListenAndServe(":"+port, router)
+	if err != nil {
+		log.Fatalf("Starting server at port %s failed!", port)
 	}
 	log.Printf("Starting server at port %s\n", port)
 	err = http.ListenAndServe(":"+port, router)
