@@ -19,3 +19,4 @@ services:
             REDIS_URL: ${REDIS_URL}
             REDIS_PASSWORD: ${REDIS_PASSWORD}
         container_name: go
+

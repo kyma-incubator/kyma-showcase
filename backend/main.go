@@ -1,118 +1,50 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
-
-	"github.com/go-redis/redis/v8"
-	"github.com/gorilla/mux"
 )
 
-var (
-	connection = connectToRedis()
-	ctx        = context.Background()
-)
-
-type Image struct {
-	URL string `json:"url"`
-	GCP string `json:"GCP"`
-}
-
-func connectToRedis() *redis.Client {
-
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_URL"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       0,
-	})
-
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		return nil
+func initAPIHandler() (Handler, error) {
+	address := os.Getenv("REDIS_URL")
+	if address == "" {
+		address = "redis:6379"
 	}
 
-	return rdb
-}
-func insertToDB(key string, value string) error {
-	_, err := connection.Set(ctx, key, value, 0).Result()
+	database := NewDatabaseConnection(address,os.Getenv("REDIS_PASSWORD"))
+	err := database.Connect()
 	if err != nil {
-		fmt.Println(err)
-	}
-	return err
-}
-func getFromDB(key string) (interface{}, error) {
-	//val, err := connection.Do(ctx, "GET", key).Result()
-	val, err := connection.Get(ctx, key).Result()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return val, err //fmt.Sprintf("%s", val)
-}
-
-func allKeys() []string {
-	keys, err := connection.Keys(ctx, "*").Result()
-	if err != nil {
-		fmt.Println(err)
-		return nil
+		log.Println(err)
+		return Handler{}, err
 	}
 
-	return keys
-}
-
-func dbPostHandler(w http.ResponseWriter, r *http.Request) {
-	j, err := json.Marshal(Image{URL: "url", GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	params := mux.Vars(r)
-	insertToDB(params["id"], string(j))
-
-}
-
-func dbGetHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var x Image
-
-	if params["id"] == "999" {
-		keys := allKeys()
-		for _, key := range keys {
-			fromDB, err := getFromDB(key)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Fprintf(w, "json = %s\n", fromDB)
-			}
-		}
-	}
-
-	fromDB, err := getFromDB(params["id"])
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	err = json.Unmarshal([]byte(fromDB.(string)), &x)
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	fmt.Fprintf(w, "json = %s\n", fromDB)
-	fmt.Fprintf(w, "json URL = %s,  json GCP = %s\n", x.URL, x.GCP)
-
+	apiHandler := NewHandler(database)
+	return apiHandler, nil
 }
 
 func main() {
+	router := mux.NewRouter()
 
-	if connection != nil {
-
-		router := mux.NewRouter()
-
-		router.HandleFunc("/{id}", dbGetHandler).Methods("GET")
-		router.HandleFunc("/{id}", dbPostHandler).Methods("POST")
-
-		fmt.Printf("Starting server at port 8081\n")
-		http.ListenAndServe(":8081", router)
+	handler, err := initAPIHandler()
+	if err != nil {
+		os.Exit(1)
+		//router.HandleFunc("/",ErrorHandler) //500
 	}
+
+	///v1/health --> dla k8s
+	// sciezka /wersjonowane[v1]/rejestracja-metadanych[metadata]/services
+
+	//zaprojektowanie API na sucho przed implementajca
+
+	router.HandleFunc("/get/{id}", handler.DBGetHandler).Methods("GET")
+	router.HandleFunc("/post/{id}", handler.DBPostHandler).Methods("POST")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = "8081"
+	}
+	log.Printf("Starting server at port %s\n", port)
+	err = http.ListenAndServe(":"+port, router)
 }
