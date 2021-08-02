@@ -8,7 +8,7 @@ export const StyledUploadImage = styled.section`
   margin: 30px 50px;
   border-radius: 30px;
   border: 1px solid black;
-  
+
   width: 90%;
   height: 25vh;
   p {
@@ -16,10 +16,15 @@ export const StyledUploadImage = styled.section`
     font-size: 20px;
   }
 
-  div {
+  input {
     height: 60%;
     width: 50%;
     background-color: rgba(13, 13, 13, 0.3);
     border: 3px dashed white;
+  }
+
+  img {
+    height: 200px;
+    width: 200px;
   }
 `;
