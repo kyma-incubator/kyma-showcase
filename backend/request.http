@@ -1,14 +1,14 @@
-POST http://localhost:8081/v1/images/1
+POST http://localhost:8081/v1/images/4
 Content-Type: application/json
 
 {"url":"raccoon.com", "GCP":"image.png","Img":"image1.png"}
 
 ###
 
-POST http://localhost:8081/v1/images/2
+POST http://localhost:8081/v1/images/24
 Content-Type: application/json
 
-{"url":"raccoon.com", "GCP":"image.png","Img":"image2.png"}
+{"url":"raccoon.com", "GCP":"image.png","Img":"image232434.png"}
 
 ###
 

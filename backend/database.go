@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockery --name=Database
 type Database struct {
 	address    string
 	password   string
