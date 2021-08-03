@@ -78,8 +78,9 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
-	fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
+	fmt.Fprintf(w, "%s", fromDB)
+	//fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
+	//fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
 }
 
 
