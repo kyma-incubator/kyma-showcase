@@ -21,10 +21,10 @@ export const StyledUploadImage = styled.section`
     width: 50%;
     background-color: rgba(13, 13, 13, 0.3);
     border: 3px dashed white;
+    cursor: pointer;
   }
 
   img {
-    height: 200px;
-    width: 200px;
+    max-height: 200px;
   }
 `;
