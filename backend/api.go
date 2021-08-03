@@ -30,7 +30,7 @@ func NewHandler(dbManager DBManager) Handler {
 func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
-
+	log.Println(params)
 	err := json.NewDecoder(r.Body).Decode(&img)
 	if err != nil {
 		err = errors.New("POST: invalid input: " + err.Error())
@@ -45,6 +45,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = h.dbManager.InsertToDB(params["id"], string(jsonImg))
 	if err != nil {
 		err = errors.New("POST: failed to insert values to database: " + err.Error())
@@ -113,7 +114,7 @@ func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
 		err = json.Unmarshal([]byte(dataStr), &img)
 
 		if err != nil {
-			err = errors.New("DBGETALL: fail to unmarshal" + err.Error())
+			err = errors.New("DBGETALL: fail to unmarshal " + err.Error())
 			log.Println(err)
 			http.Error(w,err.Error(),http.StatusInternalServerError)
 			return
