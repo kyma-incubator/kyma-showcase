@@ -11,10 +11,10 @@ export const StyledUploadImage = styled.section`
   width: 90%;
   height: 25vh;
 
-  p {
-    font-weight: bold;
-    color: red;
-    font-size: 20px;
+  form{
+    text-align: center;
+    height: 100%;
+    width: 100%;
   }
 
   input {
@@ -23,6 +23,12 @@ export const StyledUploadImage = styled.section`
     background-color: rgba(13, 13, 13, 0.3);
     border: 3px dashed white;
     cursor: pointer;
+  }
+
+  p {
+    font-weight: bold;
+    color: red;
+    font-size: 20px;
   }
 
   img {

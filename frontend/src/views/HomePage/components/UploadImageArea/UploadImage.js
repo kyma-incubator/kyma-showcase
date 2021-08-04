@@ -1,11 +1,11 @@
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState } from 'react';
 import { APIGET, APIPOST } from 'API';
+import { createExtension } from 'helpers';
 
 const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
-
   const [errorMessage, setErrorMessage] = useState('');
 
   const validateFile = (extension, size) => {
@@ -37,10 +37,10 @@ const UploadImage = () => {
   const handleImageUpload = async (event) => {
     console.log(event.target.files);
     if (event.target.files.length !== 0) {
-      //walidacja error blob
       const image = event.target.files[0];
+
       try {
-        const extension = image.name.substr(image.name.lastIndexOf('.'));
+        const extension = createExtension(image);
         const size = image.size;
 
         validateFile(extension, size);
@@ -48,14 +48,14 @@ const UploadImage = () => {
         // console.log(convertedImage);
         setBase64Image(convertedImage);
         setDisableButton(false);
-        setErrorMessage('')
+        setErrorMessage('');
       } catch (err) {
         setErrorMessage(err.message);
         setBase64Image('');
         setDisableButton(true);
       }
     } else {
-      setErrorMessage('')
+      setErrorMessage('');
       setBase64Image('');
       setDisableButton(true);
     }
@@ -70,7 +70,7 @@ const UploadImage = () => {
         return resolve(fileReader.result);
       };
 
-      fileReader.onerror = (error) => {
+      fileReader.onerror = () => {
         reject(new Error('Something went wrong. Please, try again :('));
       };
     });
@@ -80,12 +80,15 @@ const UploadImage = () => {
     <StyledUploadImage>
       <h3>Upload an image </h3>
       <h5>Acceptable files: png, gif, jpg</h5>
-      <input type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
-      {base64Image && <img src={base64Image} alt="zdjecie" />}
-      <p>{errorMessage}</p>
-      <button disabled={disabledButton} onClick={callAPIPost}>
-        POST
-      </button>
+      <form>
+        <input type="file" id="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
+        {/* <label for="file">Choose file</label> */}
+        {base64Image && <img src={base64Image} alt="zdjecie" />}
+        <p>{errorMessage}</p>
+        <button disabled={disabledButton} onClick={callAPIPost}>
+          POST
+        </button>
+      </form>
       <button onClick={callAPIGet}>GET</button>
     </StyledUploadImage>
   );
