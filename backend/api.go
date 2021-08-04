@@ -2,36 +2,48 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"strings"
 	"errors"
 	"fmt"
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
 
 //go:generate mockery --name=DBManager
+// DBManager defines a contract between api and the database.
 type DBManager interface {
 	InsertToDB(key string, value string) error
 	GetFromDB(key string) (interface{}, error)
 	GetAllKeys() ([]string, error)
 }
 
+// Handler for database manager.
 type Handler struct {
 	dbManager DBManager
 }
 
+// NewHandler returns handler for database manager.
 func NewHandler(dbManager DBManager) Handler {
 	return Handler{
 		dbManager: dbManager,
 	}
 }
 
+// DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
 func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
 
-	err := json.NewDecoder(r.Body).Decode(&img)
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
+		err := errors.New("POST: invalid content type")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&img)
 	if err != nil {
 		err = errors.New("POST: invalid input: " + err.Error())
 		log.Error(err)
@@ -45,6 +57,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = h.dbManager.InsertToDB(params["id"], string(jsonImg))
 	if err != nil {
 		err = errors.New("POST: failed to insert values to database: " + err.Error())
@@ -55,6 +68,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
+// DBGetHandler processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
 func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
@@ -62,7 +76,7 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	key := params["id"]
 	fromDB, err := h.dbManager.GetFromDB(key)
 	if err != nil {
-		err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error()) //Nazwa do zmiany
+		err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -70,75 +84,64 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal([]byte(fromDB.(string)), &img)
 	if err != nil {
-		err = errors.New("DBGETHANDLER: failed to convert marshal to json: " + err.Error()) //Nazwa do zmiany
+		err = errors.New("DBGETHANDLER: failed to convert marshal to json: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
-	fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
+	fmt.Fprintf(w, "%s", fromDB)
 }
 
-/*func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
+// DBGetAllHandler processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
+func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
-		err = errors.New("DBGETALLHANDLER: failed to get all keys from db: " + err.Error())
+		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
+	var img Image
+	var result []Image
 	for _, key := range keys {
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil {
 			err = errors.New("DBGETALL: failed to get value from db " + err.Error())
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
-		} else {
-			fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
-		}
-	}
-  	w.WriteHeader(http.StatusOK)
-}*/
-
-func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
-
-	result := "["
-
-	keys, err := h.dbManager.GetAllKeys()
-	if err != nil{
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
-	for _,key := range keys{
-		fromDB, err := h.dbManager.GetFromDB(key)
-		if err != nil{
-			log.Println(err)
-			http.Error(w,err.Error(),http.StatusNotFound)
-		}
-		dataJSON, ok := fromDB.(string) //moze zwrocic nil i err
-		if !ok{
-			log.Println("")
-			http.Error(w,err.Error(),http.StatusInternalServerError)
 			return
 		}
-		result += dataJSON
-		result+=","
+		dataStr, ok := fromDB.(string)
+
+		if !ok {
+			err = errors.New("DBGETALL: failed to assert a type")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = json.Unmarshal([]byte(dataStr), &img)
+
+		if err != nil {
+			err = errors.New("DBGETALL: fail to unmarshal " + err.Error())
+			log.Println(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		result = append(result, img)
 	}
-	result = strings.TrimSuffix(result,",")
-	result+="]"
-	/*err = json.NewDecoder(r.Body).Decode(&result)
-	if err != nil{
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	allImages, err := json.Marshal(result)
+
+	if err != nil {
+		err = errors.New("DBGETALL: fail to marshal" + err.Error())
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	resultJSON, err := json.Marshal(result)
-	fmt.Fprintf(w,string(resultJSON))*/
-	fmt.Fprintf(w,result)
+	fmt.Fprintf(w, string(allImages))
 }

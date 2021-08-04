@@ -1,5 +1,6 @@
 package main
 
+// Image defines a struct to use for the received image
 type Image struct {
 	URL string `json:"url"`
 	GCP string `json:"gcp"`
@@ -73,36 +74,36 @@ type Image struct {
 // }
 
 //func fromMain(){
-	//stworzyc obiekt database -> connection -> sprawdzic erorr osobna funkcja
-	//handler powinine zwracac odpowiednie kody bledu, np. 500 internal serv. err
+//stworzyc obiekt database -> connection -> sprawdzic erorr osobna funkcja
+//handler powinine zwracac odpowiednie kody bledu, np. 500 internal serv. err
 
-	/*inFile := "image.png"
-	err := downloadFile("https://i.pinimg.com/originals/54/9b/11/549b114dad455ae154295ecad1d05f71.png", inFile)
-	if err != nil {
-		fmt.Println(err)
-	}
-	img, err := loadImg(inFile)
-	if err != nil {
-		fmt.Println(err)
-	}
+/*inFile := "image.png"
+err := downloadFile("https://i.pinimg.com/originals/54/9b/11/549b114dad455ae154295ecad1d05f71.png", inFile)
+if err != nil {
+	fmt.Println(err)
+}
+img, err := loadImg(inFile)
+if err != nil {
+	fmt.Println(err)
+}
 
-	j, err := json.Marshal(Image{URL: img, GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
-	if err != nil {
-		fmt.Println(err)
-	}
+j, err := json.Marshal(Image{URL: img, GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
+if err != nil {
+	fmt.Println(err)
+}
 
-	insertToDB("id", string(j), connection)
+insertToDB("id", string(j), connection)
 
-	imgFromDB, err := getFromDB("id", connection)
-	if err != nil {
-		fmt.Println(err)
-	}
+imgFromDB, err := getFromDB("id", connection)
+if err != nil {
+	fmt.Println(err)
+}
 
-	var x Image
-	err = json.Unmarshal([]byte(imgFromDB.(string)), &x)
-	if err != nil {
-		fmt.Println(err)
-	}
+var x Image
+err = json.Unmarshal([]byte(imgFromDB.(string)), &x)
+if err != nil {
+	fmt.Println(err)
+}
 
-	saveImg(x.URL, "outFile.png")*/
+saveImg(x.URL, "outFile.png")*/
 //}
