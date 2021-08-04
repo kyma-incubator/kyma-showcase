@@ -31,10 +31,16 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
 
+	headerContentType:=r.Header.Get("Content-Type")
+	if headerContentType != "application/json"{
+		err := errors.New("POST: invalid content type")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&img)
-
 	if err != nil {
 		err = errors.New("POST: invalid input: " + err.Error())
 		log.Error(err)

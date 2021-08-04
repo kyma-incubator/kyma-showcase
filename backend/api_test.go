@@ -260,9 +260,11 @@ func TestDBPostHandler(t *testing.T) {
 		var jsonStr = []byte(`{"test":"test"}`)
 		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
 		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
 		vars := map[string]string{
 			"id": "1",
 		}
+		req.Header.Set("Content-Type","application/json")
 		req = mux.SetURLVars(req, vars)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
@@ -276,11 +278,14 @@ func TestDBPostHandler(t *testing.T) {
 		assert.Contains(t,recorder.Body.String(),"POST: invalid input: json: unknown field")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
+
+
 	t.Run("should return 400 error when request's body is not a json", func(t *testing.T) {
 		//given
 		var jsonStr = []byte("test")
 		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
 		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
 		vars := map[string]string{
 			"id": "1",
 		}
@@ -304,6 +309,7 @@ func TestDBPostHandler(t *testing.T) {
 		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
 		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
 		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
 		vars := map[string]string{
 			"id": "1",
 		}
@@ -331,6 +337,7 @@ func TestDBPostHandler(t *testing.T) {
 		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
 		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
 		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
 		vars := map[string]string{
 			"id": "1",
 		}
@@ -350,4 +357,21 @@ func TestDBPostHandler(t *testing.T) {
 
 	})
 
+	t.Run("should return 400 when Content-Type is incorrect", func(t *testing.T) {
+
+		//given
+		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
+		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
+		require.NoError(t, err)
+		req.Header.Set("Content-Type", "application/golang")
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+
+		//when
+		testSubject.DBPostHandler(recorder, req)
+
+		//then
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+	})
 }
