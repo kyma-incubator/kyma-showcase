@@ -26,11 +26,14 @@ func TestNewDatabaseConnection(t *testing.T) {
 func TestConnect(t *testing.T){
 	t.Run("Tests if connection is already established", func(t *testing.T){
 		//given
-		d:= Database {}
-		//when
+		d:= Database {address: "localhost:8081", password: "", ctx:  context.Background()}
 		d.Connect()
-		//then
 
+		//when
+		err := d.Connect()
+
+		//then
+		assert.Equal(t, nil,err)
 	})
 	t.Run("Tests connecting to database with correct Database fields", func(t *testing.T){
 		//given
@@ -49,6 +52,7 @@ func TestGetFromDB(t *testing.T) {
 	client, clientMock := redismock.NewClientMock()
 	clientMock.MatchExpectationsInOrder(true)
 	var ctx = context.TODO()
+	clientMock.ClearExpect()
 	//key, value
 	database := Database{connection: client}
 	test := "1"

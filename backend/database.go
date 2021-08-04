@@ -10,7 +10,7 @@ import (
 type Database struct {
 	address    string
 	password   string
-	connection *redis.Client
+	connection *redis.Client //todo:zdefiniowac interface okreslajacy kontrakt miedzy nami a redisem
 	ctx        context.Context
 }
 
