@@ -7,6 +7,7 @@ import (
 	"os"
 )
 
+// initAPIHandler initializes a handler for the API.
 func initAPIHandler() (Handler, error) {
 	address := os.Getenv("REDIS_URL")
 	if address == "" {
@@ -14,7 +15,7 @@ func initAPIHandler() (Handler, error) {
 		address = "redis:6379" //todo Czy pozwalać programowi kontynuować? Czy lepiej przerwać?
 	}
 
-	database := NewDatabaseConnection(address,os.Getenv("REDIS_PASSWORD"))
+	database := NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
 	err := database.Connect()
 	if err != nil {
 		return Handler{}, err
@@ -23,6 +24,7 @@ func initAPIHandler() (Handler, error) {
 	return apiHandler, nil
 }
 
+// main contains all the function handlers and initializes the database connection.
 func main() {
 	router := mux.NewRouter()
 

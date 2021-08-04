@@ -8,6 +8,7 @@ import (
 )
 
 //go:generate mockery --name=Database
+// Database struct contains address(String), password(string), connection, ctx.
 type Database struct {
 	address    string
 	password   string
@@ -15,6 +16,7 @@ type Database struct {
 	ctx        context.Context
 }
 
+// NewDatabaseConnection returns a Database structure using the given arguments.
 func NewDatabaseConnection(address, password string) Database {
 	return Database{
 		address:  address,
@@ -23,6 +25,7 @@ func NewDatabaseConnection(address, password string) Database {
 	}
 }
 
+// Connect returns an error if connection already has been established, otherwise creates a new connection.
 func (d *Database) Connect() error {
 	if d.connection != nil {
 		log.Info("Connection to database is already established")
@@ -41,6 +44,7 @@ func (d *Database) Connect() error {
 	return nil
 }
 
+// InsertToDB adds a database entry using provided key(String) and value(String).
 func (d Database) InsertToDB(key string, value string) error {
 	if d.connection == nil {
 		return errors.New("INSERTTODB: connection not initialized")
@@ -49,6 +53,7 @@ func (d Database) InsertToDB(key string, value string) error {
 	return err
 }
 
+// GetFromDB requests and receives a value(String) for the given key(String).
 func (d Database) GetFromDB(key string) (interface{}, error) {
 	if d.connection == nil {
 		return nil, errors.New("GETFROMDB: connection not initialized")
@@ -58,16 +63,17 @@ func (d Database) GetFromDB(key string) (interface{}, error) {
 
 	switch {
 	case err == redis.Nil:
-		err = errors.New("GETFROMDB:key " +  key + " does not exist")
+		err = errors.New("GETFROMDB:key " + key + " does not exist")
 	case err != nil:
-		err = errors.New("GETFROMDB:error: " +  err.Error() + " occurred in getting data from db")
+		err = errors.New("GETFROMDB:error: " + err.Error() + " occurred in getting data from db")
 	case val == "":
-		err = errors.New("GETFROMDB:for key " +  key + " value is empty")
+		err = errors.New("GETFROMDB:for key " + key + " value is empty")
 	}
 	return val, err
 }
 
-func (d Database) GetAllKeys() ([]string,error)  {
+// GetAllKeys returns keys([]string containing all the keys in the database.
+func (d Database) GetAllKeys() ([]string, error) {
 	if d.connection == nil {
 		return nil, errors.New("GETALLKEYS: connection not initialized")
 	}
