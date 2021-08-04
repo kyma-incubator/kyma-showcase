@@ -12,9 +12,9 @@ const UploadImage = () => {
     const acceptableSize = 5000000;
     const acceptableExtensions = ['.jpg', '.png', '.gif', '.jpeg'];
 
-    if (!acceptableExtensions.includes(extension)) throw new Error('Zly format pliku');
+    if (!acceptableExtensions.includes(extension)) throw new Error('Unsupported file');
 
-    if (size > acceptableSize) throw new Error('Zbyt duzy plik');
+    if (size > acceptableSize) throw new Error('File is too large');
   };
 
   const callAPIGet = async () => {
@@ -71,7 +71,7 @@ const UploadImage = () => {
       };
 
       fileReader.onerror = (error) => {
-        reject(error);
+        reject(new Error('Something went wrong. Please, try again :('));
       };
     });
   };
