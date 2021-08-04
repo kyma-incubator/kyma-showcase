@@ -8,11 +8,12 @@ export const StyledUploadImage = styled.section`
   margin: 30px 50px;
   border-radius: 30px;
   border: 1px solid black;
-
   width: 90%;
   height: 25vh;
+
   p {
-    text-align: center;
+    font-weight: bold;
+    color: red;
     font-size: 20px;
   }
 

@@ -6,11 +6,13 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   const validateFile = (extension, size) => {
     const acceptableSize = 5000000;
     const acceptableExtensions = ['.jpg', '.png', '.gif', '.jpeg'];
 
-    if (!acceptableExtensions.includes(extension)) throw new Error('Zly format');
+    if (!acceptableExtensions.includes(extension)) throw new Error('Zly format pliku');
 
     if (size > acceptableSize) throw new Error('Zbyt duzy plik');
   };
@@ -40,18 +42,20 @@ const UploadImage = () => {
       try {
         const extension = image.name.substr(image.name.lastIndexOf('.'));
         const size = image.size;
-        
+
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
         // console.log(convertedImage);
         setBase64Image(convertedImage);
         setDisableButton(false);
+        setErrorMessage('')
       } catch (err) {
-        alert(err);
+        setErrorMessage(err.message);
         setBase64Image('');
         setDisableButton(true);
       }
     } else {
+      setErrorMessage('')
       setBase64Image('');
       setDisableButton(true);
     }
@@ -74,9 +78,11 @@ const UploadImage = () => {
 
   return (
     <StyledUploadImage>
-      <p>Upload an image </p>
+      <h3>Upload an image </h3>
+      <h5>Acceptable files: png, gif, jpg</h5>
       <input type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
       {base64Image && <img src={base64Image} alt="zdjecie" />}
+      <p>{errorMessage}</p>
       <button disabled={disabledButton} onClick={callAPIPost}>
         POST
       </button>
