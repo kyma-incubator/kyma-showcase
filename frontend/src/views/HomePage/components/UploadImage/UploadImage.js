@@ -28,11 +28,11 @@ const convertImageToBase64 = (image) => {
 
 export const createExtension = (file) => file.name.substr(file.name.lastIndexOf('.'));
 
-const callAPIGet = async () => {
+const callAPIGet = async (url) => {
   try {
-    console.log(await APIGET());
+    console.log(await APIGET(url));
   } catch (err) {
-    console.log(err);
+    console.error(err);
   }
 };
 
@@ -40,16 +40,16 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const API_URL = 'https://my-jsonl-server.typicode.com/Lyczeq/images/images';
 
   const callAPIPost = async () => {
     try {
-      console.log(await APIPOST(base64Image));
+      console.log(await APIPOST(base64Image, API_URL));
     } catch (err) {
-      console.log(err);
+      console.error(err);
     }
   };
 
-  //TODO zmiana rozszerzenia z np pdf na jpg - obsluga err mess z visionAI
   const handleImageUpload = async (event) => {
     console.log(event.target.files);
     if (event.target.files.length !== 0) {
@@ -82,12 +82,12 @@ const UploadImage = () => {
       <h3>Upload an image </h3>
       <h5>Acceptable files: png, gif, jpg</h5>
       <input type="file" id="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
-      {base64Image && <img src={base64Image} alt="zdjecie" />}
+      {base64Image && <img src={base64Image} alt="image" />}
       <p>{errorMessage}</p>
       <button disabled={disabledButton} onClick={callAPIPost}>
         POST
       </button>
-      <button onClick={callAPIGet}>GET</button>
+      <button onClick={() => callAPIGet(API_URL)}>GET</button>
     </StyledUploadImage>
   );
 };

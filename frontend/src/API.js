@@ -1,11 +1,11 @@
-export const APIGET = async () => {
-  const response = await fetch('https://my-json-server.typicode.com/Lyczeq/images/images');
+export const APIGET = async ( url) => {
+  const response = await fetch(url);
 
   return await response.json();
 };
 
-export const APIPOST = async (base) => {
-  const response = await fetch('https://my-json-server.typicode.com/Lyczeq/images/images', {
+export const APIPOST = async (base, url) => {
+  const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
       base64: base,
