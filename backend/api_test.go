@@ -213,7 +213,7 @@ func TestDBGetAllHandler(t *testing.T) {
 		assert.Equal(t,http.StatusInternalServerError,recorder.Code)
 	})
 
-	/*t.Run("should return error while is error during marshal", func(t *testing.T) {
+	t.Run("should not return error while everything is ok", func(t *testing.T) {
 
 		//given
 
@@ -233,7 +233,7 @@ func TestDBGetAllHandler(t *testing.T) {
 
 		secondReturn := `
 			{
-				"url":"<raccoon.com>",
+				"url":"raccoon.com",
 				"gcp":"image2.png",
 				"img":"image2.png"
 			}
@@ -242,7 +242,6 @@ func TestDBGetAllHandler(t *testing.T) {
 		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
 		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
 
-		//secondReturn = "<>&" //zawiera znaczyniki uczieczki HTML
 		//when
 		testSubject.DBGetAllHandler(recorder,req)
 
@@ -251,8 +250,8 @@ func TestDBGetAllHandler(t *testing.T) {
 		dbManagerMock.AssertCalled(t, "GetFromDB","1")
 		dbManagerMock.AssertCalled(t, "GetFromDB","2")
 		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",2)
-		assert.Equal(t,http.StatusInternalServerError,recorder.Code)
-	}) */ // t.Run("should return error while is error during marshal", func(t *testing.T)
+		assert.Equal(t,http.StatusOK,recorder.Code)
+	})
 }
 
 func TestDBPostHandler(t *testing.T) {
