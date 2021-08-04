@@ -136,7 +136,7 @@ func TestDBGetAllHandler(t *testing.T) {
 }
 
 func TestDBPostHandler(t *testing.T) {
-	t.Run("should return 400 error when unable to decode json from request", func(t *testing.T) {
+	t.Run("should return 400 error when unable to decode json from request into image", func(t *testing.T) {
 		//given
 		var jsonStr = []byte(`{"test":"test"}`)
 		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
@@ -154,8 +154,31 @@ func TestDBPostHandler(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",0)
+		assert.Contains(t,recorder.Body.String(),"POST: invalid input: json: unknown field")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
+	t.Run("should return 400 error when request's body is not a json", func(t *testing.T) {
+		//given
+		var jsonStr = []byte("test")
+		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
+		require.NoError(t, err)
+		vars := map[string]string{
+			"id": "1",
+		}
+		req = mux.SetURLVars(req, vars)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+
+		//when
+		testSubject.DBPostHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",0)
+		assert.Contains(t,recorder.Body.String(),"POST: invalid input: invalid character")
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+	})
+
 	t.Run("should return 500 error when unable to insert json to db", func(t *testing.T) {
 
 		//given
