@@ -2,13 +2,13 @@ package main
 
 import (
 	"encoding/json"
-	"github.com/gorilla/mux"
-	"strings"
 	"errors"
 	"fmt"
+	"github.com/gorilla/mux"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
+
 
 //go:generate mockery --name=DBManager
 type DBManager interface {
@@ -31,7 +31,16 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
 
-	err := json.NewDecoder(r.Body).Decode(&img)
+	headerContentType:=r.Header.Get("Content-Type")
+	if headerContentType != "application/json"{
+		err := errors.New("POST: invalid content type")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+	err := decoder.Decode(&img)
 	if err != nil {
 		err = errors.New("POST: invalid input: " + err.Error())
 		log.Error(err)
@@ -45,6 +54,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
 	err = h.dbManager.InsertToDB(params["id"], string(jsonImg))
 	if err != nil {
 		err = errors.New("POST: failed to insert values to database: " + err.Error())
@@ -77,68 +87,59 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
-	fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
+	fmt.Fprintf(w, "%s", fromDB)
+	//fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
+	//fmt.Fprintf(w, "key: %s, json URL = %s,  json GCP = %s, json image = %s\n", key, img.URL, img.GCP, img.IMG)
 }
 
-/*func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request){
+
+func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
 
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
-		err = errors.New("DBGETALLHANDLER: failed to get all keys from db: " + err.Error())
+		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	for _, key := range keys {
-		fromDB, err := h.dbManager.GetFromDB(key)
-		if err != nil {
-			err = errors.New("DBGETALL: failed to get value from db " + err.Error())
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
-		} else {
-			fmt.Fprintf(w, "key: %s, value: %s\n", key, fromDB)
-		}
-	}
-  	w.WriteHeader(http.StatusOK)
-}*/
-
-func (h Handler) DBGetAllHandler (w http.ResponseWriter, r *http.Request){
-
-	result := "["
-
-	keys, err := h.dbManager.GetAllKeys()
-	if err != nil{
-		log.Println(err)
-		http.Error(w, err.Error(), http.StatusNotFound)
-		return
-	}
-
+	var img Image
+	var result []Image
 	for _,key := range keys{
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil{
-			log.Println(err)
-			http.Error(w,err.Error(),http.StatusNotFound)
+			err = errors.New("DBGETALL: failed to get value from db " + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
-		dataJSON, ok := fromDB.(string) //moze zwrocic nil i err
+		dataStr, ok := fromDB.(string)
+
 		if !ok{
-			log.Println("")
+			err = errors.New("DBGETALL: failed to assert a type")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		err = json.Unmarshal([]byte(dataStr), &img)
+
+		if err != nil {
+			err = errors.New("DBGETALL: fail to unmarshal " + err.Error())
+			log.Println(err)
 			http.Error(w,err.Error(),http.StatusInternalServerError)
 			return
 		}
-		result += dataJSON
-		result+=","
+
+		result = append(result, img)
 	}
-	result = strings.TrimSuffix(result,",")
-	result+="]"
-	/*err = json.NewDecoder(r.Body).Decode(&result)
-	if err != nil{
-		http.Error(w, err.Error(), http.StatusBadRequest)
+	allImages, err := json.Marshal(result)
+
+	if err != nil {
+		err = errors.New("DBGETALL: fail to marshal" + err.Error())
+		log.Println(err)
+		http.Error(w,err.Error(),http.StatusInternalServerError)
 		return
 	}
 
-	resultJSON, err := json.Marshal(result)
-	fmt.Fprintf(w,string(resultJSON))*/
-	fmt.Fprintf(w,result)
+	fmt.Fprintf(w,string(allImages))
 }

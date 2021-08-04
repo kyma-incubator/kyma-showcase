@@ -7,6 +7,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockery --name=Database
 type Database struct {
 	address    string
 	password   string
@@ -66,7 +67,7 @@ func (d Database) GetFromDB(key string) (interface{}, error) {
 	return val, err
 }
 
-func (d Database) GetAllKeys() ([]string, error) {
+func (d Database) GetAllKeys() ([]string,error)  {
 	if d.connection == nil {
 		return nil, errors.New("GETALLKEYS: connection not initialized")
 	}
