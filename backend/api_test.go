@@ -12,6 +12,139 @@ import (
 	"testing"
 )
 
+func TestDBGetHandler(t*testing.T) {
+
+	t.Run("Error when key has no value assigned", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		key := "1"
+		vars := map[string]string{
+			"id": key,
+		}
+		req = mux.SetURLVars(req, vars)
+		require.NoError(t, err)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+		error := errors.New("GETFROMDB:for key "+ key +" value is empty")
+		dbManagerMock.On("GetFromDB", key).Return("", error)
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",1)
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.Equal(t, "DBGETHANDLER: failed to get data from db: " + error.Error() +"\n", recorder.Body.String())
+	})
+
+	t.Run("Error when key does not exist in database", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		key := "1"
+		vars := map[string]string{
+			"id": key,
+		}
+		req = mux.SetURLVars(req, vars)
+		require.NoError(t, err)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+		error := errors.New("GETFROMDB:key " +  key + " does not exist")
+		dbManagerMock.On("GetFromDB", key).Return(nil, error )
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",1)
+		assert.Equal(t, "DBGETHANDLER: failed to get data from db: " + error.Error() +"\n", recorder.Body.String())
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+
+	t.Run("database does not respond", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		key := "1"
+		vars := map[string]string{
+			"id": key,
+		}
+		req = mux.SetURLVars(req, vars)
+		require.NoError(t, err)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+		error := errors.New("GETFROMDB:error")
+		dbManagerMock.On("GetFromDB", "1").Return(nil, error )
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",1)
+		assert.Contains(t, recorder.Body.String(),"DBGETHANDLER: failed to get data from db: ")
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+
+	t.Run("Key exists in database, value is correct should return 200", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		key := "1"
+		value := `
+			{
+				"url":"raccoon.com",
+				"gcp":"image.png",
+				"img":"image.png"
+			}`
+		vars := map[string]string{
+			"id": key,
+		}
+		req = mux.SetURLVars(req, vars)
+		require.NoError(t, err)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+		dbManagerMock.On("GetFromDB", key).Return( value, nil )
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",1)
+		assert.Equal(t, value, recorder.Body.String())
+		assert.Equal(t, http.StatusOK, recorder.Code)
+	})
+
+	t.Run("Key exists in database, value is not json, should return 500", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		key := "1"
+		value := "not json"
+		vars := map[string]string{
+			"id": key,
+		}
+		req = mux.SetURLVars(req, vars)
+		require.NoError(t, err)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+		dbManagerMock.On("GetFromDB", key).Return( value, nil )
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB",1)
+		assert.Contains(t, recorder.Body.String(),"DBGETHANDLER: failed to convert marshal to json:")
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+}
+
 func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should not return error when database is empty", func(t *testing.T) {
 
