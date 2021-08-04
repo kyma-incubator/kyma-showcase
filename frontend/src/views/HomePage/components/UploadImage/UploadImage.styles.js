@@ -8,18 +8,24 @@ export const StyledUploadImage = styled.section`
   margin: 30px 50px;
   border-radius: 30px;
   border: 1px solid black;
-  
   width: 90%;
   height: 25vh;
-  p {
-    text-align: center;
-    font-size: 20px;
-  }
 
-  div {
+  input {
     height: 60%;
     width: 50%;
     background-color: rgba(13, 13, 13, 0.3);
     border: 3px dashed white;
+    cursor: pointer;
+  }
+
+  p {
+    font-weight: bold;
+    color: red;
+    font-size: 20px;
+  }
+
+  img {
+    max-height: 200px;
   }
 `;

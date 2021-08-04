@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const ImageArea = styled.div`
   text-align: center;
@@ -6,8 +6,8 @@ export const ImageArea = styled.div`
 `;
 
 export const Img = styled.img`
-  max-height: 88%;
-  max-width: 100%;
+  height: 50%;
+  max-width: 80%;
 `;
 
 export const H2 = styled.h2`

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const UploadedImage = styled.article`
+export const Tile = styled.article`
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -16,6 +16,7 @@ export const Image = styled.div`
     padding: 5px;
     text-align: center;
   }
+  
   img {
     width: 100%;
     height: 85%;
