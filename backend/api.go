@@ -30,8 +30,10 @@ func NewHandler(dbManager DBManager) Handler {
 func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	var img Image
-	log.Println(params)
-	err := json.NewDecoder(r.Body).Decode(&img)
+	decoder := json.NewDecoder(r.Body)
+	decoder.DisallowUnknownFields()
+
+	err := decoder.Decode(&img)
 	if err != nil {
 		err = errors.New("POST: invalid input: " + err.Error())
 		log.Error(err)
