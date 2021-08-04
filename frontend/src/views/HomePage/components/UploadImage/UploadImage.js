@@ -51,7 +51,6 @@ const UploadImage = () => {
   };
 
   const handleImageUpload = async (event) => {
-    console.log(event.target.files);
     if (event.target.files.length !== 0) {
       const image = event.target.files[0];
 
@@ -61,7 +60,6 @@ const UploadImage = () => {
 
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
-        // console.log(convertedImage);
         setBase64Image(convertedImage);
         setDisableButton(false);
         setErrorMessage('');
