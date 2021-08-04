@@ -1,17 +1,17 @@
-import { UploadedImage, Image } from 'views/HomePage/components/UploadedImage/UploadedImage.styles';
+import { Tile, Image } from 'views/HomePage/components/ImageTile/ImageTile.styles';
 import { Link } from 'react-router-dom';
 
-const UploadedImageBox = ({ url, cityName }) => {
+const ImageTile = ({ url, cityName }) => {
   return (
-    <UploadedImage>
+    <Tile>
       <Image>
         <Link to={{ pathname: `/ImageDetails/${cityName}` }}>
           <img src={url} alt="cat" />
         </Link>
         <p>{cityName}</p>
       </Image>
-    </UploadedImage>
+    </Tile>
   );
 };
 
-export default UploadedImageBox;
+export default ImageTile;

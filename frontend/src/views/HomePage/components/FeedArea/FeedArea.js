@@ -1,4 +1,4 @@
-import ImagesSection from 'views/HomePage/components/UploadedImagesSection/UploadedImagesSection';
+import ImagesSection from 'views/HomePage/components/ImagesSection/ImagesSection';
 import { FeedArea, FeedTitleArea } from 'views/HomePage/components/FeedArea/FeedArea.styles';
 
 const Feed = () => (

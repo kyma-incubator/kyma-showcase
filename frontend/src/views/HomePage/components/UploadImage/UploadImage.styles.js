@@ -11,12 +11,6 @@ export const StyledUploadImage = styled.section`
   width: 90%;
   height: 25vh;
 
-  form{
-    text-align: center;
-    height: 100%;
-    width: 100%;
-  }
-
   input {
     height: 60%;
     width: 50%;
