@@ -255,11 +255,10 @@ func TestDBGetAllHandler(t *testing.T) {
 }
 
 func TestDBPostHandler(t *testing.T) {
-	t.Run("should return 400 error when unable to decode json from request", func(t *testing.T) {
-		//TODO fix json decoding (all json fields must be compatible with Image struct)
+	t.Run("should return 400 error when unable to decode json from request into image", func(t *testing.T) {
 		//given
-		var jsonStr = []byte(`{test}`)
-		req, err := http.NewRequest("POST", "v1/images/1", bytes.NewBuffer(jsonStr))
+		var jsonStr = []byte(`{"test":"test"}`)
+		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
 		require.NoError(t, err)
 		vars := map[string]string{
 			"id": "1",
@@ -273,14 +272,37 @@ func TestDBPostHandler(t *testing.T) {
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
+		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",0)
+		assert.Contains(t,recorder.Body.String(),"POST: invalid input: json: unknown field")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
-
 	})
+	t.Run("should return 400 error when request's body is not a json", func(t *testing.T) {
+		//given
+		var jsonStr = []byte("test")
+		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
+		require.NoError(t, err)
+		vars := map[string]string{
+			"id": "1",
+		}
+		req = mux.SetURLVars(req, vars)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		testSubject := NewHandler(&dbManagerMock)
+
+		//when
+		testSubject.DBPostHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",0)
+		assert.Contains(t,recorder.Body.String(),"POST: invalid input: invalid character")
+		assert.Equal(t, http.StatusBadRequest, recorder.Code)
+	})
+
 	t.Run("should return 500 error when unable to insert json to db", func(t *testing.T) {
 
 		//given
 		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
-		req, err := http.NewRequest("POST", "/v1/images/1", bytes.NewBuffer([]byte(jsonStr)))
+		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
 		require.NoError(t, err)
 		vars := map[string]string{
 			"id": "1",
@@ -289,22 +311,25 @@ func TestDBPostHandler(t *testing.T) {
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
 		testSubject := NewHandler(&dbManagerMock)
-		dbManagerMock.On("InsertToDB", "1",jsonStr).Return(errors.New("failed to insert json to db"))
+		error :=  errors.New("failed to insert json to db")
+		dbManagerMock.On("InsertToDB", "1",jsonStr).Return(error)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
+		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",1)
+		assert.Equal(t,"POST: failed to insert values to database: "+ error.Error() + "\n", recorder.Body.String())
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 
 	})
 
-	//TODO change to id checking
+	//TODO add returned id checking
 	t.Run("should return 200 when request is correct", func(t *testing.T) {
 
 		//given
 		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
-		req, err := http.NewRequest("POST", "/v1/images/1", bytes.NewBuffer([]byte(jsonStr)))
+		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
 		require.NoError(t, err)
 		vars := map[string]string{
 			"id": "1",
@@ -319,6 +344,8 @@ func TestDBPostHandler(t *testing.T) {
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
+		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB",1)
+		assert.Equal(t,"", recorder.Body.String())//change to id checking
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})
