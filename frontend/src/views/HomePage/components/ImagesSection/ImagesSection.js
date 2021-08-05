@@ -5,10 +5,11 @@ import { useState, useEffect } from 'react';
 
 const ImagesSection = () => {
   const [images, setImages] = useState([]);
+  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
 
   const callAPIGet = async () => {
     try {
-      setImages(await APIGET('https://my-json-server.typicode.com/Lyczeq/images/images'));
+      setImages(await APIGET(API_URL));
     } catch (err) {
       console.log(err);
     }

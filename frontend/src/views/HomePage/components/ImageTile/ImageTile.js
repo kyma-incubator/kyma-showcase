@@ -17,7 +17,7 @@ const ImageTile = ({ url, id }) => {
 
 ImageTile.propTypes = {
   url: PropTypes.string.isRequired,
-  id: PropTypes.string.isRequired
+  id: PropTypes.number.isRequired
 };
 
 export default ImageTile;

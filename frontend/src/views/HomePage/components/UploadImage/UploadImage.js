@@ -32,7 +32,7 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const API_URL = 'https://my-jsonl-server.typicode.com/Lyczeq/images/images';
+  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
 
   const callAPIPost = async () => {
     try {
