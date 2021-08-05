@@ -5,7 +5,7 @@ import { useState, useEffect } from 'react';
 
 const ImagesSection = () => {
   const [images, setImages] = useState([]);
-  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
+  const API_URL = 'http://localhost:8081/v1/images';
 
   const callAPIGet = async () => {
     try {
