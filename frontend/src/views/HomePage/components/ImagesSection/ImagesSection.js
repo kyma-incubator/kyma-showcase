@@ -9,7 +9,8 @@ const ImagesSection = () => {
 
   const callAPIGet = async () => {
     try {
-      setImages(await APIGET(API_URL));
+      // setImages(await APIGET(API_URL));
+      console.log(await APIGET(API_URL));
     } catch (err) {
       console.log(err);
     }
