@@ -1,119 +1,51 @@
 package main
 
 import (
-	"context"
-	"encoding/json"
-	"fmt"
+	"github.com/gorilla/mux"
+	log "github.com/sirupsen/logrus"
 	"net/http"
 	"os"
-
-	"github.com/go-redis/redis/v8"
-	"github.com/gorilla/mux"
 )
 
-var (
-	connection = connectToRedis()
-	ctx        = context.Background()
-)
-
-type Image struct {
-	URL string `json:"url"`
-	GCP string `json:"GCP"`
-}
-
-func connectToRedis() *redis.Client {
-
-	rdb := redis.NewClient(&redis.Options{
-		Addr:     os.Getenv("REDIS_URL"),
-		Password: os.Getenv("REDIS_PASSWORD"),
-		DB:       0,
-	})
-
-	if err := rdb.Ping(ctx).Err(); err != nil {
-		return nil
+// initAPIHandler initializes a handler for the API.
+func initAPIHandler() (Handler, error) {
+	address := os.Getenv("REDIS_URL")
+	if address == "" {
+		log.Fatal("Failed to read REDIS_URL from .env file")
 	}
 
-	return rdb
-}
-func insertToDB(key string, value string) error {
-	_, err := connection.Set(ctx, key, value, 0).Result()
+	database := NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
+	err := database.Connect()
 	if err != nil {
-		fmt.Println(err)
+		return Handler{}, err
 	}
-	return err
-}
-func getFromDB(key string) (interface{}, error) {
-	//val, err := connection.Do(ctx, "GET", key).Result()
-	val, err := connection.Get(ctx, key).Result()
-	if err != nil {
-		fmt.Println(err)
-	}
-	return val, err //fmt.Sprintf("%s", val)
+	apiHandler := NewHandler(database)
+	return apiHandler, nil
 }
 
-func allKeys() []string {
-	keys, err := connection.Keys(ctx, "*").Result()
-	if err != nil {
-		fmt.Println(err)
-		return nil
-	}
-
-	return keys
-}
-
-func dbPostHandler(w http.ResponseWriter, r *http.Request) {
-	j, err := json.Marshal(Image{URL: "url", GCP: "gcp"}) //key: url | value: {url:"...", GCP:"..."}
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	params := mux.Vars(r)
-	insertToDB(params["id"], string(j))
-
-}
-
-func dbGetHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var x Image
-
-	//999 only for GET.
-
-	if params["id"] == "999" {
-		keys := allKeys()
-		for _, key := range keys {
-			fromDB, err := getFromDB(key)
-			if err != nil {
-				fmt.Println(err)
-			} else {
-				fmt.Fprintf(w, "json = %s\n", fromDB)
-			}
-		}
-	} else {
-		fromDB, err := getFromDB(params["id"])
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		err = json.Unmarshal([]byte(fromDB.(string)), &x)
-		if err != nil {
-			fmt.Println(err)
-		}
-
-		fmt.Fprintf(w, "json = %s\n", fromDB)
-		fmt.Fprintf(w, "json URL = %s,  json GCP = %s\n", x.URL, x.GCP)
-	}
-}
-
+// main contains all the function handlers and initializes the database connection.
 func main() {
+	router := mux.NewRouter()
 
-	if connection != nil {
-
-		router := mux.NewRouter()
-
-		router.HandleFunc("/get/{id}", dbGetHandler).Methods("GET")
-		router.HandleFunc("/add/{id}", dbPostHandler).Methods("POST")
-
-		fmt.Printf("Starting server at port 8081\n")
-		http.ListenAndServe(":8081", router)
+	handler, err := initAPIHandler()
+	if err != nil {
+		log.Fatalf("Error connecting to database: %s", err)
 	}
+
+	router.HandleFunc("/v1/images", handler.DBGetAllHandler).Methods("GET")
+	router.HandleFunc("/v1/images/{id}", handler.DBGetHandler).Methods("GET")
+	router.HandleFunc("/v1/images/{id}", handler.DBPostHandler).Methods("POST")
+
+	port := os.Getenv("PORT")
+	if port == "" {
+		log.Fatal("Failed to read PORT from .env file")
+	}
+
+	log.Info("Starting server at port " + port + "\n")
+	err = http.ListenAndServe(":"+port, router)
+	if err != nil {
+		log.Fatalf("Starting server at port %s failed!", port)
+	}
+	log.Printf("Starting server at port %s\n", port)
+	err = http.ListenAndServe(":"+port, router)
 }

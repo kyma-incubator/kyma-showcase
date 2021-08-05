@@ -1,14 +1,12 @@
-import { HeaderSection, Logo } from "./Header.styles";
-import kymaLogo from "img/KymaLogo.png";
-
-const kymaURL = "https://kyma-project.io/";
+import { HeaderSection, Logo } from './Header.styles';
+import { Link } from 'react-router-dom';
 
 const Header = () => (
   <>
     <HeaderSection>
-      <a href={kymaURL}>
-        <Logo src={kymaLogo} alt="Kyma Logo" />
-      </a>
+      <Link to="/">
+        <Logo src={`${process.env.PUBLIC_URL}/img/KymaLogo.png`} alt="Kyma Logo" />
+      </Link>
     </HeaderSection>
   </>
 );
