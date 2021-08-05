@@ -1,16 +1,29 @@
 import ImageTile from 'views/HomePage/components/ImageTile/ImageTile';
 import { UploadedImagesSection } from 'views/HomePage/components/ImagesSection/ImagesSection.styles';
+import { APIGET } from 'API';
+import { useState, useEffect } from 'react';
 
-const imageURL1 = 'https://cataas.com/cat/says/Gliwice';
-const imageURL2 = 'https://cataas.com/cat/says/Warsaw';
-const imageURL3 = 'https://cataas.com/cat/says/Munich';
+const ImagesSection = () => {
+  const [images, setImages] = useState([]);
+  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
 
-const ImagesSection = () => (
+  const callAPIGet = async () => {
+    try {
+      setImages(await APIGET(API_URL));
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  useEffect(() => {
+    callAPIGet();
+  }, []);
+  return(
   <UploadedImagesSection>
-    <ImageTile url={imageURL1} cityName={'Gliwice'} />
-    <ImageTile url={imageURL2} cityName={'Warsaw'} />
-    <ImageTile url={imageURL3} cityName={'Munich'} />
+    {images.map(({ id, base64 }) => {
+        return <ImageTile url={base64} id={id} key={id} />;
+      })}
   </UploadedImagesSection>
-);
+  )
+};
 
 export default ImagesSection;
