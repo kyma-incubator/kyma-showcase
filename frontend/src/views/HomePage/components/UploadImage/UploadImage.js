@@ -1,6 +1,6 @@
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState } from 'react';
-import { APIGET, APIPOST } from 'API';
+import { APIPOST } from 'API';
 
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
@@ -27,14 +27,6 @@ const convertImageToBase64 = (image) => {
 };
 
 export const createExtension = (file) => file.name.substr(file.name.lastIndexOf('.'));
-
-const callAPIGet = async (url) => {
-  try {
-    console.log(await APIGET(url));
-  } catch (err) {
-    console.error(err);
-  }
-};
 
 const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
@@ -80,12 +72,11 @@ const UploadImage = () => {
       <h3>Upload an image </h3>
       <h5>Acceptable files: png, gif, jpg</h5>
       <input type="file" id="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
-      {base64Image && <img src={base64Image} alt="image" />}
+      {base64Image && <img src={base64Image} alt="Chosen file" />}
       <p>{errorMessage}</p>
       <button disabled={disabledButton} onClick={callAPIPost}>
         POST
       </button>
-      <button onClick={() => callAPIGet(API_URL)}>GET</button>
     </StyledUploadImage>
   );
 };

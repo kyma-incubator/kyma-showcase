@@ -1,14 +1,14 @@
 import { Tile, Image } from 'views/HomePage/components/ImageTile/ImageTile.styles';
 import { Link } from 'react-router-dom';
 
-const ImageTile = ({ url, cityName }) => {
+const ImageTile = ({ url, id }) => {
   return (
     <Tile>
       <Image>
-        <Link to={{ pathname: `/ImageDetails/${cityName}` }}>
-          <img src={url} alt="cat" />
+        <Link to={{ pathname: `/ImageDetails/${id}` }}>
+          <img src={url} alt="KymaImage" />
         </Link>
-        <p>{cityName}</p>
+        <p>{id}</p>
       </Image>
     </Tile>
   );
