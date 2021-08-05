@@ -1,4 +1,4 @@
-import UploadImage from 'views/HomePage/components/UploadImageArea/UploadImage';
+import UploadImage from 'views/HomePage/components/UploadImage/UploadImage';
 import Feed from 'views/HomePage/components/FeedArea/FeedArea';
 import Header from 'components/Header/Header';
 import Footer from 'components/Footer/Footer';
@@ -9,7 +9,7 @@ const Home = () => {
     <>
       <Wrapper>
         <Header />
-        <UploadImage/>
+        <UploadImage />
         <Feed />
       </Wrapper>
       <Footer />
