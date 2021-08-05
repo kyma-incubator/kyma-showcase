@@ -478,7 +478,6 @@ func TestDBPostHandler(t *testing.T) {
 
 	})
 
-	//TODO add returned id checking
 	t.Run("should return 200 code when request, data and connection with database are correct", func(t *testing.T) {
 
 		//given

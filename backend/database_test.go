@@ -9,7 +9,7 @@ import (
 )
 
 func TestConnect(t *testing.T) {
-	t.Run("should check that connection is already established and return error", func(t *testing.T) {
+	t.Run("should return nil when connection is already initialized", func(t *testing.T) {
 		//given
 		client, _ := redismock.NewClientMock()
 		d := Database{address: "localhost:8081", password: "", connection: client, ctx: context.Background()}
@@ -18,9 +18,9 @@ func TestConnect(t *testing.T) {
 		err := d.Connect()
 
 		//then
-		assert.Equal(t, nil, err)
+		assert.NoError(t, err)
 	})
-	t.Run("should return error when trying to Ping database", func(t *testing.T) { //todo:test refactor
+	t.Run("should return error when trying to ping database", func(t *testing.T) {
 
 		//given
 		d := Database{address: "localhost:8081", password: "", ctx: context.Background()}
@@ -35,6 +35,7 @@ func TestConnect(t *testing.T) {
 }
 
 func TestInsertToDB(t *testing.T) {
+	const key, value = "key", "value"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
 		_, clientMock := redismock.NewClientMock()
@@ -43,7 +44,7 @@ func TestInsertToDB(t *testing.T) {
 		database := Database{connection: nil}
 
 		//when
-		err := database.InsertToDB("key", "value")
+		err := database.InsertToDB(key, value)
 
 		//then
 		assert.Error(t, err, errors.New("INSERTTODB: connection not initialized"))
@@ -57,7 +58,6 @@ func TestInsertToDB(t *testing.T) {
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key, value := "key", "value"
 		clientMock.ExpectSet(key, value, 0)
 
 		//when
@@ -69,14 +69,13 @@ func TestInsertToDB(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	t.Run("should insert data correctly using the InsertToDB function - returns no error", func(t *testing.T) {
+	t.Run("should insert data correctly to database with no errors", func(t *testing.T) {
 
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key, value := "key", "value"
 		clientMock.ExpectSet(key, value, 0).SetVal(value)
 
 		//when
@@ -84,10 +83,6 @@ func TestInsertToDB(t *testing.T) {
 
 		//then
 		assert.NoError(t, err)
-		//clientMock.ExpectGet(key).SetVal(value)
-		//val, err := database.GetFromDB(key)
-		//assert.NoError(t, err)
-		//assert.Equal(t, value, val)
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -95,6 +90,7 @@ func TestInsertToDB(t *testing.T) {
 }
 
 func TestGetFromDB(t *testing.T) {
+	const key = "key"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
 		_, clientMock := redismock.NewClientMock()
@@ -103,7 +99,7 @@ func TestGetFromDB(t *testing.T) {
 		database := Database{connection: nil}
 
 		//when
-		_, err := database.GetFromDB("key")
+		_, err := database.GetFromDB(key)
 
 		//then
 		assert.Error(t, err, errors.New("GETFROMDB: connection not initialized"))
@@ -117,7 +113,6 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key := "key"
 		clientMock.ExpectGet(key).RedisNil()
 
 		//when
@@ -136,7 +131,6 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key := "key"
 		clientMock.ExpectGet(key)
 
 		//when
@@ -155,7 +149,6 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key := "key"
 		clientMock.ExpectGet(key).SetVal("")
 
 		//when
@@ -168,13 +161,13 @@ func TestGetFromDB(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	t.Run("should acquire data correctly using GetFromDB function", func(t *testing.T) {
+	t.Run("should get data correctly from database with no errors", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()
 		clientMock.MatchExpectationsInOrder(true)
 		database := Database{connection: client}
-		key, value := "key", "value"
+		value := "value"
 		clientMock.ExpectGet(key).SetVal(value)
 
 		//when
@@ -225,7 +218,7 @@ func TestGetAllKeysDB(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	t.Run("should acquire all keys using the GetAllKeys function", func(t *testing.T) {
+	t.Run("should get all keys from database with no errors", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()

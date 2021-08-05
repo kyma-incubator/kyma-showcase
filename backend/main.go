@@ -11,8 +11,7 @@ import (
 func initAPIHandler() (Handler, error) {
 	address := os.Getenv("REDIS_URL")
 	if address == "" {
-		log.Info("Failed to read REDIS_URL from .env file, using a default value instead")
-		address = "redis:6379" //todo Czy pozwalać programowi kontynuować? Czy lepiej przerwać?
+		log.Fatal("Failed to read REDIS_URL from .env file")
 	}
 
 	database := NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
@@ -39,9 +38,7 @@ func main() {
 
 	port := os.Getenv("PORT")
 	if port == "" {
-		port = "8081"
-		log.Info("Failed to read PORT from .env file, using a default value instead")
-		//todo return?? To samo co z REDIS_URL
+		log.Fatal("Failed to read PORT from .env file")
 	}
 
 	log.Info("Starting server at port " + port + "\n")

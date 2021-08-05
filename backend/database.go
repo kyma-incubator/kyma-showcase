@@ -12,7 +12,7 @@ import (
 type Database struct {
 	address    string
 	password   string
-	connection *redis.Client //todo:zdefiniowac interface okreslajacy kontrakt miedzy nami a redisem
+	connection *redis.Client
 	ctx        context.Context
 }
 
@@ -25,10 +25,10 @@ func NewDatabaseConnection(address, password string) Database {
 	}
 }
 
-// Connect returns an error if connection already has been established, otherwise creates a new connection.
+// Connect returns an error if connection already has been initialized, otherwise creates a new connection.
 func (d *Database) Connect() error {
 	if d.connection != nil {
-		log.Info("Connection to database is already established")
+		log.Info("Connection to database is already initialized")
 		return nil
 	}
 
