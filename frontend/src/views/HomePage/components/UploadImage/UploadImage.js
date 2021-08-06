@@ -33,17 +33,17 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const { callAPIGet } = useContext(ImagesContext);
+  const { getImages } = useContext(ImagesContext);
   let random = Math.floor(Math.random() * 10000);
 
   const callAPIPost = async () => {
     const API_URL = `http://localhost:8081/v1/images/${random}`;
     try {
       console.log(await APIPOST(base64Image, API_URL, random));
-      await callAPIGet();
+      await getImages();
       setDisableButton(true);
     } catch (err) {
-      await callAPIGet();
+      await getImages();
       console.error(err);
     }
   };
