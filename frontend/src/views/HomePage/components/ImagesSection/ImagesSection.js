@@ -15,16 +15,18 @@ const ImagesSection = () => {
       console.log(err);
     }
   };
+
   useEffect(() => {
     callAPIGet();
   }, []);
-  return(
-  <UploadedImagesSection>
-    {images.map(({ id, base64 }) => {
+
+  return (
+    <UploadedImagesSection>
+      {images.map(({ id, base64 }) => {
         return <ImageTile url={base64} id={id} key={id} />;
       })}
-  </UploadedImagesSection>
-  )
+    </UploadedImagesSection>
+  );
 };
 
 export default ImagesSection;

@@ -98,6 +98,7 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html; charset=utf-8")
 	w.Header().Set("Access-Control-Allow-Origin", "*")
+	
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
 		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
