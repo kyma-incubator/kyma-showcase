@@ -17,69 +17,42 @@ type DBManager interface {
 	GetAllKeys() ([]string, error)
 }
 
+//go:generate mockery --name=IdGenerator
+//TODO documentation idGenerator
+type IdGenerator interface {
+	NewID() (string, error)
+}
+
 // Handler for database manager.
 type Handler struct {
-	dbManager DBManager
+	dbManager   DBManager
+	idGenerator IdGenerator
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager) Handler {
+func NewHandler(dbManager DBManager, idGenerator IdGenerator) Handler {
 	return Handler{
-		dbManager: dbManager,
+		dbManager:   dbManager,
+		idGenerator: idGenerator,
 	}
 }
 
-func CorsRoute (w http.ResponseWriter, r *http.Request) {
+func accessControl(w http.ResponseWriter, r *http.Request) {
 	if origin := r.Header.Get("Origin"); origin != "" {
-		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET")
-		//w.Header().Set("Access-Control-Allow-Headers", allowedHeaders)
-		//w.Header().Set("Access-Control-Expose-Headers", "Authorization")
+		w.Header().Set("Content-Type", "application/json")
+		w.Header().Set("Access-Control-Allow-Origin", "*") //todo ip frontend instead of '*', k8s?
 	}
-	return
-}
-
-// DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
-func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
-	params := mux.Vars(r)
-	var img Image
-
-	headerContentType := r.Header.Get("Content-Type")
-	if headerContentType != "application/json" {
-		err := errors.New("POST: invalid content type")
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	decoder := json.NewDecoder(r.Body)
-	decoder.DisallowUnknownFields()
-	err := decoder.Decode(&img)
-	if err != nil {
-		err = errors.New("POST: invalid input: " + err.Error())
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-	jsonImg, err := json.Marshal(img)
-	if err != nil {
-		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	err = h.dbManager.InsertToDB(params["id"], string(jsonImg))
-	if err != nil {
-		err = errors.New("POST: failed to insert values to database: " + err.Error())
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-	w.WriteHeader(http.StatusOK)
 }
 
 // DBGetHandler processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
 func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/v1/images/{id}" {
+		err := errors.New("DBGETHANDLER: 404 not found")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	accessControl(w, r)
 	params := mux.Vars(r)
 	var img Image
 
@@ -106,7 +79,13 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 
 // DBGetAllHandler processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
 func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
-
+	if r.URL.Path != "/v1/images" {
+		err := errors.New("DBGETALLHANDLER: 404 not found")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	accessControl(w, r)
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
 		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
@@ -154,4 +133,55 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprintf(w, string(allImages))
+}
+
+// DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
+func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
+	if r.URL.Path != "/v1/images" {
+		err := errors.New("POST: 404 not found")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	accessControl(w, r)
+
+	var img Image
+
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
+		err := errors.New("POST: invalid content type")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&img)
+	if err != nil {
+		err = errors.New("POST: invalid input: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	jsonImg, err := json.Marshal(img)
+	if err != nil {
+		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	id, err := h.idGenerator.NewID()
+	if err != nil {
+		log.Error(err)
+		return
+	}
+
+	err = h.dbManager.InsertToDB(id, string(jsonImg))
+	if err != nil {
+		err = errors.New("POST: failed to insert values to database: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusOK)
 }

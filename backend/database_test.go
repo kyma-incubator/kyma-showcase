@@ -119,7 +119,7 @@ func TestGetFromDB(t *testing.T) {
 		_, err := database.GetFromDB(key)
 
 		//then
-		assert.Equal(t, "GETFROMDB:key " + key + " does not exist", err.Error())
+		assert.Equal(t, "GETFROMDB:key "+key+" does not exist", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -156,7 +156,7 @@ func TestGetFromDB(t *testing.T) {
 
 		//then
 		assert.Equal(t, "", val)
-		assert.Equal(t, "GETFROMDB:for key " + key + " value is empty", err.Error())
+		assert.Equal(t, "GETFROMDB:for key "+key+" value is empty", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
