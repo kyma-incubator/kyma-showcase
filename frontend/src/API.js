@@ -1,10 +1,9 @@
-export const APIGET = async (url) => {
-  const response = await fetch(url);
+const getAllURL = 'http://localhost:8081/v1/images';
 
+export const APIGET = async () => {
+  const response = await fetch(getAllURL);
   return response.json();
 };
-
-export const API_URL = 'http://localhost:8081/v1/images';
 
 export const APIPOST = async (base, url, random) => {
   const response = await fetch(url, {
