@@ -32,11 +32,12 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
+  let random = Math.floor(Math.random()*10000)
+  const API_URL = `http://localhost:8081/v1/images/${random}`;
 
   const callAPIPost = async () => {
     try {
-      console.log(await APIPOST(base64Image, API_URL));
+      console.log(await APIPOST(base64Image, API_URL, random));
     } catch (err) {
       console.error(err);
     }

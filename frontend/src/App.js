@@ -14,7 +14,8 @@ function App() {
       <Router>
         <Switch>
           <Route exact path="/" component={Home} />
-          <Route exact path="/ImageDetails/:id" component={ImageDetails} />
+          <Route exact path="/ImageDetails/undefined" component={ErrorPage} />
+          <Route exact path="/ImageDetails/:img" component={ImageDetails} />
           <Route path="*" component={ErrorPage} />
         </Switch>
       </Router>

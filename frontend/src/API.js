@@ -4,14 +4,15 @@ export const APIGET = async (url) => {
   return response.json();
 };
 
-export const APIPOST = async (base, url) => {
+export const APIPOST = async (base, url, random) => {
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
-      base64: base,
+      url: base,
+      img: random.toString(),
     }),
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
+      'Content-type': 'application/json',
     },
   });
 
