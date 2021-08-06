@@ -1,19 +1,21 @@
-export const APIGET = async (url) => {
-  const response = await fetch(url);
+const getAllURL = 'http://localhost:8081/v1/images';
 
-  return await response.json();
+export const APIGET = async () => {
+  const response = await fetch(getAllURL);
+  return response.json();
 };
 
-export const APIPOST = async (base, url) => {
+export const APIPOST = async (base, url, random) => {
   const response = await fetch(url, {
     method: 'POST',
     body: JSON.stringify({
-      base64: base,
+      url: base,
+      img: random.toString(),
     }),
     headers: {
-      'Content-type': 'application/json; charset=UTF-8',
+      'Content-type': 'application/json',
     },
   });
 
-  return response.json();
+  return response.text();
 };

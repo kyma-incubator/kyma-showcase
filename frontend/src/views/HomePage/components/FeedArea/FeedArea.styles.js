@@ -8,6 +8,11 @@ export const FeedArea = styled.main`
   border-radius: 30px;
   width: 90%;
   border: 1px solid black;
+
+  &::after{
+    content: "";
+    height: 90px;
+  }
 `;
 
 export const FeedTitleArea = styled.div`

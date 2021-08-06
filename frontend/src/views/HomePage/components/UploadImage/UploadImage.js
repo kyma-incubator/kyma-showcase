@@ -1,6 +1,7 @@
 import { StyledUploadImage } from './UploadImage.styles';
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { APIPOST } from 'API';
+import { ImagesContext } from 'contexts/imagesContext';
 
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
@@ -32,13 +33,19 @@ const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
+  const { getImages } = useContext(ImagesContext);
+  let random = Math.floor(Math.random() * 10000);
 
   const callAPIPost = async () => {
+    const API_URL = `http://localhost:8081/v1/images/${random}`;
     try {
-      console.log(await APIPOST(base64Image, API_URL));
+      console.log(await APIPOST(base64Image, API_URL, random));
+      await getImages();
+      setDisableButton(true);
     } catch (err) {
       console.error(err);
+      setErrorMessage('Something went wrong');
+      setDisableButton(true);
     }
   };
 

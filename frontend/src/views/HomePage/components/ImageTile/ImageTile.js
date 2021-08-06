@@ -2,14 +2,14 @@ import { Tile, Image } from 'views/HomePage/components/ImageTile/ImageTile.style
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-const ImageTile = ({ url, id }) => {
+const ImageTile = ({ url, img }) => {
   return (
     <Tile>
       <Image>
-        <Link to={{ pathname: `/ImageDetails/${id}` }}>
+        <Link to={{ pathname: `/ImageDetails/${img}` }}>
           <img src={url} alt="KymaImage" />
         </Link>
-        <p>{id}</p>
+        <p>{img}</p>
       </Image>
     </Tile>
   );
@@ -17,7 +17,7 @@ const ImageTile = ({ url, id }) => {
 
 ImageTile.propTypes = {
   url: PropTypes.string.isRequired,
-  id: PropTypes.number.isRequired
+  img: PropTypes.string.isRequired,
 };
 
 export default ImageTile;

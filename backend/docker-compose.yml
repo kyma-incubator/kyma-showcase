@@ -18,5 +18,6 @@ services:
         environment:
             REDIS_URL: ${REDIS_URL}
             REDIS_PASSWORD: ${REDIS_PASSWORD}
+            PORT: ${PORT}
         container_name: go
 
