@@ -4,6 +4,8 @@ export const APIGET = async (url) => {
   return response.json();
 };
 
+export const API_URL = 'http://localhost:8081/v1/images';
+
 export const APIPOST = async (base, url, random) => {
   const response = await fetch(url, {
     method: 'POST',
@@ -16,5 +18,5 @@ export const APIPOST = async (base, url, random) => {
     },
   });
 
-  return response.json();
+  return response.text();
 };
