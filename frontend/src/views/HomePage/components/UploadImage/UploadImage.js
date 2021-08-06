@@ -43,8 +43,9 @@ const UploadImage = () => {
       await getImages();
       setDisableButton(true);
     } catch (err) {
-      await getImages();
       console.error(err);
+      setErrorMessage('Something went wrong');
+      setDisableButton(true);
     }
   };
 
