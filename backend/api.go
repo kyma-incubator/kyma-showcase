@@ -29,6 +29,16 @@ func NewHandler(dbManager DBManager) Handler {
 	}
 }
 
+func CorsRoute (w http.ResponseWriter, r *http.Request) {
+	if origin := r.Header.Get("Origin"); origin != "" {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET")
+		//w.Header().Set("Access-Control-Allow-Headers", allowedHeaders)
+		//w.Header().Set("Access-Control-Expose-Headers", "Authorization")
+	}
+	return
+}
+
 // DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
 func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
