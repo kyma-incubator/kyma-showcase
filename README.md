@@ -26,7 +26,7 @@ make build
 Go to the .env file and paste the code below:
 ```
 REDIS_URL=redis:6379
-REDIS_PASSWORD=“”
+REDIS_PASSWORD=
 PORT=8081
 ```
 
