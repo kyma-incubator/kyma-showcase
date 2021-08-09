@@ -1,6 +1,6 @@
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext } from 'react';
-import { APIPOST } from 'API';
+import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
 
 const validateFile = (extension, size) => {
@@ -37,7 +37,7 @@ const UploadImage = () => {
 
   const callAPIPost = async () => {
     try {
-      console.log(await APIPOST(base64Image));
+      await postImageToAPI(base64Image);
       await getImages();
       setDisableButton(true);
     } catch (err) {

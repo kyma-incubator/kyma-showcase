@@ -1,11 +1,11 @@
 const API_URL = 'http://localhost:8081/v1/images';
 
-export const APIGET = async () => {
+export const getAllImagesFromAPI = async () => {
   const response = await fetch(API_URL);
   return response.json();
 };
 
-export const APIPOST = async (base64) => {
+export const postImageToAPI = async (base64) => {
   const response = await fetch(API_URL, {
     method: 'POST',
     body: JSON.stringify({
