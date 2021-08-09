@@ -34,6 +34,7 @@ const UploadImage = () => {
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
+  const [fileName, setFileName] = useState('') 
   let random = Math.floor(Math.random() * 10000);
 
   const callAPIPost = async () => {
@@ -52,16 +53,17 @@ const UploadImage = () => {
   const handleImageUpload = async (event) => {
     if (event.target.files.length !== 0) {
       const image = event.target.files[0];
-
       try {
         const extension = createExtension(image);
         const size = image.size;
-
+        const name = image.name
+        
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
         setBase64Image(convertedImage);
         setDisableButton(false);
         setErrorMessage('');
+        setFileName(name)
       } catch (err) {
         setErrorMessage(err.message);
         setBase64Image('');
@@ -78,7 +80,11 @@ const UploadImage = () => {
     <StyledUploadImage>
       <h3>Upload an image </h3>
       <h5>Acceptable files: png, gif, jpg</h5>
-      <input type="file" id="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
+      <form>
+        <p className='file-message'>Choose a file or drag and drop</p>
+        {fileName && <p className='file-name'>{fileName}</p>}
+        <input className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload}></input>
+      </form>
       {base64Image && <img src={base64Image} alt="Chosen file" />}
       <p>{errorMessage}</p>
       <button disabled={disabledButton} onClick={callAPIPost}>
