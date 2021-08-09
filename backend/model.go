@@ -7,3 +7,7 @@ type Image struct {
 	GCP     string `json:"gcp"`     //returned JSON from gcp api
 	Status  bool   `json:"status"`
 }
+
+type ID struct {
+	ID string `json:"id"`
+}

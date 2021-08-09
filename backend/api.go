@@ -1,12 +1,12 @@
-package api
+package main
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/utilities"
 	log "github.com/sirupsen/logrus"
+	"io"
 	"net/http"
 )
 
@@ -54,15 +54,21 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-	var img utilities.Image
+	var img Image
 
-	params := mux.Vars(r) // TODO: Zmienic klucz na nanoid
+	params := mux.Vars(r)
 	key := params["id"]
 	fromDB, err := h.dbManager.GetFromDB(key)
+
 	if err != nil {
-		err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
+		if err.Error() == "GETFROMDB:key " + key + " does not exist"{
+			err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else{
+			err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
 		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -95,8 +101,8 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var img utilities.Image
-	var result []utilities.Image
+	var img Image
+	var result []Image
 	for _, key := range keys {
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil {
@@ -133,7 +139,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	fmt.Fprintf(w, string(allImages))
+	fmt.Fprint(w, string(allImages))
 }
 
 // DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
@@ -146,7 +152,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accessControl(w, r)
 
-	var img utilities.Image
+	var img Image
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
@@ -156,24 +162,40 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-	err := decoder.Decode(&img)
+	//err := decoder.Decode(&img)
+
+	for {
+		if err := decoder.Decode(&img); err == io.EOF {
+			break
+		} else if err != nil {
+			err = errors.New("POST: invalid input: " + err.Error())
+				log.Error(err)
+				http.Error(w, err.Error(), http.StatusBadRequest)
+				return
+		}
+	}
+	//if err != nil {
+	//	if err == io.EOF{
+	//		break
+	//	}
+	//	err = errors.New("POST: invalid input: " + err.Error())
+	//	log.Error(err)
+	//	http.Error(w, err.Error(), http.StatusBadRequest)
+	//	return
+	//}
+
+	id, err := h.idGenerator.NewID()
 	if err != nil {
-		err = errors.New("POST: invalid input: " + err.Error())
 		log.Error(err)
-		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
+	img.ID = id
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
 		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	id, err := h.idGenerator.NewID()
-	if err != nil {
-		log.Error(err)
 		return
 	}
 
@@ -184,5 +206,18 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	var idStruct ID
+	idStruct.ID = id
+
+	jsonID, err := json.Marshal(idStruct)
+	if err != nil {
+		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, string(jsonID))
 	w.WriteHeader(http.StatusOK)
 }

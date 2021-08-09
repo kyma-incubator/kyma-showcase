@@ -1,4 +1,4 @@
-package api
+package main
 
 import (
 	"bytes"
@@ -86,7 +86,7 @@ func TestDBGetHandler(t *testing.T) {
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
 		assert.Contains(t, recorder.Body.String(), err.Error())
-		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
 
 	t.Run("should return error with status code 500 when key has no value assigned", func(t *testing.T) {
@@ -524,7 +524,7 @@ func TestDBPostHandler(t *testing.T) {
 
 		//given
 		var jsonStr = `{` +
-			`"id":"key",` +
+			`"id":"`+ fixedID +`",` +
 			`"content":"base64",` +
 			`"gcp":"JSON1",` +
 			`"status":false` +
@@ -538,7 +538,7 @@ func TestDBPostHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		testSubject := NewHandler(&dbManagerMock, &idMock)
 		err = errors.New("failed to insert json to db")
-		dbManagerMock.On("InsertToDB", "", jsonStr).Return(err)
+		dbManagerMock.On("InsertToDB", fixedID, jsonStr).Return(err)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
@@ -554,7 +554,7 @@ func TestDBPostHandler(t *testing.T) {
 
 		//given
 		value := `{` +
-			`"id":"key",` +
+			`"id":"`+ fixedID +`",` +
 			`"content":"base64",` +
 			`"gcp":"JSON1",` +
 			`"status":false` +
@@ -567,14 +567,14 @@ func TestDBPostHandler(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		testSubject := NewHandler(&dbManagerMock, &idMock)
-		dbManagerMock.On("InsertToDB",fixedID , value).Return(nil) //Todo: czemu mockid nie dziala
+		dbManagerMock.On("InsertToDB", fixedID, value).Return(nil)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
-		assert.Equal(t, "FEA98D88-0669-4FFD-B17A-8F80BB97C381", fixedID) //TODO:change to id checking
+		assert.Contains(t, recorder.Body.String(),fixedID)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})

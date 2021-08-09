@@ -1,4 +1,4 @@
-package utilities
+package main
 
 import "github.com/matoous/go-nanoid/v2"
 
