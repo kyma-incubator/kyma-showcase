@@ -25,8 +25,8 @@ const ImagesSection = () => {
       <p>{errorMessage}</p>
       <UploadedImagesSection>
         {images &&
-          images.map(({ url, img }) => {
-            return <ImageTile url={url} img={img} key={img} />;
+          images.map(({ id, content }) => {
+            return <ImageTile content={content} id={id} key={id} />;
           })}
       </UploadedImagesSection>
     </>

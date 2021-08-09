@@ -1,6 +1,6 @@
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext } from 'react';
-import { APIPOST } from 'API';
+import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
 
 const validateFile = (extension, size) => {
@@ -34,12 +34,10 @@ const UploadImage = () => {
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
-  let random = Math.floor(Math.random() * 10000);
 
   const callAPIPost = async () => {
-    const API_URL = `http://localhost:8081/v1/images/${random}`;
     try {
-      console.log(await APIPOST(base64Image, API_URL, random));
+      await postImageToAPI(base64Image);
       await getImages();
       setDisableButton(true);
     } catch (err) {
