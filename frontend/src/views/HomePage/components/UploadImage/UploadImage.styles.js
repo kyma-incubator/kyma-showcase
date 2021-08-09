@@ -9,7 +9,6 @@ export const StyledUploadImage = styled.section`
   border-radius: 30px;
   border: 1px solid black;
   width: 90%;
-  height: 30vh;
 
   h3 {
     margin-top: 1.5%;
@@ -22,7 +21,9 @@ export const StyledUploadImage = styled.section`
   }
 
   img {
-    max-height: 50%;
+    max-width: 80%;
+    max-height: 15%;
+    margin-bottom: 2%;
   }
 
   form {
@@ -30,25 +31,27 @@ export const StyledUploadImage = styled.section`
     display: flex;
     align-items: center;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: flex-start;
     margin: 2% 0;
     width: 50%;
-    padding: 25px;
+    padding: 3%;
     background-color: #6797f7;
     border: 3px dashed ${({ theme }) => theme.colors.primary};
     border-radius: 3px;
     transition: 0.2s;
-    cursor: pointer;
   }
 
   input {
     position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
+    inset: 0;
     width: 100%;
+    height: 100%;
     opacity: 0;
     cursor: pointer;
+
+    &::file-selector-button {
+      display: none;
+    }
   }
 
   .file-message,
@@ -61,6 +64,9 @@ export const StyledUploadImage = styled.section`
 
   .file-name {
     font-style: italic;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 90%;
   }
 
   @media screen and (max-width: 600px) {
