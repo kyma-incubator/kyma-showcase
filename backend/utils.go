@@ -1,4 +1,4 @@
-package main
+package utilities
 
 import "github.com/matoous/go-nanoid/v2"
 
@@ -11,3 +11,5 @@ func NewIdGenerator() *idGenerator {
 func (g *idGenerator) NewID() (string, error) {
 	return gonanoid.New()
 }
+
+// TODO: Finish documentation

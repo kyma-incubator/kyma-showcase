@@ -1,10 +1,11 @@
-package main
+package api
 
 import (
 	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/kyma-incubator/Kyma-Showcase/utilities"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 )
@@ -18,7 +19,7 @@ type DBManager interface {
 }
 
 //go:generate mockery --name=IdGenerator
-//TODO documentation idGenerator
+// IdGenerator defines an interface used for nanoid generation.
 type IdGenerator interface {
 	NewID() (string, error)
 }
@@ -53,9 +54,9 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-	params := mux.Vars(r)
-	var img Image
+	var img utilities.Image
 
+	params := mux.Vars(r) // TODO: Zmienic klucz na nanoid
 	key := params["id"]
 	fromDB, err := h.dbManager.GetFromDB(key)
 	if err != nil {
@@ -94,8 +95,8 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var img Image
-	var result []Image
+	var img utilities.Image
+	var result []utilities.Image
 	for _, key := range keys {
 		fromDB, err := h.dbManager.GetFromDB(key)
 		if err != nil {
@@ -145,7 +146,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accessControl(w, r)
 
-	var img Image
+	var img utilities.Image
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
