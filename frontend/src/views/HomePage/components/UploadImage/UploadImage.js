@@ -2,7 +2,7 @@ import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
-
+import {Button} from 'assets/styles/style'
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
   const acceptableExtensions = ['.jpg', '.png', '.gif', '.jpeg'];
@@ -34,6 +34,8 @@ const UploadImage = () => {
   const [disabledButton, setDisableButton] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
+  const [fileName, setFileName] = useState('');
+
 
   const callAPIPost = async () => {
     try {
@@ -50,22 +52,24 @@ const UploadImage = () => {
   const handleImageUpload = async (event) => {
     if (event.target.files.length !== 0) {
       const image = event.target.files[0];
-
       try {
         const extension = createExtension(image);
         const size = image.size;
+        const name = image.name;
 
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
         setBase64Image(convertedImage);
         setDisableButton(false);
         setErrorMessage('');
+        setFileName(name);
       } catch (err) {
         setErrorMessage(err.message);
         setBase64Image('');
         setDisableButton(true);
       }
     } else {
+      setFileName('');
       setErrorMessage('');
       setBase64Image('');
       setDisableButton(true);
@@ -76,12 +80,16 @@ const UploadImage = () => {
     <StyledUploadImage>
       <h3>Upload an image </h3>
       <h5>Acceptable files: png, gif, jpg</h5>
-      <input type="file" id="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
+      <form>
+        <p className="file-message">Choose a file or drag and drop</p>
+        {fileName && <p className="file-name">{fileName}</p>}
+        <input size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload}></input>
+      </form>
       {base64Image && <img src={base64Image} alt="Chosen file" />}
       <p>{errorMessage}</p>
-      <button disabled={disabledButton} onClick={callAPIPost}>
+      <Button disabled={disabledButton} onClick={callAPIPost}>
         POST
-      </button>
+      </Button>
     </StyledUploadImage>
   );
 };

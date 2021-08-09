@@ -9,14 +9,9 @@ export const StyledUploadImage = styled.section`
   border-radius: 30px;
   border: 1px solid black;
   width: 90%;
-  height: 25vh;
 
-  input {
-    height: 60%;
-    width: 50%;
-    background-color: rgba(13, 13, 13, 0.3);
-    border: 3px dashed white;
-    cursor: pointer;
+  h3 {
+    margin-top: 1.5%;
   }
 
   p {
@@ -26,6 +21,61 @@ export const StyledUploadImage = styled.section`
   }
 
   img {
-    max-height: 200px;
+    max-width: 80%;
+    max-height: 15%;
+    margin-bottom: 2%;
+  }
+
+  form {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 2% 0;
+    width: 50%;
+    padding: 3%;
+    background-color: #6797f7;
+    border: 3px dashed ${({ theme }) => theme.colors.primary};
+    border-radius: 3px;
+    transition: 0.2s;
+  }
+
+  input {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    cursor: pointer;
+
+    &::file-selector-button {
+      display: none;
+    }
+  }
+
+  .file-message,
+  .file-name {
+    text-align: center;
+    font-size: 1rem;
+    font-weight: normal;
+    color: white;
+  }
+
+  .file-name {
+    font-style: italic;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    width: 90%;
+  }
+
+  @media screen and (max-width: 600px) {
+    form {
+      flex-direction: column;
+    }
+
+    .file-name {
+      margin-top: 10%;
+    }
   }
 `;

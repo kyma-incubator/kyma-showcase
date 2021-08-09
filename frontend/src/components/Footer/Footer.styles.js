@@ -1,20 +1,18 @@
 import styled from "styled-components";
 
-export const H4 = styled.h4``;
-
 export const FooterSection = styled.footer`
-  position: fixed;
+  position: relative;
   left: 0;
   bottom: 0;
   width: 100%;
   border-top: 1px solid black;
   text-align: center;
-  background-color: #0e74de;
+  background-color: ${({ theme }) => theme.colors.primary};
   color: white;
 `;
 
 export const Logo = styled.img`
-  height: 44px;
+  height: 30px;
   background-color: white;
-  padding: 3px;
+  border: 2px solid white;
 `;

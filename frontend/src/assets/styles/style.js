@@ -14,16 +14,16 @@ export const Button = styled.button`
   border-radius: 25px;
   font-size: 18px;
   font-weight: 500;
-  padding: 4px 18px;
-  line-height: 46px;
-  transition: background-color 0.2s ease-out 0s;
+  padding: 4px 15px;
+  line-height: 15px;
+  transition: background-color 0.2s;
   cursor: pointer;
-  border: 2px solid rgb(0, 119, 225);
-  background-color: rgb(0, 119, 225);
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
   color: rgb(255, 255, 255);
-  height: 40px;
+  height: 30px;
   &:hover {
-    background-color: #025eb3;
-    border: 2px solid #025eb3;
+    background-color: ${({ theme }) => theme.colors.secondary};
+    border: 2px solid ${({ theme }) => theme.colors.secondary};
   }
 `;
