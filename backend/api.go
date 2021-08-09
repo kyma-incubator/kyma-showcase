@@ -174,15 +174,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 				return
 		}
 	}
-	//if err != nil {
-	//	if err == io.EOF{
-	//		break
-	//	}
-	//	err = errors.New("POST: invalid input: " + err.Error())
-	//	log.Error(err)
-	//	http.Error(w, err.Error(), http.StatusBadRequest)
-	//	return
-	//}
 
 	id, err := h.idGenerator.NewID()
 	if err != nil {
