@@ -16,5 +16,5 @@ export const postImageToAPI = async (base64) => {
     },
   });
 
-  return response.text();
+  return response.json();
 };
