@@ -93,6 +93,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
+  
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
 		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())

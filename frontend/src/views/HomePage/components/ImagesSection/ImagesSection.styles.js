@@ -13,4 +13,8 @@ export const UploadedImagesSection = styled.section`
   @media screen and (max-width: 600px) {
     grid-template-columns: 1fr;
   }
+
+  p {
+    text-align: center;
+  }
 `;

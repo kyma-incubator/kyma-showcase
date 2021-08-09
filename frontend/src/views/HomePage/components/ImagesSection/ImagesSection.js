@@ -1,29 +1,36 @@
 import ImageTile from 'views/HomePage/components/ImageTile/ImageTile';
 import { UploadedImagesSection } from 'views/HomePage/components/ImagesSection/ImagesSection.styles';
-import { APIGET } from 'API';
-import { useState, useEffect } from 'react';
+import { useState, useContext, useEffect } from 'react';
+import React from 'react';
+import { ImagesContext } from 'contexts/imagesContext';
 
 const ImagesSection = () => {
-  const [images, setImages] = useState([]);
-  const API_URL = 'https://my-json-server.typicode.com/Lyczeq/images/images';
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const callAPIGet = async () => {
-    try {
-      setImages(await APIGET(API_URL));
-    } catch (err) {
-      console.log(err);
-    }
-  };
+  const { images, getImages } = useContext(ImagesContext);
   useEffect(() => {
-    callAPIGet();
+    async function callAPI() {
+      try {
+        setErrorMessage('');
+        await getImages();
+      } catch (err) {
+        setErrorMessage('Something went wrong');
+      }
+    }
+    callAPI();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return(
-  <UploadedImagesSection>
-    {images.map(({ id, base64 }) => {
-        return <ImageTile url={base64} id={id} key={id} />;
-      })}
-  </UploadedImagesSection>
-  )
+  return (
+    <>
+      <p>{errorMessage}</p>
+      <UploadedImagesSection>
+        {images &&
+          images.map(({ url, img }) => {
+            return <ImageTile url={url} img={img} key={img} />;
+          })}
+      </UploadedImagesSection>
+    </>
+  );
 };
 
 export default ImagesSection;
