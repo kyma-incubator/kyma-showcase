@@ -217,7 +217,7 @@ func TestGetAllKeysDB(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	t.Run("should no error when all keys have been got from database", func(t *testing.T) {
+	t.Run("should return no error when all keys have been got from database", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()

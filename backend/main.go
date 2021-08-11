@@ -33,9 +33,7 @@ func main() {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
 
-	mux.HandleFunc("/v1/images", APIhandler.DBGetAllHandler).Methods("GET")
-	mux.HandleFunc("/v1/images/{id}", APIhandler.DBGetHandler).Methods("GET")
-	mux.HandleFunc("/v1/images", APIhandler.DBPostHandler).Methods("POST")
+	APIhandler.EndpointInitialize(mux)
 
 	handler := cors.Default().Handler(mux)
 
