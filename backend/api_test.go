@@ -524,7 +524,7 @@ func TestDBPostHandler(t *testing.T) {
 
 		//given
 		var jsonStr = `{` +
-			`"id":"`+ fixedID +`",` +
+			`"id":"` + fixedID + `",` +
 			`"content":"base64",` +
 			`"gcp":"JSON1",` +
 			`"status":false` +
@@ -554,7 +554,7 @@ func TestDBPostHandler(t *testing.T) {
 
 		//given
 		value := `{` +
-			`"id":"`+ fixedID +`",` +
+			`"id":"` + fixedID + `",` +
 			`"content":"base64",` +
 			`"gcp":"JSON1",` +
 			`"status":false` +
@@ -574,7 +574,7 @@ func TestDBPostHandler(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
-		assert.Contains(t, recorder.Body.String(),fixedID)
+		assert.Contains(t, recorder.Body.String(), fixedID)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})
