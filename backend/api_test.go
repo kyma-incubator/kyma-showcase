@@ -11,11 +11,34 @@ import (
 	"testing"
 )
 
+const fixedID = "FEA98D88-0669-4FFD-B17A-8F80BB97C381"
+
 func TestDBGetHandler(t *testing.T) {
+
+	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "/v1/images/{id}/wrong", nil)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
+		err = errors.New("DBGETHANDLER: 404 not found")
+
+		//when
+		testSubject.DBGetHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		assert.Contains(t, recorder.Body.String(), err.Error())
+		assert.Equal(t, http.StatusNotFound, recorder.Code)
+	})
+
 	t.Run("should return error with status code 500 when database does not respond", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		req, err := http.NewRequest("GET", "/v1/images/{id}", nil)
 		key := "1"
 		vars := map[string]string{
 			"id": key,
@@ -24,7 +47,9 @@ func TestDBGetHandler(t *testing.T) {
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		err = errors.New("GETFROMDB: database not respond error")
 		dbManagerMock.On("GetFromDB", "1").Return(nil, err)
 
@@ -40,7 +65,7 @@ func TestDBGetHandler(t *testing.T) {
 	t.Run("should return error with status code 500 when key does not exist in database", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		req, err := http.NewRequest("GET", "/v1/images/{id}", nil)
 		key := "1"
 		vars := map[string]string{
 			"id": key,
@@ -49,7 +74,9 @@ func TestDBGetHandler(t *testing.T) {
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		err = errors.New("GETFROMDB:key " + key + " does not exist")
 		dbManagerMock.On("GetFromDB", key).Return(nil, err)
 
@@ -59,13 +86,13 @@ func TestDBGetHandler(t *testing.T) {
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
 		assert.Contains(t, recorder.Body.String(), err.Error())
-		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
 
 	t.Run("should return error with status code 500 when key has no value assigned", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		req, err := http.NewRequest("GET", "/v1/images/{id}", nil)
 		key := "1"
 		vars := map[string]string{
 			"id": key,
@@ -74,7 +101,9 @@ func TestDBGetHandler(t *testing.T) {
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		err = errors.New("GETFROMDB:for key " + key + " value is empty")
 		dbManagerMock.On("GetFromDB", key).Return("", err)
 
@@ -90,7 +119,7 @@ func TestDBGetHandler(t *testing.T) {
 	t.Run("should return error with status code 500 when key exist but value is not json", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		req, err := http.NewRequest("GET", "/v1/images/{id}", nil)
 		key := "1"
 		value := "not json"
 		vars := map[string]string{
@@ -100,7 +129,9 @@ func TestDBGetHandler(t *testing.T) {
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetFromDB", key).Return(value, nil)
 
 		//when
@@ -115,7 +146,7 @@ func TestDBGetHandler(t *testing.T) {
 	t.Run("should return status code 200 when key exists in database and value is correct", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images/{id}", nil)
+		req, err := http.NewRequest("GET", "/v1/images/{id}", nil)
 		key := "1"
 		value := `
 			{
@@ -130,7 +161,9 @@ func TestDBGetHandler(t *testing.T) {
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetFromDB", key).Return(value, nil)
 
 		//when
@@ -144,15 +177,37 @@ func TestDBGetHandler(t *testing.T) {
 }
 
 func TestDBGetAllHandler(t *testing.T) {
+	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
+
+		//given
+		req, err := http.NewRequest("GET", "/v1/images/wrong", nil)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
+		err = errors.New("DBGETALLHANDLER: 404 not found")
+
+		//when
+		testSubject.DBGetAllHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		assert.Contains(t, recorder.Body.String(), err.Error())
+		assert.Equal(t, http.StatusNotFound, recorder.Code)
+	})
+
 	t.Run("should return empty value when database is empty", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return(nil, nil)
 
 		//when
@@ -167,12 +222,14 @@ func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should return 500 code when all values are empty", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2", "3"}, nil)
 		dbManagerMock.On("GetFromDB", "1").Return("", errors.New("value is empty"))
 		dbManagerMock.On("GetFromDB", "2").Return("", errors.New("value is empty"))
@@ -194,26 +251,30 @@ func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should return 500 code when one of the values is empty", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 		firstReturn := `
 			{
-				"url":"raccoon.com",
-				"gcp":"image.png",
-				"img":"image.png"
+				"id":"abcd1234",
+				"content":"base64",
+				"gcp":"JSON1",
+				"status":false
 			}`
 
 		secondReturn := `
 			{
-				"url":"raccoon.com",
-				"gcp":"image2.png",
-				"img":"image2.png"
+				"id":"zaqwsx",
+				"content":"base64_2",
+				"gcp":"JSON2",
+				"status":false
 			}
 			`
 
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2", "3"}, nil)
 		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
 		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
@@ -236,11 +297,13 @@ func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should return 500 code when error occurred during type assertion", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1"}, nil)
 		dbManagerMock.On("GetFromDB", "1").Return(100, nil)
 
@@ -258,35 +321,41 @@ func TestDBGetAllHandler(t *testing.T) {
 
 		//given
 		expected := `[{` +
-			`"url":"raccoon.com",` +
-			`"gcp":"image.png",` +
-			`"img":"image.png"` +
+			`"id":"abcd1234",` +
+			`"content":"base64",` +
+			`"gcp":"JSON1",` +
+			`"status":false` +
 			`},` +
 			`{` +
-			`"url":"raccoon.com",` +
-			`"gcp":"image2.png",` +
-			`"img":"image2.png"` +
+			`"id":"zaqwsx",` +
+			`"content":"base64_2",` +
+			`"gcp":"JSON2",` +
+			`"status":false` +
 			`}]`
 
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
 			{
-				"url":"raccoon.com",
-				"gcp":"image.png",
-				"img":"image.png"
+				"id":"abcd1234",
+				"content":"base64",
+				"gcp":"JSON1",
+				"status":false
 			}`
 
 		secondReturn := `
 			{
-				"url":"raccoon.com",
-				"gcp":"image2.png",
-				"img":"image2.png"
+				"id":"zaqwsx",
+				"content":"base64_2",
+				"gcp":"JSON2",
+				"status":false
 			}
 			`
 
@@ -307,25 +376,29 @@ func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should return error while is error during unmarshal", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
 			{
-				url":"raccoon.com",
-				"gcp":"image.png",
-				"img":"image.png"
+				id":"abcd1234",
+				"content":"base64",
+				"gcp":"JSON1",
+				"status":false
 			}`
 
 		secondReturn := `
 			{
-				"url":"raccoon.com"
-				"gcp":"image2.png",
-				"img":"image2.png"
+				"id":"zaqwsx"
+				"content":"base64_2",
+				"gcp":"JSON2"
+				"status":false
 			}
 			`
 
@@ -346,11 +419,13 @@ func TestDBGetAllHandler(t *testing.T) {
 	t.Run("should not return error while function can create valid JSON array", func(t *testing.T) {
 
 		//given
-		req, err := http.NewRequest("GET", "v1/images", nil)
+		req, err := http.NewRequest("GET", "/v1/images", nil)
 		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
@@ -384,17 +459,37 @@ func TestDBGetAllHandler(t *testing.T) {
 }
 
 func TestDBPostHandler(t *testing.T) {
+	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
 
+		//given
+		req, err := http.NewRequest("POST", "/v1/images/wrong", nil)
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
+		err = errors.New("POST: 404 not found")
+
+		//when
+		testSubject.DBPostHandler(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		assert.Contains(t, recorder.Body.String(), err.Error())
+		assert.Equal(t, http.StatusNotFound, recorder.Code)
+	})
 	t.Run("should return 400 when Content-Type is incorrect", func(t *testing.T) {
 
 		//given
-		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
-		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
+		var jsonStr = []byte(`{"content":"raccoon"}`)
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonStr))
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/golang")
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
@@ -403,70 +498,47 @@ func TestDBPostHandler(t *testing.T) {
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
 
-	t.Run("should return 400 error when unable to decode json from request into image", func(t *testing.T) {
+	t.Run("should return 400 error when request body is not json", func(t *testing.T) {
 
 		//given
-		var jsonStr = []byte(`{"test":"test"}`)
-		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
-		assert.NoError(t, err)
-		vars := map[string]string{
-			"id": "1",
-		}
-		req.Header.Set("Content-Type", "application/json") //sprawdzic czy on istnieje
-		req = mux.SetURLVars(req, vars)
-		recorder := httptest.NewRecorder()
-		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
-
-		//when
-		testSubject.DBPostHandler(recorder, req)
-
-		//then
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		assert.Contains(t, recorder.Body.String(), "POST: invalid input: json: unknown field")
-		assert.Equal(t, http.StatusBadRequest, recorder.Code)
-	})
-
-	t.Run("should return 400 error when request's body is not a json", func(t *testing.T) {
-
-		//given
-		var jsonStr = []byte("test")
-		req, err := http.NewRequest("POST", "v1/images/{id}", bytes.NewBuffer(jsonStr))
+		var jsonStr = "string"
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer([]byte(jsonStr)))
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
-		vars := map[string]string{
-			"id": "1",
-		}
-		req = mux.SetURLVars(req, vars)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		assert.Contains(t, recorder.Body.String(), "POST: invalid input: invalid character")
+		assert.Contains(t, recorder.Body.String(), "POST: invalid input:")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
 
 	t.Run("should return 500 error when unable to insert json to db", func(t *testing.T) {
 
 		//given
-		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
-		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
+		var jsonStr = `{` +
+			`"id":"` + fixedID + `",` +
+			`"content":"base64",` +
+			`"gcp":"JSON1",` +
+			`"status":false` +
+			`}`
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer([]byte(jsonStr)))
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
-		vars := map[string]string{
-			"id": "1",
-		}
-		req = mux.SetURLVars(req, vars)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
 		err = errors.New("failed to insert json to db")
-		dbManagerMock.On("InsertToDB", "1", jsonStr).Return(err)
+		dbManagerMock.On("InsertToDB", fixedID, jsonStr).Return(err)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
@@ -481,25 +553,28 @@ func TestDBPostHandler(t *testing.T) {
 	t.Run("should return 200 code when request, data and connection with database are correct", func(t *testing.T) {
 
 		//given
-		var jsonStr = `{"url":"raccoon.com","gcp":"image.png","img":"image.png"}`
-		req, err := http.NewRequest("POST", "/v1/images/{id}", bytes.NewBuffer([]byte(jsonStr)))
+		value := `{` +
+			`"id":"` + fixedID + `",` +
+			`"content":"base64",` +
+			`"gcp":"JSON1",` +
+			`"status":false` +
+			`}`
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer([]byte(value)))
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
-		vars := map[string]string{
-			"id": "1",
-		}
-		req = mux.SetURLVars(req, vars)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
-		testSubject := NewHandler(&dbManagerMock)
-		dbManagerMock.On("InsertToDB", "1", jsonStr).Return(nil)
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		testSubject := NewHandler(&dbManagerMock, &idMock)
+		dbManagerMock.On("InsertToDB", fixedID, value).Return(nil)
 
 		//when
 		testSubject.DBPostHandler(recorder, req)
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
-		assert.Equal(t, "", recorder.Body.String()) //change to id checking
+		assert.Contains(t, recorder.Body.String(), fixedID)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})

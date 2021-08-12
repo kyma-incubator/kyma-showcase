@@ -119,7 +119,7 @@ func TestGetFromDB(t *testing.T) {
 		_, err := database.GetFromDB(key)
 
 		//then
-		assert.Equal(t, "GETFROMDB:key " + key + " does not exist", err.Error())
+		assert.Equal(t, "GETFROMDB:key "+key+" does not exist", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -156,12 +156,12 @@ func TestGetFromDB(t *testing.T) {
 
 		//then
 		assert.Equal(t, "", val)
-		assert.Equal(t, "GETFROMDB:for key " + key + " value is empty", err.Error())
+		assert.Equal(t, "GETFROMDB:for key "+key+" value is empty", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
 	})
-	t.Run("should get data correctly from database with no errors", func(t *testing.T) {
+	t.Run("should return no error when data is got correctly from database", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()
@@ -171,11 +171,10 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ExpectGet(key).SetVal(value)
 
 		//when
-		val, err := database.GetFromDB(key)
-		assert.NoError(t, err)
+		_, err := database.GetFromDB(key)
 
 		//then
-		assert.Equal(t, value, val)
+		assert.NoError(t, err)
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -218,7 +217,7 @@ func TestGetAllKeysDB(t *testing.T) {
 			t.Error(err)
 		}
 	})
-	t.Run("should get all keys from database with no errors", func(t *testing.T) {
+	t.Run("should return no error when all keys have been got from database", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()
@@ -227,18 +226,15 @@ func TestGetAllKeysDB(t *testing.T) {
 		clientMock.ExpectKeys("*").SetVal([]string{"1", "2", "3"})
 
 		//when
-		val, err := database.GetAllKeys()
-		assert.NoError(t, err)
+		_, err := database.GetAllKeys()
 
 		//then
-		assert.Equal(t, val[0], "1")
-		assert.Equal(t, val[1], "2")
-		assert.Equal(t, val[2], "3")
+		assert.NoError(t, err)
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
 	})
-	t.Run("should return empty slice when database is empty", func(t *testing.T) {
+	t.Run("should return no error when database is empty", func(t *testing.T) {
 		//given
 		client, clientMock := redismock.NewClientMock()
 		clientMock.ClearExpect()
@@ -247,11 +243,10 @@ func TestGetAllKeysDB(t *testing.T) {
 		clientMock.ExpectKeys("*").SetVal([]string{})
 
 		//when
-		val, err := database.GetAllKeys()
-		assert.NoError(t, err)
+		_, err := database.GetAllKeys()
 
 		//then
-		assert.Equal(t, val, []string{})
+		assert.NoError(t, err)
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
