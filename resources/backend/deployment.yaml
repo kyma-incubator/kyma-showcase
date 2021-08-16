@@ -20,8 +20,18 @@ spec:
             - containerPort: 8081
           env:
             - name: REDIS_URL
-              value: "redis-leader.default:6379"
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: REDIS_URL
             - name: REDIS_PASSWORD
-              value: ""
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: REDIS_PASSWORD
             - name: PORT
-              value: "8081"
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: PORT
+
