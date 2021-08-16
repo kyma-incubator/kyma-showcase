@@ -21,7 +21,7 @@ spec:
                 path: config.json
       containers:
         - name: frontend
-          image: lyczeq/frontend
+          image: raccoonsteam/frontend:0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 80
@@ -29,16 +29,3 @@ spec:
             - name: config
               mountPath: /etc/nginx/app/config
       restartPolicy: Always
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: frontend-service
-spec:
-  type: NodePort
-  ports:
-    - port: 80
-      targetPort: 80
-      protocol: TCP
-  selector:
-    app: frontend

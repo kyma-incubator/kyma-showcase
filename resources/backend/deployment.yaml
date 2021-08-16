@@ -14,30 +14,14 @@ spec:
     spec:
       containers:
         - name: backend
-          image: kaktusowy500/backend
+          image: raccoonsteam/backend:0.1
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
           env:
             - name: REDIS_URL
-              value: "hb-redis-micro-a65b2b40-cbbb-450d-aac2-42e2ec61846f-redis.grzyby:6379"
+              value: "redis-leader.default:6379"
             - name: REDIS_PASSWORD
-              value: "j8KgnRBUpk"
+              value: ""
             - name: PORT
               value: "8081"
-
----
-kind: Service
-apiVersion: v1
-metadata:
-  name: backend
-  labels:
-    app: backend
-spec:
-  selector:
-    app: backend
-  type: NodePort
-  ports:
-    - protocol: TCP
-      port: 8081
-      targetPort: 8081
