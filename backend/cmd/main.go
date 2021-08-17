@@ -3,7 +3,7 @@ package main
 import (
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
-	database2 "github.com/kyma-incubator/Kyma-Showcase/internal/database"
+	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
@@ -18,7 +18,7 @@ func initAPIHandler() (api.Handler, error) {
 		log.Fatal("Failed to read REDIS_URL from .env file")
 	}
 
-	database := database2.NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
+	database := db.NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
 	err := database.Connect()
 	if err != nil {
 		return api.Handler{}, err
