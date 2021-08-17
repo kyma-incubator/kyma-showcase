@@ -1,0 +1,31 @@
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: frontend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: frontend
+  template:
+    metadata:
+      labels:
+        app: frontend
+    spec:
+      volumes:
+        - name: config
+          configMap:
+            name: frontend-config
+            items:
+              - key: config.json
+                path: config.json
+      containers:
+        - name: frontend
+          image: raccoonsteam/frontend:0.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: /etc/nginx/app/config
+      restartPolicy: Always

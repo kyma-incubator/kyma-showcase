@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-leader
+  labels:
+    app: redis
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: redis
+  template:
+    metadata:
+      labels:
+        app: redis
+    spec:
+      containers:
+        - name: leader
+          image: 'docker.io/redis:6.0.5'
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+          args: ['--requirepass', '$(REDIS_PASSWORD)']
+          ports:
+            - containerPort: 6379
+          env:
+            - name: REDIS_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: secret
+                  key: REDIS_PASSWORD
