@@ -1,7 +1,7 @@
 FROM golang:alpine as builder 
 RUN mkdir /build
-ADD . /build/
-WORKDIR /build
+ADD . /build
+WORKDIR /build/cmd
 RUN go build -o main .
 
 FROM alpine
@@ -11,7 +11,7 @@ FROM alpine
 #-S
 #-h 
 #USER appuser
-COPY --from=builder /build/main /app/
+COPY --from=builder /build/cmd/main /app/
 WORKDIR /app
 EXPOSE 8081
 CMD ./main
