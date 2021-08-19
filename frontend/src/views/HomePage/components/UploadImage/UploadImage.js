@@ -38,14 +38,13 @@ const UploadImage = () => {
 
 
   const callAPIPost = async () => {
+    setDisableButton(true);
     try {
       await postImageToAPI(base64Image);
       await getImages();
-      setDisableButton(true);
     } catch (err) {
       console.error(err);
       setErrorMessage('Something went wrong');
-      setDisableButton(true);
     }
   };
 
