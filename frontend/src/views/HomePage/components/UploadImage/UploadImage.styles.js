@@ -22,7 +22,7 @@ export const StyledUploadImage = styled.section`
 
   img {
     max-width: 80%;
-    max-height: 15%;
+    max-height: 250px;
     margin-bottom: 2%;
   }
 
