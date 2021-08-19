@@ -32,10 +32,6 @@ export const Loader = styled.div`
     margin-top: 10%;
   }
 
-  .loader--hide {
-    opacity: 0;
-  }
-
   @keyframes load8 {
     0% {
       transform: rotate(0deg);
