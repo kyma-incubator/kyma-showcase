@@ -1,4 +1,4 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const Wrapper = styled.div`
   display: flex;
@@ -27,9 +27,30 @@ export const Button = styled.button`
     border: 2px solid ${({ theme }) => theme.colors.secondary};
   }
   &:disabled,
-  button[disabled]{
-  border: 1px solid #999999;
-  background-color: #cccccc;
-  color: #666666;
+  button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+  }
+`;
+
+export const Loader = styled.div`
+  position: relative;
+  width: 5vh;
+  height: 5vh;
+  border: 0.8vh solid rgba(0, 0, 0, 0.2);
+  border-left: 0.8vh solid black;
+  border-radius: 50%;
+  animation: load 1.1s infinite linear;
+  transition: opacity 0.3s;
+  margin-top: 10%;
+
+  @keyframes load {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
   }
 `;
