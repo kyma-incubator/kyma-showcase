@@ -2,6 +2,12 @@ package utils
 
 import "github.com/matoous/go-nanoid/v2"
 
+//go:generate mockery --name=IdGenerator
+// IdGenerator it is an interface used for generation of unique id.
+type IdGenerator interface {
+	NewID() (string, error)
+}
+
 // idGenerator is a struct used for generating unique ids
 type idGenerator struct{}
 

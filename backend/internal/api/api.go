@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -21,16 +22,10 @@ type DBManager interface {
 	GetAllKeys() ([]string, error)
 }
 
-//go:generate mockery --name=IdGenerator
-// IdGenerator it is an interface used for generation of unique id.
-type IdGenerator interface {
-	NewID() (string, error)
-}
-
 // Handler for database manager.
 type Handler struct {
 	dbManager      DBManager
-	idGenerator    IdGenerator
+	idGenerator    utils.IdGenerator
 	getEndpoint    string
 	getAllEndpoint string
 	postEndpoint   string
@@ -45,7 +40,7 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator IdGenerator /*, log *log.Entry*/) Handler {
+func NewHandler(dbManager DBManager, idGenerator utils.IdGenerator) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
@@ -55,6 +50,7 @@ func NewHandler(dbManager DBManager, idGenerator IdGenerator /*, log *log.Entry*
 	}
 }
 
+// accessControl sets headers that allow browser to pass data to frontend
 func accessControl(w http.ResponseWriter, r *http.Request) {
 	if origin := r.Header.Get("Origin"); origin != "" {
 		w.Header().Set("Content-Type", "application/json")
@@ -223,7 +219,9 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	err = events.SendEvent(img)
+
+	eventHandler := events.NewEventHandler(events.NewEvent(img), utils.NewIdGenerator())
+	err = eventHandler.SendEvent()
 	if err != nil {
 		err = errors.New("POST: SendEvent failed: " + err.Error())
 		log.Error(err)
