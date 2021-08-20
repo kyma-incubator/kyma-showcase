@@ -21,26 +21,18 @@ type Event struct {
 	EventType        string `json:"type"`
 }
 
-//// NewEvent returns new event
-//func NewEvent(data string) Event {
-//	return Event{
-//		Source:           "kyma-showcase",
-//		SpecVersion:      "1.0",
-//		EventTypeVersion: "v1",
-//		Data:             data,
-//		DataContentType:  "application/json",
-//		EventType:        os.Getenv("EVENT_TYPE"),
-//	}
-//}
-
+//go:generate mockery --name=EventFactory
+// EventFactory defines all event methods
 type EventFactory interface {
 	NewEvent(id string) Event
 }
 
+// ImgEvent fulfills the EventFactory interface
 type ImgEvent struct {
 	Img model.Image
 }
 
+// NewEvent defines the values for Event
 func (e *ImgEvent) NewEvent(id string) Event {
 	return Event{
 		Source:           "kyma-showcase",
