@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	log "github.com/sirupsen/logrus"
 	"io"
@@ -40,10 +41,11 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 	mux.HandleFunc(h.getAllEndpoint, h.DBGetAllHandler).Methods("GET")
 	mux.HandleFunc(h.getEndpoint, h.DBGetHandler).Methods("GET")
 	mux.HandleFunc(h.postEndpoint, h.DBPostHandler).Methods("POST")
+
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator IdGenerator) Handler {
+func NewHandler(dbManager DBManager, idGenerator IdGenerator /*, log *log.Entry*/) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
@@ -60,14 +62,12 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
 // DBGetHandler processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
 func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	key := params["id"]
 	url := strings.Replace(h.getEndpoint, "{id}", key, 1)
-	if r.URL.Path != url{
+	if r.URL.Path != url {
 		log.Error(h.getEndpoint)
 		err := errors.New("DBGETHANDLER: 404 not found")
 		log.Error(err)
@@ -76,7 +76,6 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accessControl(w, r)
 	var img model.Image
-
 
 	fromDB, err := h.dbManager.GetFromDB(key)
 
@@ -100,7 +99,6 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "%s", fromDB)
 }
 
@@ -113,7 +111,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-  
+
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
 		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
@@ -171,7 +169,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-
 	var img model.Image
 
 	headerContentType := r.Header.Get("Content-Type")
@@ -182,7 +179,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-
 	for {
 		if err := decoder.Decode(&img); err == io.EOF {
 			break
@@ -227,7 +223,11 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+	err = events.SendEvent(img)
+	if err != nil {
+		err = errors.New("POST: SendEvent failed: " + err.Error())
+		log.Error(err)
+	}
 
 	fmt.Fprint(w, string(jsonID))
-	w.WriteHeader(http.StatusOK)
 }

@@ -9,7 +9,7 @@ require (
 	github.com/kr/pretty v0.1.0 // indirect
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/pkg/errors v0.8.1
-	github.com/rs/cors v1.8.0 // indirect
+	github.com/rs/cors v1.8.0
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.7.0

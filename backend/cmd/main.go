@@ -35,16 +35,13 @@ func main() {
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
-
 	APIhandler.EndpointInitialize(mux)
 
 	handler := cors.Default().Handler(mux)
-
 	port := os.Getenv("PORT")
 	if port == "" {
 		log.Fatal("Failed to read PORT from .env file")
 	}
-
 	err = http.ListenAndServe(":"+port, handler)
 	if err != nil {
 		log.Fatalf("Starting server at port %s failed!", port)
