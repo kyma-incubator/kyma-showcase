@@ -21,13 +21,33 @@ type Event struct {
 	EventType        string `json:"type"`
 }
 
-// NewEvent returns new event
-func NewEvent(img model.Image) Event {
+//// NewEvent returns new event
+//func NewEvent(data string) Event {
+//	return Event{
+//		Source:           "kyma-showcase",
+//		SpecVersion:      "1.0",
+//		EventTypeVersion: "v1",
+//		Data:             data,
+//		DataContentType:  "application/json",
+//		EventType:        os.Getenv("EVENT_TYPE"),
+//	}
+//}
+
+type EventFactory interface {
+	NewEvent(id string) Event
+}
+
+type ImgEvent struct {
+	Img model.Image
+}
+
+func (e *ImgEvent) NewEvent(id string) Event {
 	return Event{
 		Source:           "kyma-showcase",
 		SpecVersion:      "1.0",
 		EventTypeVersion: "v1",
-		Data:             img.ID,
+		Data:             e.Img.ID,
+		Id:               id,
 		DataContentType:  "application/json",
 		EventType:        os.Getenv("EVENT_TYPE"),
 	}
@@ -35,15 +55,15 @@ func NewEvent(img model.Image) Event {
 
 // EventHandler for event
 type EventHandler struct {
-	event       Event
-	idGenerator utils.IdGenerator
+	eventFactory EventFactory
+	idGenerator  utils.IdGenerator
 }
 
 // NewEventHandler returns handler for event
-func NewEventHandler(event Event, idGenerator utils.IdGenerator) EventHandler {
+func NewEventHandler(event EventFactory, idGenerator utils.IdGenerator) EventHandler {
 	return EventHandler{
-		event:       event,
-		idGenerator: idGenerator,
+		eventFactory: event,
+		idGenerator:  idGenerator,
 	}
 }
 
@@ -55,8 +75,8 @@ func (e EventHandler) SendEvent() error {
 		return err
 	}
 
-	e.event.Id = eventID
-	postBody, err := json.Marshal(e.event)
+	event := e.eventFactory.NewEvent(eventID)
+	postBody, err := json.Marshal(event)
 	if err != nil {
 		err = errors.New("SENDEVENT: marshal error" + err.Error())
 		return err

@@ -573,4 +573,39 @@ func TestDBPostHandler(t *testing.T) {
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})
+
+	//t.Run("should return error when sending event fails", func(t *testing.T) {
+	//	//given
+	//	value := `{` +
+	//		`"id":"` + fixedID + `",` +
+	//		`"content":"base64",` +
+	//		`"gcp":"",` +
+	//		`"status":false` +
+	//		`}`
+	//	img := model.Image{
+	//		ID:      fixedID,
+	//		Content: "",
+	//		GCP:     "",
+	//		Status:  false,
+	//	}
+	//	req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer([]byte(value)))
+	//	assert.NoError(t, err)
+	//	req.Header.Set("Content-Type", "application/json")
+	//	recorder := httptest.NewRecorder()
+	//	dbManagerMock := mocks.DBManager{}
+	//	idMock := mocks.IdGenerator{}
+	//	idMock.On("NewID").Return(fixedID, nil)
+	//	idMock.
+	//	//testSubject := NewHandler(&dbManagerMock, &idMock)
+	//	event := events.NewEvent(img)
+	//
+	//	testSubject := events.NewEventHandler(event, &idMock)
+	//	testSubject.SendEvent()
+	//	//dbManagerMock.On("InsertToDB", fixedID, value).Return(nil)
+	//
+	//	//when
+	//	testSubject.SendEvent()
+	//
+	//	//then
+	//})
 }

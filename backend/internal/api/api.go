@@ -219,8 +219,8 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-
-	eventHandler := events.NewEventHandler(events.NewEvent(img), utils.NewIdGenerator())
+	event := events.ImgEvent {Img: img}
+	eventHandler := events.NewEventHandler(&event, utils.NewIdGenerator())
 	err = eventHandler.SendEvent()
 	if err != nil {
 		err = errors.New("POST: SendEvent failed: " + err.Error())
