@@ -22,18 +22,12 @@ git clone https://github.com/kyma-incubator/Kyma-Showcase.git
 
 3. Set secrets with command:
 ```
-kubectl create secret generic kyma-showcase-secret \ 
---from-literal=REDIS_PASSWORD={YOUR_PASSWORD} \ 
---from-literal=REDIS_URL=redis-leader.default:6379 \
---from-literal=PORT=8081
+kubectl create secret generic kyma-showcase-secret --from-literal=REDIS_PASSWORD={YOUR_PASSWORD}
 ```
 
 4. To deploy application on k8s cluster, run the following commands:
 ```
-cd kyma-showcase
-kubectl apply -f resources/backend
-kubectl apply -f resources/redis
-kubectl apply -f resources/frontend
+kubectl apply -f resources -R
 ```
 
 5. To get the URL of the application run the following command:
