@@ -1,6 +1,6 @@
-kind: ConfigMap
 apiVersion: v1
+kind: ConfigMap
 metadata:
-  name: frontend-config
+  name: showcase-frontend-config
 data:
   config.json: '{"API_URL": "https://backend.{YOUR_CLUSTER_DOMAIN}/v1/images"}'

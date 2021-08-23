@@ -1,21 +1,21 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: redis-leader
+  name: showcase-redis
   labels:
-    app: redis
+    app: showcase-redis
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: redis
+      app: showcase-redis
   template:
     metadata:
       labels:
-        app: redis
+        app: showcase-redis
     spec:
       containers:
-        - name: leader
+        - name: showcase-redis
           image: 'docker.io/redis:6.0.5'
           resources:
             requests:

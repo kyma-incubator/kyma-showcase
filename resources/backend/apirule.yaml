@@ -3,8 +3,6 @@ kind: APIRule
 metadata:
   name: showcase-backend
 spec:
-  service:
-    gateway: kyma-gateway.kyma-system.svc.cluster.local
   rules:
     - accessStrategies:
         - config: {}
@@ -18,6 +16,7 @@ spec:
         - HEAD
       path: /.*
   service:
+    gateway: kyma-gateway.kyma-system.svc.cluster.local
     host: backend.{YOUR_CLUSTER_DOMAIN}
     name: showcase-backend
     port: 8081
