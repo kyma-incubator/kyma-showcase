@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: raccoonsteam/backend:test1
+          image: raccoonsteam/backend:events
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
