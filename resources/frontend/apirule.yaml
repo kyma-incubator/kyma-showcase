@@ -19,5 +19,5 @@ spec:
       path: /.*
   service:
     host: frontend.{YOUR_CLUSTER_DOMAIN}
-    name: frontend-service
+    name: showcase-frontend-service
     port: 80

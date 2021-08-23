@@ -19,5 +19,5 @@ spec:
       path: /.*
   service:
     host: backend.{YOUR_CLUSTER_DOMAIN}
-    name: backend
+    name: showcase-backend
     port: 8081

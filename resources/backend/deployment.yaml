@@ -1,19 +1,19 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: showcase-backend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: showcase-backend
   template:
     metadata:
       labels:
-        app: backend
+        app: showcase-backend
     spec:
       containers:
-        - name: backend
+        - name: showcase-backend
           image: raccoonsteam/backend:0.1
           imagePullPolicy: Always
           ports:

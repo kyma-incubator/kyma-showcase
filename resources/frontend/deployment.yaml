@@ -1,16 +1,16 @@
 kind: Deployment
 apiVersion: apps/v1
 metadata:
-  name: frontend
+  name: showcase-frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: frontend
+      app: showcase-frontend
   template:
     metadata:
       labels:
-        app: frontend
+        app: showcase-frontend
     spec:
       volumes:
         - name: config
@@ -20,7 +20,7 @@ spec:
               - key: config.json
                 path: config.json
       containers:
-        - name: frontend
+        - name: showcase-frontend
           image: raccoonsteam/frontend:0.1
           imagePullPolicy: Always
           ports:
