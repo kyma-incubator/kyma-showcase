@@ -2,12 +2,13 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
+	//"errors"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -219,13 +220,13 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
-	event := events.ImgEvent {Img: img}
+
+	fmt.Fprint(w, string(jsonID))
+
+	event := events.ImgEvent{Img: img}
 	eventHandler := events.NewEventHandler(&event, utils.NewIdGenerator())
 	err = eventHandler.SendEvent()
 	if err != nil {
-		err = errors.New("POST: SendEvent failed: " + err.Error())
-		log.Error(err)
+		log.Error(errors.Wrap(err, "POST: SendEvent failed"))
 	}
-
-	fmt.Fprint(w, string(jsonID))
 }

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: raccoonsteam/backend:0.1
+          image: raccoonsteam/backend:test1
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
@@ -34,4 +34,8 @@ spec:
                 secretKeyRef:
                   name: secret
                   key: PORT
+            - name: EVENT_TYPE
+              value: "sap.kyma.custom.commerce.order.created.v1"
+            - name: EVENT_URL
+              value: "http://eventing-event-publisher-proxy.kyma-system/publish"
 

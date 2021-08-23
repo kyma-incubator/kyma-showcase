@@ -10,21 +10,10 @@ import (
 	"os"
 )
 
-// Event defines a struct that triggers lambdas
-type Event struct {
-	Source           string `json:"source"`
-	SpecVersion      string `json:"specversion"`
-	EventTypeVersion string `json:"eventtypeversion"`
-	Data             string `json:"data"`
-	DataContentType  string `json:"datacontenttype"`
-	Id               string `json:"id"`
-	EventType        string `json:"type"`
-}
-
 //go:generate mockery --name=EventFactory
 // EventFactory defines all event methods
 type EventFactory interface {
-	NewEvent(id string) Event
+	NewEvent(id string) model.Event
 }
 
 // ImgEvent fulfills the EventFactory interface
@@ -33,8 +22,8 @@ type ImgEvent struct {
 }
 
 // NewEvent defines the values for Event
-func (e *ImgEvent) NewEvent(id string) Event {
-	return Event{
+func (e *ImgEvent) NewEvent(id string) model.Event {
+	return model.Event{
 		Source:           "kyma-showcase",
 		SpecVersion:      "1.0",
 		EventTypeVersion: "v1",
@@ -57,6 +46,12 @@ func NewEventHandler(event EventFactory, idGenerator utils.IdGenerator) EventHan
 		eventFactory: event,
 		idGenerator:  idGenerator,
 	}
+}
+
+//go:generate mockery --name=EventHelper
+// EventHelper helps to mock SendEvent method in tests
+type EventHelper interface {
+	SendEvent() error
 }
 
 // SendEvent creates event and sends a request that triggers lambda
