@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: showcase-frontend
@@ -15,7 +15,7 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: frontend-config
+            name: showcase-frontend-config
             items:
               - key: config.json
                 path: config.json

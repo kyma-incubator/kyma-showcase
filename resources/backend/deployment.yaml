@@ -1,4 +1,4 @@
-apiVersion: v1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: showcase-backend
@@ -14,20 +14,20 @@ spec:
     spec:
       containers:
         - name: showcase-backend
-          image: raccoonsteam/backend:0.1
+          image: raccoonsteam/backend:events
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
           env:
             - name: REDIS_URL
-              value: "showcase-redis.default:6379"
+              value: "showcase-redis-service.default:6379"
             - name: REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: kyma-showcase-secret
                   key: REDIS_PASSWORD
             - name: PORT
-              value: 8081
+              value: "8081"
             - name: EVENT_TYPE
               value: "sap.kyma.custom.commerce.order.created.v1"
             - name: EVENT_URL

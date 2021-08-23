@@ -16,7 +16,7 @@ spec:
         - HEAD
       path: /.*
   service:
-    gateway: kyma-gateway.kyma-system.svc.cluster.local
     host: backend.{YOUR_CLUSTER_DOMAIN}
-    name: showcase-backend
+    name: showcase-backend-service
     port: 8081
+  gateway: kyma-gateway.kyma-system.svc.cluster.local
