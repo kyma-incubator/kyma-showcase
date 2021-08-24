@@ -6,45 +6,35 @@ Kyma Showcase about object-recognition relying on GCP API and Lambda Workflow.
 
 ## Prerequisites
 
-TODO: List the requirements to run the project.
+- Kubernetes cluster
+- Kyma installed on cluster
 
 ## Installation
 
-To run Kyma-Showcase application, run the following commands:
+1. To run Kyma-Showcase application, you have to clone repository:
 ```
 git clone https://github.com/kyma-incubator/Kyma-Showcase.git
 ```
+2. Get cluster domain and replace placeholder values in following files:
+- resources/backend/apirule.yaml
+- resources/frontend/apirule.yaml
+- resources/frontend/frontend-config.yaml
 
-Run Docker app.
-
-Run the project in any IDE.
+3. Set secrets with command:
 ```
-cd backend
-make build
-```
-
-Go to the .env file and paste the code below:
-```
-REDIS_URL=redis:6379
-REDIS_PASSWORD=
-PORT=8081
+kubectl create secret generic kyma-showcase-secret --from-literal=REDIS_PASSWORD={YOUR_PASSWORD}
 ```
 
-In terminal run the folowing commands:
+4. To deploy application on k8s cluster, run the following commands:
+```
+kubectl apply -f resources -R
+```
 
+5. To get the URL of the application run the following command:
 ```
-docker build -t image .
+kubectl get apirule frontend -o jsonpath='{.spec.service.host}'
 ```
-```
-docker-compose up --build
-```
-Now backend is ready, then we have to start frontend application.
 
-```
-cd ../frontend
-npm ci
-npm start
-```
 ## Usage
 
 TODO: Explain how to use the project. You can create multiple subsections. Include the instructions or provide links to the related documentation.
