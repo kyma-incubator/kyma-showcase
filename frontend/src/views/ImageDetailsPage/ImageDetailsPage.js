@@ -6,6 +6,7 @@ import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea
 import ImageDetails from 'views/ImageDetailsPage/components/ImageDetails/ImageDetails';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
+import PropTypes from 'prop-types';
 
 const ImageDetailsPage = () => {
   const { id } = useParams();

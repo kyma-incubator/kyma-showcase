@@ -4,12 +4,16 @@ import { getImageDetailsFromAPI } from 'API.js';
 
 const ImageDetailsArea = ({ id }) => {
   const [imageDetails, setImageDetails] = useState({});
+  const [isLoading, setIsLoading] = useState(true);
   useEffect(() => {
     const callAPI = async () => {
+      setIsLoading(true);
       try {
         setImageDetails(await getImageDetailsFromAPI(id));
       } catch (err) {
         console.error(err);
+        setIsLoading(false);
+        //todo?? 
       }
     };
     callAPI();
@@ -21,6 +25,10 @@ const ImageDetailsArea = ({ id }) => {
       <Img src={imageDetails.content} alt="here will be" />
     </ImageArea>
   );
+};
+
+ImageDetailsArea.propTypes = {
+  id: PropTypes.string.isRequired,
 };
 
 export default ImageDetailsArea;
