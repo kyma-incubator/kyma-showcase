@@ -20,7 +20,7 @@ const ImagesSection = () => {
         setIsLoading(false);
       } catch (err) {
         setErrorMessage('Something went wrong');
-        //setIsLoading(false);
+        setIsLoading(false);
       }
     }
     callAPI();

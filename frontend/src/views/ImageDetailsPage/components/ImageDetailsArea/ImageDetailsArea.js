@@ -1,12 +1,26 @@
-import { ImageArea, Img, H2 } from "./ImageDetailsArea.styles.js";
+import { ImageArea, Img, H2 } from './ImageDetailsArea.styles.js';
+import { useEffect, useState } from 'react';
+import { getImageDetailsFromAPI } from 'API.js';
 
-const imageURL = "https://cataas.com/cat/says/Gliwice";
-
-const ImageDetailsArea = () => (
-  <ImageArea>
-    <H2>Image title</H2>
-    <Img src={imageURL} alt="here will be" />
-  </ImageArea>
-);
+const ImageDetailsArea = ({ id }) => {
+  const [imageDetails, setImageDetails] = useState({});
+  useEffect(() => {
+    const callAPI = async () => {
+      try {
+        setImageDetails(await getImageDetailsFromAPI(id));
+      } catch (err) {
+        console.error(err);
+      }
+    };
+    callAPI();
+  }, []);
+  console.log(imageDetails);
+  return (
+    <ImageArea>
+      <H2>Image title</H2>
+      <Img src={imageDetails.content} alt="here will be" />
+    </ImageArea>
+  );
+};
 
 export default ImageDetailsArea;

@@ -21,7 +21,7 @@ spec:
                 path: config.json
       containers:
         - name: showcase-frontend
-          image: raccoonsteam/frontend:0.1
+          image: raccoonsteam/frontend:details
           imagePullPolicy: Always
           ports:
             - containerPort: 80
