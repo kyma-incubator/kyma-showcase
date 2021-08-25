@@ -6,6 +6,7 @@ import ImageDetails from 'views/ImageDetailsPage/ImageDetailsPage';
 import ErrorPage from 'components/ErrorPage/ErrorPage';
 import { GlobalStyle } from 'assets/styles/GlobalStyle';
 import { theme } from 'assets/styles/theme';
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
