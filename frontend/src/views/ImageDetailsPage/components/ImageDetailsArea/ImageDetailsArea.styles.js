@@ -1,15 +1,19 @@
 import styled from 'styled-components';
 
 export const ImageArea = styled.div`
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3%;
   max-height: 50%;
-`;
 
-export const Img = styled.img`
-  height: 50%;
-  max-width: 80%;
-`;
+  p {
+    text-align: center;
+  }
 
-export const H2 = styled.h2`
-  margin: 2%;
+  img {
+    height: 50%;
+    max-width: 80%;
+  }
 `;

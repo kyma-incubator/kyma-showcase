@@ -39,13 +39,13 @@ export const Loader = styled.div`
   width: 5vh;
   height: 5vh;
   border: 0.8vh solid rgba(0, 0, 0, 0.2);
-  border-left: 0.8vh solid #000000;
+  border-left: 0.8vh solid black;
   border-radius: 50%;
-  animation: load8 1.1s infinite linear;
+  animation: load 1.1s infinite linear;
   transition: opacity 0.3s;
   margin-top: 10%;
 
-  @keyframes load8 {
+  @keyframes load {
     0% {
       transform: rotate(0deg);
     }
