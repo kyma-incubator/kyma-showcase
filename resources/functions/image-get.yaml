@@ -1,0 +1,45 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: Function
+metadata:
+  name: image-get-test-2
+spec:
+  deps: |-
+    { 
+      "name": "image-get",
+      "version": "1.0.0",
+      "dependencies": {
+        "node-fetch": "2.6.1"
+      }
+    }
+  env:
+    - name: API_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: config.json
+          name: showcase-frontend-config
+  runtime: nodejs14
+  source: |
+    module.exports = { 
+      main: async function (event, context) {
+        const fetch = require('node-fetch');
+        async function getBase64() {
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + event.data;
+          const response = await fetch(URL);
+          const data = await response.json();
+          return data;
+        }
+        try{
+        const base64 = (await getBase64()).content;
+        console.log(base64);
+        return base64;
+        }catch(err){
+          console.error(err);
+          return null;
+        }
+      }
+    }
+
+
+
+
+
