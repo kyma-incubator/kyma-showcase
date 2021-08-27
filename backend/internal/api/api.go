@@ -12,7 +12,7 @@ import (
 	"strings"
 )
 
-//go:generate mockery --name=DBManager --output=../mocks
+//go:generate mockery --name=DBManager
 // DBManager defines a contract between api and the database.
 type DBManager interface {
 	InsertToDB(key string, value string) error
@@ -38,7 +38,7 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 
 }
 
-//go:generate mockery --name=EventBus --output=../mocks
+//go:generate mockery --name=EventBus
 // EventBus defines a contract between api and events.
 type EventBus interface {
 	SendNewImage(id string, img model.Image) error
