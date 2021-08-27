@@ -23,7 +23,7 @@ type Event struct {
 	EventType        string `json:"type"`
 }
 
-// NewEvent defines the values for Event
+// newEvent defines the values for Event
 func newEvent(id string, img model.Image) Event {
 	return Event{
 		Source:           "kyma-showcase",
@@ -52,7 +52,7 @@ func NewEventHandler(url string) EventHandler {
 	}
 }
 
-// SendEvent creates event and sends a request that triggers lambda
+// SendNewImage creates event and sends a request that triggers lambda
 func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	event := newEvent(id, img)
 	postBody, err := json.Marshal(event)
