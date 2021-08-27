@@ -43,7 +43,6 @@ func TestSendNewImage(t *testing.T) {
 			rw.WriteHeader(http.StatusInternalServerError)
 		}
 		testServer := httptest.NewServer(http.HandlerFunc(handler))
-		//testServer.Start()
 		defer testServer.Close()
 		eventHandler := NewEventHandler(testServer.URL)
 		err := eventHandler.SendNewImage(fixedID, img)
