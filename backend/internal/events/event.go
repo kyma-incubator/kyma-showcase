@@ -73,7 +73,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 		return err
 	}
 
-	if resp.StatusCode != http.StatusNoContent { //todo 204??
+	if resp.StatusCode != http.StatusNoContent {
 		err = errors.New(fmt.Sprintf("eventing returned not expected status: %s, %v", resp.Status, resp.StatusCode))
 	}
 

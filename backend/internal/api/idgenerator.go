@@ -1,8 +1,8 @@
-package utils
+package api
 
 import "github.com/matoous/go-nanoid/v2"
 
-//go:generate mockery --name=IdGenerator
+//go:generate mockery --name=IdGenerator --output=../mocks
 // IdGenerator it is an interface used for generation of unique id.
 type IdGenerator interface {
 	NewID() (string, error)

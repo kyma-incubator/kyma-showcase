@@ -5,7 +5,6 @@ import (
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/vrischmann/envconfig"
@@ -47,7 +46,7 @@ func initAPIHandler(conf Configuration) (api.Handler, error) {
 
 	eventHandler := events.NewEventHandler(conf.Event.URL)
 
-	apiHandler := api.NewHandler(database, utils.NewIdGenerator(), eventHandler)
+	apiHandler := api.NewHandler(database, api.NewIdGenerator(), eventHandler)
 	return apiHandler, nil
 }
 

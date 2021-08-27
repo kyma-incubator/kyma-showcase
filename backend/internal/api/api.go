@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
-	//"errors"
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io"
@@ -14,7 +12,7 @@ import (
 	"strings"
 )
 
-//go:generate mockery --name=DBManager
+//go:generate mockery --name=DBManager --output=../mocks
 // DBManager defines a contract between api and the database.
 type DBManager interface {
 	InsertToDB(key string, value string) error
@@ -25,7 +23,7 @@ type DBManager interface {
 // Handler for database manager.
 type Handler struct {
 	dbManager      DBManager
-	idGenerator    utils.IdGenerator
+	idGenerator    IdGenerator
 	eventBus       EventBus
 	getEndpoint    string
 	getAllEndpoint string
@@ -40,14 +38,14 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 
 }
 
-//go:generate mockery --name=EventBus
+//go:generate mockery --name=EventBus --output=../mocks
 // EventBus defines a contract between api and events.
 type EventBus interface {
 	SendNewImage(id string, img model.Image) error
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator utils.IdGenerator, eventBus EventBus) Handler {
+func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
