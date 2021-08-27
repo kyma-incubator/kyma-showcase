@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/mocks"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/api/mocks"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus/hooks/test"
