@@ -23,3 +23,8 @@ export const postImageToAPI = async (base64) => {
 
   return response.json();
 };
+
+export const getImageDetailsFromAPI = async (id) => {
+  const response = await fetch(API_CONFIG.API_URL + `/${id}`);
+  return response.json();
+};

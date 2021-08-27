@@ -2,7 +2,7 @@ import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
-import {Button} from 'assets/styles/style'
+import { Button } from 'assets/styles/style';
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
   const acceptableExtensions = ['.jpg', '.png', '.gif', '.jpeg'];
@@ -36,16 +36,14 @@ const UploadImage = () => {
   const { getImages } = useContext(ImagesContext);
   const [fileName, setFileName] = useState('');
 
-
   const callAPIPost = async () => {
+    setDisableButton(true);
     try {
       await postImageToAPI(base64Image);
       await getImages();
-      setDisableButton(true);
     } catch (err) {
       console.error(err);
       setErrorMessage('Something went wrong');
-      setDisableButton(true);
     }
   };
 

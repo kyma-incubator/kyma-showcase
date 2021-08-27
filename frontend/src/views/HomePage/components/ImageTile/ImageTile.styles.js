@@ -11,15 +11,10 @@ export const Image = styled.div`
   border: 2px solid grey;
   width: 90%;
   height: 260px;
-
-  p {
-    padding: 5px;
-    text-align: center;
-  }
   
   img {
     width: 100%;
-    height: 85%;
+    height: 100%;
     object-fit: cover;
   }
 `;
