@@ -29,7 +29,8 @@ spec:
           return data;
         }
         try{
-        const base64 = (await getBase64()).content;
+        const content = (await getBase64()).content;
+        const base64 = content.replace(/data:.*?base64,/, '')
         console.log(base64);
         return base64;
         }catch(err){
@@ -38,6 +39,7 @@ spec:
         }
       }
     }
+
 
 
 
