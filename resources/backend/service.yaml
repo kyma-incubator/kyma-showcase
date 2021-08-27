@@ -1,12 +1,12 @@
-kind: Service
 apiVersion: v1
+kind: Service
 metadata:
-  name: backend
+  name: showcase-backend-service
   labels:
-    app: backend
+    app: showcase-backend
 spec:
   selector:
-    app: backend
+    app: showcase-backend
   type: NodePort
   ports:
     - protocol: TCP
