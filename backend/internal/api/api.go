@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
 	//"errors"
@@ -27,6 +26,7 @@ type DBManager interface {
 type Handler struct {
 	dbManager      DBManager
 	idGenerator    utils.IdGenerator
+	eventBus       EventBus
 	getEndpoint    string
 	getAllEndpoint string
 	postEndpoint   string
@@ -40,11 +40,18 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 
 }
 
+//go:generate mockery --name=EventBus
+// EventBus defines a contract between api and events.
+type EventBus interface {
+	SendNewImage(id string, img model.Image) error
+}
+
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator utils.IdGenerator) Handler {
+func NewHandler(dbManager DBManager, idGenerator utils.IdGenerator, eventBus EventBus) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
+		eventBus:       eventBus,
 		getEndpoint:    "/v1/images/{id}",
 		getAllEndpoint: "/v1/images",
 		postEndpoint:   "/v1/images",
@@ -221,12 +228,21 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	eventId, err := h.idGenerator.NewID()
+	if err != nil {
+		err = errors.New("POST: failed to generate id for event: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = h.eventBus.SendNewImage(eventId, img)
+	if err != nil {
+		err = errors.New("POST: failed to send an event" + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+
 	fmt.Fprint(w, string(jsonID))
 
-	event := events.ImgEvent{Img: img}
-	eventHandler := events.NewEventHandler(&event, utils.NewIdGenerator())
-	err = eventHandler.SendEvent()
-	if err != nil {
-		log.Error(errors.Wrap(err, "POST: SendEvent failed"))
-	}
 }

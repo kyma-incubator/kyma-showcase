@@ -1,45 +1,53 @@
 package events
 
 import (
-	"errors"
-	eventMocks "github.com/kyma-incubator/Kyma-Showcase/internal/events/mocks"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
-	utilsMocks "github.com/kyma-incubator/Kyma-Showcase/internal/utils/mocks"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
 	"testing"
 )
 
 const fixedID = "FEA98D88-0669-4FFD-B17A-8F80BB97C381"
 
-func TestSendEvent(t *testing.T) {
-	t.Run("should return nano id error when generating id fails", func(t *testing.T) {
-		//given
-		idMock := utilsMocks.IdGenerator{}
-		idMock.On("NewID").Return("", errors.New("SENDEVENT: nanoid error"))
-		eventFactoryMock := eventMocks.EventFactory{}
-		testSubject := NewEventHandler(&eventFactoryMock, &idMock)
+func TestSendNewImage(t *testing.T) {
+	t.Run("should send event", func(t *testing.T) {
 
-		//when
-		err := testSubject.SendEvent()
+		img := model.Image{}
 
-		//then
-		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "SENDEVENT: nanoid error")
+		handler := func(rw http.ResponseWriter, r *http.Request) {
+			rw.WriteHeader(http.StatusNoContent)
+			//todo sprawdzić jak możemy zweryfikować zawartość
+		}
+		testServer := httptest.NewServer(http.HandlerFunc(handler))
+		defer testServer.Close()
+		eventHandler := NewEventHandler(testServer.URL)
+		err := eventHandler.SendNewImage(fixedID, img)
+		assert.NoError(t, err)
+
 	})
+	t.Run("should return error when failed to access event's url", func(t *testing.T) {
 
-	t.Run("should return post error when post fails ", func(t *testing.T) {
-		//given
-		idMock := utilsMocks.IdGenerator{}
-		idMock.On("NewID").Return(fixedID, nil)
-		eventFactoryMock := eventMocks.EventFactory{}
-		eventFactoryMock.On("NewEvent", fixedID).Return(model.Event{})
-		testSubject := NewEventHandler(&eventFactoryMock, &idMock)
+		img := model.Image{}
 
-		//when
-		err := testSubject.SendEvent()
-
-		//then
+		eventHandler := NewEventHandler("notexists.com")
+		err := eventHandler.SendNewImage(fixedID, img)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "SENDEVENT: post sending error")
+
+	})
+	t.Run("should send event", func(t *testing.T) {
+
+		img := model.Image{}
+
+		handler := func(rw http.ResponseWriter, r *http.Request) {
+			rw.WriteHeader(http.StatusInternalServerError)
+		}
+		testServer := httptest.NewServer(http.HandlerFunc(handler))
+		//testServer.Start()
+		defer testServer.Close()
+		eventHandler := NewEventHandler(testServer.URL)
+		err := eventHandler.SendNewImage(fixedID, img)
+		assert.Error(t, err)
+		assert.Contains(t, err.Error(), "eventing returned not expected status")
 	})
 }

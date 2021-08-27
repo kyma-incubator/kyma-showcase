@@ -12,14 +12,3 @@ type Image struct {
 type ID struct {
 	ID string `json:"id"` //id
 }
-
-// Event defines a struct that triggers lambdas
-type Event struct {
-	Source           string `json:"source"`
-	SpecVersion      string `json:"specversion"`
-	EventTypeVersion string `json:"eventtypeversion"`
-	Data             string `json:"data"`
-	DataContentType  string `json:"datacontenttype"`
-	Id               string `json:"id"`
-	EventType        string `json:"type"`
-}

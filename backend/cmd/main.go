@@ -4,44 +4,70 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/utils"
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
+	"github.com/vrischmann/envconfig"
 	"net/http"
-	"os"
 )
 
-// initAPIHandler initializes a handler for the API.
-func initAPIHandler() (api.Handler, error) {
-	address := os.Getenv("REDIS_URL")
-	if address == "" {
-		log.Fatal("Failed to read REDIS_URL from .env file")
+// Configuration struct containing environmental variables
+type Configuration struct {
+	Redis struct {
+		URL      string
+		Password string
+	}
+	Backend struct {
+		Port string `envconfig:"default=8081"`
+	}
+	Event struct {
+		URL string
+	}
+}
+
+// initEnvConfiguration initialize environmental variables
+func initEnvConfiguration() (Configuration, error) {
+	configuration := Configuration{}
+	if err := envconfig.Init(&configuration); err != nil {
+		return Configuration{}, err
 	}
 
-	database := db.NewDatabaseConnection(address, os.Getenv("REDIS_PASSWORD"))
+	return configuration, nil
+}
+
+// initAPIHandler initializes a handler for the API.
+func initAPIHandler(conf Configuration) (api.Handler, error) {
+
+	database := db.NewDatabaseConnection(conf.Redis.URL, conf.Redis.Password)
 	err := database.Connect()
 	if err != nil {
 		return api.Handler{}, err
 	}
-	apiHandler := api.NewHandler(database, utils.NewIdGenerator())
+
+	eventHandler := events.NewEventHandler(conf.Event.URL)
+
+	apiHandler := api.NewHandler(database, utils.NewIdGenerator(), eventHandler)
 	return apiHandler, nil
 }
 
 // main contains all the function handlers and initializes the database connection.
 func main() {
-	mux := mux.NewRouter()
+	conf, err := initEnvConfiguration()
+	if err != nil {
+		log.Fatal("Error when getting environmental variables: " + err.Error())
+	}
 
-	APIhandler, err := initAPIHandler()
+	router := mux.NewRouter()
+
+	apiHandler, err := initAPIHandler(conf)
 	if err != nil {
 		log.Fatalf("Error connecting to database: %s", err)
 	}
-	APIhandler.EndpointInitialize(mux)
+	apiHandler.EndpointInitialize(router)
 
-	handler := cors.Default().Handler(mux)
-	port := os.Getenv("PORT")
-	if port == "" {
-		log.Fatal("Failed to read PORT from .env file")
-	}
+	handler := cors.Default().Handler(router)
+	port := conf.Backend.Port
 	err = http.ListenAndServe(":"+port, handler)
 	if err != nil {
 		log.Fatalf("Starting server at port %s failed!", port)
