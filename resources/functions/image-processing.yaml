@@ -32,72 +32,65 @@ spec:
   source: |-
     module.exports = { 
       main: async function (event, context) {
-        async function getBase64() {
-          try{
-            const fetch = require('node-fetch');
-            const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + event.data;
-            const response = await fetch(URL);
-            const data = await response.json();
-            const content = data.content;
-            const base64 = content.replace(/data:.*?base64,/, '')
-            console.log(base64);
-            return base64;
-          }catch(err){
-            console.error(err);
-            return null;
-          }
+        async function getBase64(id) {
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL);
+          const data = await response.json();
+          const content = data.content;
+          const base64 = content.replace(/data:.*?base64,/, '')
+          console.log(base64);
+          return base64;
         }
 
-        async function getLabels(){
-            const base64 = await getBase64();
-            try {
-              const vision = require('@google-cloud/vision');
-              const options = {
-                credentials: {
-                  client_email: process.env.GCP_EMAIL,
-                  private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
-                },
-              };
+        async function getLabels(base64){
+          const vision = require('@google-cloud/vision');
+          const options = {
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
+            },
+          };
 
-              const client = new vision.ImageAnnotatorClient(options);
-              const request = {
-                image: {
-                  content: Buffer.from(base64, 'base64'),
-                },
-              };
+          const client = new vision.ImageAnnotatorClient(options);
+          const request = {
+            image: {
+              content: Buffer.from(base64, 'base64'),
+            },
+          };
 
-              const [result] = await client.labelDetection(request);
-              const resultLabels = result.labelAnnotations;
-              const labels = resultLabels.map(label => label.description);
-              console.log(labels);
-              return labels;
-            } catch (err) {
-              console.error(err);
-              return null;
-            }
-          }
-        async function putDetailsToDB(){
-          const labels = await getLabels();
-          console.log(labels);
-          try{
-            const fetch = require('node-fetch');
-            const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + event.data;
-            const response = await fetch(URL,{
-              method:'PUT',
-              body: JSON.stringify({
-                gcp: labels,
-              }),
-              headers: {
-                'Content-type': 'application/json',
-              },
-            });
-            console.log(response.json());
-            return response.json();
-          }catch(err){
-            console.error(err);
-            return err;
-          }
+          const [result] = await client.labelDetection(request);
+          const resultLabels = result.labelAnnotations;
+          const labels = resultLabels.map(label => label.description);
+          const labelJson = JSON.stringify({label:labels})
+          console.log(labelJson);
+          return labelJson;
         }
-        putDetailsToDB();
+
+        async function putDetailsToDB(id, data){
+          console.log(data);
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL,{
+            method:'PUT',
+            body: JSON.stringify({
+              gcp: data,
+            }),
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+          console.log(response.json());
+          return response.json();
+        }
+
+        try{
+          const base64 = await getBase64(event.data);
+          const labels = await getLabels(base64);
+          await putDetailsToDB(event.data, labels);
+        }catch(err){
+          console.error(err);
+          return err;
+        }
       }
     }
