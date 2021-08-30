@@ -2,10 +2,10 @@ package api
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"net/http"
@@ -20,16 +20,11 @@ type DBManager interface {
 	GetAllKeys() ([]string, error)
 }
 
-//go:generate mockery --name=IdGenerator
-// IdGenerator it is an interface used for generation of unique id.
-type IdGenerator interface {
-	NewID() (string, error)
-}
-
 // Handler for database manager.
 type Handler struct {
 	dbManager      DBManager
 	idGenerator    IdGenerator
+	eventBus       EventBus
 	getEndpoint    string
 	getAllEndpoint string
 	postEndpoint   string
@@ -40,19 +35,28 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 	mux.HandleFunc(h.getAllEndpoint, h.DBGetAllHandler).Methods("GET")
 	mux.HandleFunc(h.getEndpoint, h.DBGetHandler).Methods("GET")
 	mux.HandleFunc(h.postEndpoint, h.DBPostHandler).Methods("POST")
+
+}
+
+//go:generate mockery --name=EventBus
+// EventBus defines a contract between api and events.
+type EventBus interface {
+	SendNewImage(id string, img model.Image) error
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator IdGenerator) Handler {
+func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
+		eventBus:       eventBus,
 		getEndpoint:    "/v1/images/{id}",
 		getAllEndpoint: "/v1/images",
 		postEndpoint:   "/v1/images",
 	}
 }
 
+// accessControl sets headers that allow browser to pass data to frontend
 func accessControl(w http.ResponseWriter, r *http.Request) {
 	if origin := r.Header.Get("Origin"); origin != "" {
 		w.Header().Set("Content-Type", "application/json")
@@ -60,14 +64,12 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-
-
 // DBGetHandler processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
 func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	key := params["id"]
 	url := strings.Replace(h.getEndpoint, "{id}", key, 1)
-	if r.URL.Path != url{
+	if r.URL.Path != url {
 		log.Error(h.getEndpoint)
 		err := errors.New("DBGETHANDLER: 404 not found")
 		log.Error(err)
@@ -76,7 +78,6 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	accessControl(w, r)
 	var img model.Image
-
 
 	fromDB, err := h.dbManager.GetFromDB(key)
 
@@ -100,7 +101,6 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "%s", fromDB)
 }
 
@@ -113,7 +113,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-  
+
 	keys, err := h.dbManager.GetAllKeys()
 	if err != nil {
 		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
@@ -171,7 +171,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	accessControl(w, r)
-
 	var img model.Image
 
 	headerContentType := r.Header.Get("Content-Type")
@@ -182,7 +181,6 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	decoder := json.NewDecoder(r.Body)
-
 	for {
 		if err := decoder.Decode(&img); err == io.EOF {
 			break
@@ -228,6 +226,21 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	eventId, err := h.idGenerator.NewID()
+	if err != nil {
+		err = errors.New("POST: failed to generate id for event: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = h.eventBus.SendNewImage(eventId, img)
+	if err != nil {
+		err = errors.New("POST: failed to send an event" + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadGateway)
+		return
+	}
+
 	fmt.Fprint(w, string(jsonID))
-	w.WriteHeader(http.StatusOK)
+
 }
