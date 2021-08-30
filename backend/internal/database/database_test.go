@@ -34,7 +34,7 @@ func TestConnect(t *testing.T) {
 	})
 }
 
-func TestInsertToDB(t *testing.T) {
+func TestInsert(t *testing.T) {
 	const key, value = "key", "value"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
@@ -89,7 +89,7 @@ func TestInsertToDB(t *testing.T) {
 	})
 }
 
-func TestGetFromDB(t *testing.T) {
+func TestGet(t *testing.T) {
 	const key = "key"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
@@ -181,7 +181,7 @@ func TestGetFromDB(t *testing.T) {
 	})
 }
 
-func TestGetAllKeysDB(t *testing.T) {
+func TestGetAll(t *testing.T) {
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
 		_, clientMock := redismock.NewClientMock()

@@ -28,7 +28,5 @@ spec:
                   key: REDIS_PASSWORD
             - name: PORT
               value: "8081"
-            - name: EVENT_TYPE
-              value: "sap.kyma.custom.showcase.image.uploaded.v1"
             - name: EVENT_URL
               value: "http://eventing-event-publisher-proxy.kyma-system/publish"
