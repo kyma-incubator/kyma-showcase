@@ -37,8 +37,8 @@ type Handler struct {
 
 // EndpointInitialize adds api endpoints to the mux router
 func (h Handler) EndpointInitialize(mux *mux.Router) {
-	mux.HandleFunc(h.getAllEndpoint, h.Get).Methods("GET")
-	mux.HandleFunc(h.getEndpoint, h.GetAll).Methods("GET")
+	mux.HandleFunc(h.getAllEndpoint, h.GetAll).Methods("GET")
+	mux.HandleFunc(h.getEndpoint, h.Get).Methods("GET")
 	mux.HandleFunc(h.postEndpoint, h.Create).Methods("POST")
 }
 
