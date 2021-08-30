@@ -75,11 +75,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 
 	if resp.StatusCode != http.StatusNoContent {
 		err = errors.New(fmt.Sprintf("eventing returned not expected status: %s, %v", resp.Status, resp.StatusCode))
-	}
-
-	if err != nil {
-		err = errors.New("SENDEVENT: post sending error" + err.Error())
-		return err
+		return errors.New("SENDEVENT: post sending error" + err.Error())
 	}
 
 	return nil
