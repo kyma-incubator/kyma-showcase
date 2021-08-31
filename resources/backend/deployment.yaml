@@ -19,14 +19,14 @@ spec:
           ports:
             - containerPort: 8081
           env:
-            - name: REDIS_URL
+            - name: APP_REDIS_URL
               value: "showcase-redis-service.default:6379"
-            - name: REDIS_PASSWORD
+            - name: APP_REDIS_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: kyma-showcase-secret
                   key: REDIS_PASSWORD
-            - name: PORT
+            - name: APP_PORT
               value: "8081"
-            - name: EVENT_URL
+            - name: APP_EVENT_URL
               value: "http://eventing-event-publisher-proxy.kyma-system/publish"
