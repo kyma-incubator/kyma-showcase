@@ -33,7 +33,6 @@ func initEnvConfiguration() (Configuration, error) {
 		return Configuration{}, err
 	}
 
-	fmt.Println(configuration)
 	return configuration, nil
 }
 
