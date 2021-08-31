@@ -143,7 +143,7 @@ func TestGet(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
-		assert.Contains(t, recorder.Body.String(), "GET handler: failed to convert marshal to json:") // TODO: ???
+		assert.Contains(t, recorder.Body.String(), "GET handler: failed to convert marshal to json:")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 
@@ -541,7 +541,7 @@ func TestCreate(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "Create", 0)
-		assert.Contains(t, recorder.Body.String(), "CREATE handler: invalid input:") // TODO
+		assert.Contains(t, recorder.Body.String(), "CREATE handler: invalid input:")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
 
@@ -571,7 +571,7 @@ func TestCreate(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "Insert", 1)
-		assert.Equal(t, "CREATE handler: failed to insert values to database: "+err.Error()+"\n", recorder.Body.String()) // TODO
+		assert.Equal(t, "CREATE handler: failed to insert values to database: "+err.Error()+"\n", recorder.Body.String())
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 
 	})
