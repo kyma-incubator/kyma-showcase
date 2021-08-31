@@ -84,7 +84,7 @@ spec:
         try{
           const base64 = await getBase64(event.data);
           const labels = await getLabels(base64);
-          putDetailsToDB(event.data, labels);
+          await putDetailsToDB(event.data, labels);
         }catch(err){
           console.error(err);
           return err;
