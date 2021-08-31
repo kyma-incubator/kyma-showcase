@@ -7,7 +7,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
 // Database struct contains address(String), password(string), connection, ctx.
 type Database struct {
 	address    string
