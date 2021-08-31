@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
@@ -28,7 +29,7 @@ type Configuration struct {
 // initEnvConfiguration initialize environmental variables
 func initEnvConfiguration() (Configuration, error) {
 	configuration := Configuration{}
-	if err := envconfig.Init(&configuration); err != nil {
+	if err := envconfig.InitWithPrefix(&configuration,"APP"); err != nil {
 		return Configuration{}, err
 	}
 
