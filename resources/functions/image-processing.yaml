@@ -39,7 +39,7 @@ spec:
           const data = await response.json();
           const content = data.content;
           const base64 = content.replace(/data:.*?base64,/, '')
-          console.log(base64);
+          console.log("Base64 loaded from DB");
           return base64;
         }
 
@@ -63,12 +63,12 @@ spec:
           const resultLabels = result.labelAnnotations;
           const labels = resultLabels.map(label => label.description);
           const labelJson = JSON.stringify({label:labels})
-          console.log(labelJson);
+          console.log("Labels loaded from DB");
           return labelJson;
         }
 
         async function putDetailsToDB(id, data){
-          console.log(data);
+          console.log("Putting to DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL,{
@@ -78,14 +78,13 @@ spec:
               'Content-type': 'application/json',
             },
           });
-          console.log(response.json());
           return response.json();
         }
 
         try{
           const base64 = await getBase64(event.data);
           const labels = await getLabels(base64);
-          await putDetailsToDB(event.data, labels);
+          putDetailsToDB(event.data, labels);
         }catch(err){
           console.error(err);
           return err;
