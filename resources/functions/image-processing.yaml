@@ -1,0 +1,93 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: Function
+metadata:
+  name: image-processing
+spec:
+  deps: |-
+    { 
+      "name": "image-processing",
+      "version": "1.0.0",
+      "dependencies": {
+        "node-fetch": "2.6.1",
+        "@google-cloud/vision":"2.3.8"
+      }
+    }
+  env:
+    - name: API_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: config.json
+          name: showcase-frontend-config
+    - name: GCP_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: GCP_API_KEY
+          name: kyma-showcase-secret
+    - name: GCP_EMAIL
+      valueFrom:
+        secretKeyRef:
+          key: GCP_EMAIL
+          name: kyma-showcase-secret
+  runtime: nodejs14
+  source: |-
+    module.exports = { 
+      main: async function (event, context) {
+        async function getBase64(id) {
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL);
+          const data = await response.json();
+          const content = data.content;
+          const base64 = content.replace(/data:.*?base64,/, '')
+          console.log("Base64 loaded from DB");
+          return base64;
+        }
+
+        async function getLabels(base64){
+          const vision = require('@google-cloud/vision');
+          const options = {
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
+            },
+          };
+
+          const client = new vision.ImageAnnotatorClient(options);
+          const request = {
+            image: {
+              content: Buffer.from(base64, 'base64'),
+            },
+          };
+
+          const [result] = await client.labelDetection(request);
+          const resultLabels = result.labelAnnotations;
+          const labels = resultLabels.map(label => label.description);
+          const labelJson = JSON.stringify({label:labels})
+          console.log("Labels loaded from DB");
+          return labelJson;
+        }
+
+        async function putDetailsToDB(id, data){
+          console.log("Putting to DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL,{
+            method:'PUT',
+            body: data,
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+          return response.json();
+        }
+
+        try{
+          const base64 = await getBase64(event.data);
+          const labels = await getLabels(base64);
+          await putDetailsToDB(event.data, labels);
+        }catch(err){
+          console.error(err);
+          return err;
+        }
+      }
+    }
