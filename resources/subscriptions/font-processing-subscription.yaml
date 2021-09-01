@@ -1,0 +1,16 @@
+apiVersion: eventing.kyma-project.io/v1alpha1
+kind: Subscription
+metadata:
+  name: font-processing-subscription
+spec:
+  filter:
+    filters:
+    - eventSource:
+        property: source
+        type: exact
+        value: ""
+      eventType:
+        property: type
+        type: exact
+        value: sap.kyma.custom.showcase.font.processing.v1
+  sink: http://font-processing.default.svc.cluster.local

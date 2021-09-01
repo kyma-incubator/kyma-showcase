@@ -1,11 +1,11 @@
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
-  name: text-detection
+  name: font-processing
 spec:
   deps: |-
     { 
-      "name": "text-detect",
+      "name": "font-processing",
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
@@ -46,8 +46,8 @@ spec:
           return base64;
         }
 
-        async function getText(base64){
-          console.log("Getting text details from GCP");
+        async function getFontDetails(base64){
+          console.log("Getting font details from GCP");
           const vision = require('@google-cloud/vision');
           const options = {
             credentials: {
@@ -65,16 +65,16 @@ spec:
 
           const [result] = await client.textDetection(request);
           const resultTexts = result.textAnnotations;
-          const textDetails = resultTexts.map(text => text.description);
-          const fontTable = textDetails[0];
-          textDetails.shift();
-          const fontJson = JSON.stringify({font:fontTable, words:textDetails})
-          console.log("Text details loaded");
+          const fontDetails = resultTexts.map(text => text.description);
+          const fontTable = fontDetails[0];
+          fontDetails.shift();
+          const fontJson = JSON.stringify({font:fontTable, words:fontDetails})
+          console.log("Font details loaded");
           return fontJson;
         }
 
         async function putDetailsToDB(id, data){
-          console.log("Putting labels to DB");
+          console.log("Putting font details to DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL,{
@@ -86,7 +86,7 @@ spec:
               'Content-type': 'application/json',
             },
           });
-          await console.log("Text details put to DB with status: " + response.status);
+          await console.log("Font details put to DB with status: " + response.status);
           return response.json();
         }
 
@@ -96,8 +96,8 @@ spec:
           console.log("Processing image: " + imgID);
 
           const base64 = await getBase64(imgID);
-          const textDetails = await getText(base64);
-          await putDetailsToDB(imgID, textDetails);
+          const fontDetails = await getFontDetails(base64);
+          await putDetailsToDB(imgID, fontDetails);
         }catch(err){
           console.error(err);
           return null;
