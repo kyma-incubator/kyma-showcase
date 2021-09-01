@@ -6,11 +6,12 @@ import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea
 import ImageDetails from 'views/ImageDetailsPage/components/ImageDetails/ImageDetails';
 import { Link } from 'react-router-dom';
 import { useParams } from 'react-router';
+import { DetailsContextProvider } from 'contexts/detailsContext';
 
 const ImageDetailsPage = () => {
   const { id } = useParams();
   return (
-    <>
+    <DetailsContextProvider>
       <Wrapper>
         <Header />
         <ImageDetailsArea id={id} />
@@ -20,7 +21,7 @@ const ImageDetailsPage = () => {
         </Link>
       </Wrapper>
       <Footer />
-    </>
+    </DetailsContextProvider>
   );
 };
 

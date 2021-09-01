@@ -1,19 +1,19 @@
-import { getImageDetailsFromAPI } from 'API.js';
 import { Loader } from 'assets/styles/style.js';
 import PropTypes from 'prop-types';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import { ImageArea } from './ImageDetailsArea.styles.js';
+import { DetailsContext } from 'contexts/detailsContext';
 
 const ImageDetailsArea = ({ id }) => {
-  const [imageDetails, setImageDetails] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const { imageDetails, getImageDetails } = useContext(DetailsContext);
 
   useEffect(() => {
     const callAPI = async () => {
       setIsLoading(true);
       try {
-        setImageDetails(await getImageDetailsFromAPI(id));
+        await getImageDetails(id);
         setIsLoading(false);
       } catch (err) {
         setIsLoading(false);

@@ -7,6 +7,10 @@ export const Details = styled.section`
   text-align: center;
   display: grid;
   grid-template-columns: 1fr 1fr;
+
+  ul{
+    list-style:none;
+  }
 `;
 
 export const Ul = styled.ul`
