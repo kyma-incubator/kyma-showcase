@@ -10,7 +10,6 @@ spec:
       "dependencies": {
         "node-fetch": "2.6.1",
         "@google-cloud/vision":"2.3.8",
-        "axios": "0.21.1",
         "nanoid": "3.1.25"
       }
     }
