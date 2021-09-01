@@ -1,7 +1,7 @@
 package main
 
 import (
-	"fmt"
+	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
@@ -9,7 +9,6 @@ import (
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/vrischmann/envconfig"
-	"net/http"
 )
 
 // Configuration struct containing environmental variables
@@ -29,7 +28,7 @@ type Configuration struct {
 // initEnvConfiguration initialize environmental variables
 func initEnvConfiguration() (Configuration, error) {
 	configuration := Configuration{}
-	if err := envconfig.InitWithPrefix(&configuration,"APP"); err != nil {
+	if err := envconfig.InitWithPrefix(&configuration, "APP"); err != nil {
 		return Configuration{}, err
 	}
 
