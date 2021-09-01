@@ -134,17 +134,6 @@ spec:
               console.log("Generated nano for " + eventInfo + " " + id);
               lambdaTrigger(id, textEventType, eventInfo);
           }
-          if( labels.includes("Handwriting") ){
-            const textEventType = "sap.kyma.custom.showcase.handwriting.processing.v1";
-            eventInfo = "Handwriting-processing";
-            console.log("Handwriting detected")
-            id = nanoid();
-            console.log("Generated nano for " + eventInfo + " " + id);
-            lambdaTrigger(id, textEventType, eventInfo);
-          }
-          if( labels.includes("Face") ){
-            console.log("Face detected");
-          }
 
           await putDetailsToDB(event.data, labels);
         }catch(err){
