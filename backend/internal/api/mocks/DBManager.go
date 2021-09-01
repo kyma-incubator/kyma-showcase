@@ -9,31 +9,8 @@ type DBManager struct {
 	mock.Mock
 }
 
-// GetAllKeys provides a mock function with given fields:
-func (_m *DBManager) GetAllKeys() ([]string, error) {
-	ret := _m.Called()
-
-	var r0 []string
-	if rf, ok := ret.Get(0).(func() []string); ok {
-		r0 = rf()
-	} else {
-		if ret.Get(0) != nil {
-			r0 = ret.Get(0).([]string)
-		}
-	}
-
-	var r1 error
-	if rf, ok := ret.Get(1).(func() error); ok {
-		r1 = rf()
-	} else {
-		r1 = ret.Error(1)
-	}
-
-	return r0, r1
-}
-
-// GetFromDB provides a mock function with given fields: key
-func (_m *DBManager) GetFromDB(key string) (interface{}, error) {
+// Get provides a mock function with given fields: key
+func (_m *DBManager) Get(key string) (interface{}, error) {
 	ret := _m.Called(key)
 
 	var r0 interface{}
@@ -55,8 +32,31 @@ func (_m *DBManager) GetFromDB(key string) (interface{}, error) {
 	return r0, r1
 }
 
-// InsertToDB provides a mock function with given fields: key, value
-func (_m *DBManager) InsertToDB(key string, value string) error {
+// GetAll provides a mock function with given fields:
+func (_m *DBManager) GetAll() ([]string, error) {
+	ret := _m.Called()
+
+	var r0 []string
+	if rf, ok := ret.Get(0).(func() []string); ok {
+		r0 = rf()
+	} else {
+		if ret.Get(0) != nil {
+			r0 = ret.Get(0).([]string)
+		}
+	}
+
+	var r1 error
+	if rf, ok := ret.Get(1).(func() error); ok {
+		r1 = rf()
+	} else {
+		r1 = ret.Error(1)
+	}
+
+	return r0, r1
+}
+
+// Insert provides a mock function with given fields: key, value
+func (_m *DBManager) Insert(key string, value string) error {
 	ret := _m.Called(key, value)
 
 	var r0 error

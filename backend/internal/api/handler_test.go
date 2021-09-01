@@ -16,25 +16,26 @@ import (
 
 const fixedID = "FEA98D88-0669-4FFD-B17A-8F80BB97C381"
 
-func TestDBGetHandler(t *testing.T) {
+func TestGet(t *testing.T) {
 	const key = fixedID
 	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
 
 		//given
 		req, err := http.NewRequest("GET", "/v1/images/{id}/wrong", nil)
+		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("DBGETHANDLER: 404 not found")
+		err = errors.New("GET handler: 404 not found")
 
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
@@ -54,14 +55,13 @@ func TestDBGetHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("GETFROMDB: database not respond error")
-		dbManagerMock.On("GetFromDB", key).Return(nil, err)
-
+		err = errors.New("GET handler: database not respond error")
+		dbManagerMock.On("Get", key).Return(nil, err)
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
@@ -81,14 +81,14 @@ func TestDBGetHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("GETFROMDB:key " + key + " does not exist")
-		dbManagerMock.On("GetFromDB", key).Return(nil, err)
+		err = errors.New("GET from db: key " + key + " does not exist")
+		dbManagerMock.On("Get", key).Return(nil, err)
 
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
@@ -108,14 +108,14 @@ func TestDBGetHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("GETFROMDB:for key " + key + " value is empty")
-		dbManagerMock.On("GetFromDB", key).Return("", err)
+		err = errors.New("GET handler:for key " + key + " value is empty")
+		dbManagerMock.On("Get", key).Return("", err)
 
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 	})
@@ -136,14 +136,14 @@ func TestDBGetHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(value, nil)
+		dbManagerMock.On("Get", key).Return(value, nil)
 
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
-		assert.Contains(t, recorder.Body.String(), "DBGETHANDLER: failed to convert marshal to json:")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
+		assert.Contains(t, recorder.Body.String(), "GET handler: failed to convert marshal to json:")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 
@@ -168,36 +168,37 @@ func TestDBGetHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(value, nil)
+		dbManagerMock.On("Get", key).Return(value, nil)
 
 		//when
-		testSubject.DBGetHandler(recorder, req)
+		testSubject.Get(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, value, recorder.Body.String())
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
 }
 
-func TestDBGetAllHandler(t *testing.T) {
+func TestGetAll(t *testing.T) {
 	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
 
 		//given
 		req, err := http.NewRequest("GET", "/v1/images/wrong", nil)
+		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("DBGETALLHANDLER: 404 not found")
+		err = errors.New("GETALL handler: 404 not found")
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
@@ -214,13 +215,13 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return(nil, nil)
+		dbManagerMock.On("GetAll").Return(nil, nil)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 
 	})
@@ -237,20 +238,20 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2", "3"}, nil)
-		dbManagerMock.On("GetFromDB", "1").Return("", errors.New("value is empty"))
-		dbManagerMock.On("GetFromDB", "2").Return("", errors.New("value is empty"))
-		dbManagerMock.On("GetFromDB", "3").Return("", errors.New("value is empty"))
+		dbManagerMock.On("GetAll").Return([]string{"1", "2", "3"}, nil)
+		dbManagerMock.On("Get", "1").Return("", errors.New("value is empty"))
+		dbManagerMock.On("Get", "2").Return("", errors.New("value is empty"))
+		dbManagerMock.On("Get", "3").Return("", errors.New("value is empty"))
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertNotCalled(t, "GetFromDB", "2")
-		dbManagerMock.AssertNotCalled(t, "GetFromDB", "3")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1) // 1 poniewaz jest return po pierwszej pustej wartosci
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertNotCalled(t, "Get", "2")
+		dbManagerMock.AssertNotCalled(t, "Get", "3")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 
 	})
@@ -283,21 +284,21 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2", "3"}, nil)
-		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
-		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
-		dbManagerMock.On("GetFromDB", "3").Return("", errors.New("value is empty"))
+		dbManagerMock.On("GetAll").Return([]string{"1", "2", "3"}, nil)
+		dbManagerMock.On("Get", "1").Return(firstReturn, nil)
+		dbManagerMock.On("Get", "2").Return(secondReturn, nil)
+		dbManagerMock.On("Get", "3").Return("", errors.New("value is empty"))
 		//handler := http.HandleFunc(DBGetAllHandler)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertCalled(t, "GetFromDB", "2")
-		dbManagerMock.AssertCalled(t, "GetFromDB", "3")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 3)
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertCalled(t, "Get", "2")
+		dbManagerMock.AssertCalled(t, "Get", "3")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 3)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 
 	})
@@ -313,16 +314,16 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1"}, nil)
-		dbManagerMock.On("GetFromDB", "1").Return(100, nil)
+		dbManagerMock.On("GetAll").Return([]string{"1"}, nil)
+		dbManagerMock.On("Get", "1").Return(100, nil)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 
@@ -350,7 +351,7 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
+		dbManagerMock.On("GetAll").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
 			{
@@ -369,17 +370,17 @@ func TestDBGetAllHandler(t *testing.T) {
 			}
 			`
 
-		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
-		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
+		dbManagerMock.On("Get", "1").Return(firstReturn, nil)
+		dbManagerMock.On("Get", "2").Return(secondReturn, nil)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertCalled(t, "GetFromDB", "2")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 2)
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertCalled(t, "Get", "2")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 2)
 		assert.Equal(t, expected, recorder.Body.String())
 	})
 
@@ -394,7 +395,7 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
+		dbManagerMock.On("GetAll").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
 			{
@@ -413,17 +414,17 @@ func TestDBGetAllHandler(t *testing.T) {
 			}
 			`
 
-		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
-		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
+		dbManagerMock.On("Get", "1").Return(firstReturn, nil)
+		dbManagerMock.On("Get", "2").Return(secondReturn, nil)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertNotCalled(t, "GetFromDB", "2")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1) //return po pierwszym blednym odczycie
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertNotCalled(t, "Get", "2")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 
@@ -438,7 +439,7 @@ func TestDBGetAllHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetAllKeys").Return([]string{"1", "2"}, nil)
+		dbManagerMock.On("GetAll").Return([]string{"1", "2"}, nil)
 
 		firstReturn := `
 			{
@@ -455,42 +456,44 @@ func TestDBGetAllHandler(t *testing.T) {
 			}
 			`
 
-		dbManagerMock.On("GetFromDB", "1").Return(firstReturn, nil)
-		dbManagerMock.On("GetFromDB", "2").Return(secondReturn, nil)
+		dbManagerMock.On("Get", "1").Return(firstReturn, nil)
+		dbManagerMock.On("Get", "2").Return(secondReturn, nil)
 
 		//when
-		testSubject.DBGetAllHandler(recorder, req)
+		testSubject.GetAll(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetAllKeys", 1)
-		dbManagerMock.AssertCalled(t, "GetFromDB", "1")
-		dbManagerMock.AssertCalled(t, "GetFromDB", "2")
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 2)
+		dbManagerMock.AssertNumberOfCalls(t, "GetAll", 1)
+		dbManagerMock.AssertCalled(t, "Get", "1")
+		dbManagerMock.AssertCalled(t, "Get", "2")
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 2)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
 }
 
-func TestDBPostHandler(t *testing.T) {
+func TestCreate(t *testing.T) {
 	t.Run("should return error with status code 404 when url is wrong", func(t *testing.T) {
 
 		//given
 		req, err := http.NewRequest("POST", "/v1/images/wrong", nil)
+		assert.NoError(t, err)
 		recorder := httptest.NewRecorder()
 		dbManagerMock := mocks.DBManager{}
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("POST: 404 not found")
+		err = errors.New("CREATE handler: 404 not found")
 
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
+
 	t.Run("should return 400 when Content-Type is incorrect", func(t *testing.T) {
 
 		//given
@@ -513,7 +516,7 @@ func TestDBPostHandler(t *testing.T) {
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
 
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
@@ -534,11 +537,11 @@ func TestDBPostHandler(t *testing.T) {
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
 
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		assert.Contains(t, recorder.Body.String(), "POST: invalid input:")
+		dbManagerMock.AssertNumberOfCalls(t, "Create", 0)
+		assert.Contains(t, recorder.Body.String(), "CREATE handler: invalid input:")
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
 	})
 
@@ -561,14 +564,14 @@ func TestDBPostHandler(t *testing.T) {
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
 		err = errors.New("failed to insert json to db")
-		dbManagerMock.On("InsertToDB", fixedID, jsonStr).Return(err)
+		dbManagerMock.On("Insert", fixedID, jsonStr).Return(err)
 
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
-		assert.Equal(t, "POST: failed to insert values to database: "+err.Error()+"\n", recorder.Body.String())
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 1)
+		assert.Equal(t, "CREATE handler: failed to insert values to database: "+err.Error()+"\n", recorder.Body.String())
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 
 	})
@@ -593,13 +596,13 @@ func TestDBPostHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("InsertToDB", fixedID, string(jsonImg)).Return(nil)
+		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
 		eventBusMock.On("SendNewImage", fixedID, img).Return(nil)
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 1)
 		assert.Contains(t, recorder.Body.String(), fixedID)
 		assert.Equal(t, http.StatusOK, recorder.Code)
 		eventBusMock.AssertExpectations(t)
@@ -626,11 +629,11 @@ func TestDBPostHandler(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("InsertToDB", fixedID, string(jsonImg)).Return(nil)
+		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
 		eventBusMock.On("SendNewImage", fixedID, img).Return(errors.New("SENDEVENT: error"))
 
 		//when
-		testSubject.DBPostHandler(recorder, req)
+		testSubject.Create(recorder, req)
 
 		//then
 		assert.Contains(t, hook.LastEntry().Message, "SENDEVENT")

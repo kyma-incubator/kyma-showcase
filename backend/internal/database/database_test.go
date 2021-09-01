@@ -34,7 +34,7 @@ func TestConnect(t *testing.T) {
 	})
 }
 
-func TestInsertToDB(t *testing.T) {
+func TestInsert(t *testing.T) {
 	const key, value = "key", "value"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
@@ -44,10 +44,10 @@ func TestInsertToDB(t *testing.T) {
 		database := Database{connection: nil}
 
 		//when
-		err := database.InsertToDB(key, value)
+		err := database.Insert(key, value)
 
 		//then
-		assert.Error(t, err, errors.New("INSERTTODB: connection not initialized"))
+		assert.Error(t, err, errors.New("INSERT to db: connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -61,7 +61,7 @@ func TestInsertToDB(t *testing.T) {
 		clientMock.ExpectSet(key, value, 0)
 
 		//when
-		err := database.InsertToDB(key, value)
+		err := database.Insert(key, value)
 
 		//then
 		assert.Error(t, err)
@@ -79,7 +79,7 @@ func TestInsertToDB(t *testing.T) {
 		clientMock.ExpectSet(key, value, 0).SetVal(value)
 
 		//when
-		err := database.InsertToDB(key, value)
+		err := database.Insert(key, value)
 
 		//then
 		assert.NoError(t, err)
@@ -89,7 +89,7 @@ func TestInsertToDB(t *testing.T) {
 	})
 }
 
-func TestGetFromDB(t *testing.T) {
+func TestGet(t *testing.T) {
 	const key = "key"
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
@@ -99,10 +99,10 @@ func TestGetFromDB(t *testing.T) {
 		database := Database{connection: nil}
 
 		//when
-		_, err := database.GetFromDB(key)
+		_, err := database.Get(key)
 
 		//then
-		assert.Error(t, err, errors.New("GETFROMDB: connection not initialized"))
+		assert.Error(t, err, errors.New("GET from db: connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -116,10 +116,10 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ExpectGet(key).RedisNil()
 
 		//when
-		_, err := database.GetFromDB(key)
+		_, err := database.Get(key)
 
 		//then
-		assert.Equal(t, "GETFROMDB:key "+key+" does not exist", err.Error())
+		assert.Equal(t, "GET from db:key "+key+" does not exist", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -134,10 +134,10 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ExpectGet(key)
 
 		//when
-		_, err := database.GetFromDB(key)
+		_, err := database.Get(key)
 
 		//then
-		assert.Contains(t, err.Error(), "GETFROMDB:error: ")
+		assert.Contains(t, err.Error(), "GET from db:error: ")
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -152,11 +152,11 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ExpectGet(key).SetVal("")
 
 		//when
-		val, err := database.GetFromDB(key)
+		val, err := database.Get(key)
 
 		//then
 		assert.Equal(t, "", val)
-		assert.Equal(t, "GETFROMDB:for key "+key+" value is empty", err.Error())
+		assert.Equal(t, "GET from db:for key "+key+" value is empty", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -171,7 +171,7 @@ func TestGetFromDB(t *testing.T) {
 		clientMock.ExpectGet(key).SetVal(value)
 
 		//when
-		_, err := database.GetFromDB(key)
+		_, err := database.Get(key)
 
 		//then
 		assert.NoError(t, err)
@@ -181,7 +181,7 @@ func TestGetFromDB(t *testing.T) {
 	})
 }
 
-func TestGetAllKeysDB(t *testing.T) {
+func TestGetAll(t *testing.T) {
 	t.Run("should return error when connection is not initialized", func(t *testing.T) {
 		//given
 		_, clientMock := redismock.NewClientMock()
@@ -190,10 +190,10 @@ func TestGetAllKeysDB(t *testing.T) {
 		database := Database{connection: nil}
 
 		//when
-		_, err := database.GetAllKeys()
+		_, err := database.GetAll()
 
 		//then
-		assert.Error(t, err, errors.New("GETALLKEYS: connection not initialized"))
+		assert.Error(t, err, errors.New("GETALL from db: connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -207,7 +207,7 @@ func TestGetAllKeysDB(t *testing.T) {
 		clientMock.ExpectKeys("*")
 
 		//when
-		val, err := database.GetAllKeys()
+		val, err := database.GetAll()
 
 		//then
 		assert.Error(t, err)
@@ -226,7 +226,7 @@ func TestGetAllKeysDB(t *testing.T) {
 		clientMock.ExpectKeys("*").SetVal([]string{"1", "2", "3"})
 
 		//when
-		_, err := database.GetAllKeys()
+		_, err := database.GetAll()
 
 		//then
 		assert.NoError(t, err)
@@ -243,7 +243,7 @@ func TestGetAllKeysDB(t *testing.T) {
 		clientMock.ExpectKeys("*").SetVal([]string{})
 
 		//when
-		_, err := database.GetAllKeys()
+		_, err := database.GetAll()
 
 		//then
 		assert.NoError(t, err)

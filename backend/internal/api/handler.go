@@ -15,9 +15,9 @@ import (
 //go:generate mockery --name=DBManager
 // DBManager defines a contract between api and the database.
 type DBManager interface {
-	InsertToDB(key string, value string) error
-	GetFromDB(key string) (interface{}, error)
-	GetAllKeys() ([]string, error)
+	Insert(key string, value string) error
+	Get(key string) (interface{}, error)
+	GetAll() ([]string, error)
 }
 
 // Handler for database manager.
@@ -32,10 +32,9 @@ type Handler struct {
 
 // EndpointInitialize adds api endpoints to the mux router
 func (h Handler) EndpointInitialize(mux *mux.Router) {
-	mux.HandleFunc(h.getAllEndpoint, h.DBGetAllHandler).Methods("GET")
-	mux.HandleFunc(h.getEndpoint, h.DBGetHandler).Methods("GET")
-	mux.HandleFunc(h.postEndpoint, h.DBPostHandler).Methods("POST")
-
+	mux.HandleFunc(h.getAllEndpoint, h.GetAll).Methods("GET")
+	mux.HandleFunc(h.getEndpoint, h.Get).Methods("GET")
+	mux.HandleFunc(h.postEndpoint, h.Create).Methods("POST")
 }
 
 //go:generate mockery --name=EventBus
@@ -60,18 +59,18 @@ func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus)
 func accessControl(w http.ResponseWriter, r *http.Request) {
 	if origin := r.Header.Get("Origin"); origin != "" {
 		w.Header().Set("Content-Type", "application/json")
-		w.Header().Set("Access-Control-Allow-Origin", "*") //todo ip frontend instead of '*', k8s?
+		w.Header().Set("Access-Control-Allow-Origin", "*")
 	}
 }
 
-// DBGetHandler processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
-func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
+// Get processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
+func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	key := params["id"]
 	url := strings.Replace(h.getEndpoint, "{id}", key, 1)
 	if r.URL.Path != url {
 		log.Error(h.getEndpoint)
-		err := errors.New("DBGETHANDLER: 404 not found")
+		err := errors.New("GET handler: 404 not found")
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -79,14 +78,14 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	accessControl(w, r)
 	var img model.Image
 
-	fromDB, err := h.dbManager.GetFromDB(key)
+	fromDB, err := h.dbManager.Get(key)
 
 	if err != nil {
-		if err.Error() == "GETFROMDB:key "+key+" does not exist" {
-			err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
+		if err.Error() == "GET from db: key "+key+" does not exist" {
+			err = errors.New("GET handler: failed to get data from db: " + err.Error())
 			http.Error(w, err.Error(), http.StatusNotFound)
 		} else {
-			err = errors.New("DBGETHANDLER: failed to get data from db: " + err.Error())
+			err = errors.New("GET handler: failed to get data from db: " + err.Error())
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 		}
 		log.Error(err)
@@ -95,7 +94,7 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal([]byte(fromDB.(string)), &img)
 	if err != nil {
-		err = errors.New("DBGETHANDLER: failed to convert marshal to json: " + err.Error())
+		err = errors.New("GET handler: failed to convert marshal to json: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -104,19 +103,19 @@ func (h Handler) DBGetHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "%s", fromDB)
 }
 
-// DBGetAllHandler processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
-func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
+//GetAll processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
+func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.getAllEndpoint {
-		err := errors.New("DBGETALLHANDLER: 404 not found")
+		err := errors.New("GETALL handler: 404 not found")
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 	accessControl(w, r)
 
-	keys, err := h.dbManager.GetAllKeys()
+	keys, err := h.dbManager.GetAll()
 	if err != nil {
-		err = errors.New("DBGETALL: failed to get all keys from db: " + err.Error())
+		err = errors.New("GETALL handler: failed to get all keys from db: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -125,9 +124,9 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 	var img model.Image
 	var result []model.Image
 	for _, key := range keys {
-		fromDB, err := h.dbManager.GetFromDB(key)
+		fromDB, err := h.dbManager.Get(key)
 		if err != nil {
-			err = errors.New("DBGETALL: failed to get value from db " + err.Error())
+			err = errors.New("GETALL handler: failed to get value from db " + err.Error())
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -135,7 +134,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		dataStr, ok := fromDB.(string)
 
 		if !ok {
-			err = errors.New("DBGETALL: failed to assert a type")
+			err = errors.New("GETALL handler: failed to assert a type")
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -143,7 +142,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 		err = json.Unmarshal([]byte(dataStr), &img)
 
 		if err != nil {
-			err = errors.New("DBGETALL: fail to unmarshal " + err.Error())
+			err = errors.New("GETALL handler: fail to unmarshal " + err.Error())
 			log.Println(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
@@ -154,7 +153,7 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 	allImages, err := json.Marshal(result)
 
 	if err != nil {
-		err = errors.New("DBGETALL: fail to marshal" + err.Error())
+		err = errors.New("GETALL handler: fail to marshal" + err.Error())
 		log.Println(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -162,10 +161,10 @@ func (h Handler) DBGetAllHandler(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(allImages))
 }
 
-// DBPostHandler processes a request and passes the parsed data to the InsertToDB function.
-func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
+// Create processes a request and passes the parsed data to the InsertToDB function.
+func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.postEndpoint {
-		err := errors.New("POST: 404 not found")
+		err := errors.New("CREATE handler: 404 not found")
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
@@ -175,7 +174,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
-		err := errors.New("POST: invalid content type")
+		err := errors.New("CREATE handler: invalid content type")
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -185,7 +184,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 		if err := decoder.Decode(&img); err == io.EOF {
 			break
 		} else if err != nil {
-			err = errors.New("POST: invalid input: " + err.Error())
+			err = errors.New("CREATE handler: invalid input: " + err.Error())
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
@@ -201,15 +200,15 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 	img.ID = id
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
-		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
+		err = errors.New("CREATE handler: failed to convert json into marshal: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	err = h.dbManager.InsertToDB(id, string(jsonImg))
+	err = h.dbManager.Insert(id, string(jsonImg))
 	if err != nil {
-		err = errors.New("POST: failed to insert values to database: " + err.Error())
+		err = errors.New("CREATE handler: failed to insert values to database: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -220,7 +219,7 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	jsonID, err := json.Marshal(idStruct)
 	if err != nil {
-		err = errors.New("POST: failed to convert json into marshal: " + err.Error())
+		err = errors.New("CREATE handler: failed to convert json into marshal: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -228,14 +227,14 @@ func (h Handler) DBPostHandler(w http.ResponseWriter, r *http.Request) {
 
 	eventId, err := h.idGenerator.NewID()
 	if err != nil {
-		err = errors.New("POST: failed to generate id for event: " + err.Error())
+		err = errors.New("CREATE handler: failed to generate id for event: " + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	err = h.eventBus.SendNewImage(eventId, img)
 	if err != nil {
-		err = errors.New("POST: failed to send an event" + err.Error())
+		err = errors.New("CREATE handler: failed to send an event" + err.Error())
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusBadGateway)
 		return

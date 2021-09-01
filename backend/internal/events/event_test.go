@@ -17,7 +17,6 @@ func TestSendNewImage(t *testing.T) {
 
 		handler := func(rw http.ResponseWriter, r *http.Request) {
 			rw.WriteHeader(http.StatusNoContent)
-			//todo sprawdzić jak możemy zweryfikować zawartość
 		}
 		testServer := httptest.NewServer(http.HandlerFunc(handler))
 		defer testServer.Close()
