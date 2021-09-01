@@ -33,17 +33,19 @@ spec:
     module.exports = { 
       main: async function (event, context) {
         async function getBase64(id) {
+          console.log("Getting base64 from DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
           const data = await response.json();
           const content = data.content;
-          const base64 = content.replace(/data:.*?base64,/, '')
-          console.log("Base64 loaded from DB");
+          const base64 = content.replace(/data:.*?base64,/, '');
+          console.log("Base64 loaded");
           return base64;
         }
 
         async function getLabels(base64){
+          console.log("Getting labels from GCP");
           const vision = require('@google-cloud/vision');
           const options = {
             credentials: {
@@ -63,31 +65,79 @@ spec:
           const resultLabels = result.labelAnnotations;
           const labels = resultLabels.map(label => label.description);
           const labelJson = JSON.stringify({label:labels})
-          console.log("Labels loaded from DB");
+          console.log("Labels loaded");
           return labelJson;
         }
 
         async function putDetailsToDB(id, data){
-          console.log("Putting to DB");
+          console.log("Putting labels to DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL,{
             method:'PUT',
-            body: data,
+            body: JSON.stringify({
+              gcp: data,
+            }),
             headers: {
               'Content-type': 'application/json',
             },
           });
-          return response.json();
+          console.log("Labels put to DB with status: " + response.status);
+          return response.status;
+        }
+
+        function lambdaTrigger(id, eventType){
+          const axios = require("axios");
+          const eventData = {
+            'type': eventType,
+            'source': event["ce-source"],
+            'eventtypeversion': event["ce-eventtypeversion"],
+            'specversion': event["ce-specversion"],
+            'id': id,
+            'data': event.data,
+          };
+          console.log(eventData);
+          axios({
+            method: "post",
+            baseURL: process.env.EVENT_URL,
+            headers: {
+                "Content-Type": "application/cloudevents+json"
+            },
+            data: eventData,
+          }).then(function (response) {
+            console.log("Event post to function image-detect with status: " + response.status);
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
         }
 
         try{
+          console.log("Processing image: " + event.data);
+          
           const base64 = await getBase64(event.data);
           const labels = await getLabels(base64);
           await putDetailsToDB(event.data, labels);
+
+          const { nanoid } = require("nanoid");
+          let id;
+
+          if( labels.includes("Font") ) {
+              const textEventType = "sap.kyma.custom.showcase.text.detect.v1";
+              console.log("Text detected")
+              id = nanoid();
+              console.log("Generated nano for text-detect: " + id);
+              lambdaTrigger(id, textEventType);
+          }
+          if( labels.includes("Handwriting") ){
+            console.log("Handwriting detected");
+          }
+          if( labels.includes("Face") ){
+            console.log("Face detected");
+          }
         }catch(err){
           console.error(err);
-          return err;
+          return null;
         }
       }
     }
