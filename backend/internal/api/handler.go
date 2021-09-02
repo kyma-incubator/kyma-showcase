@@ -319,4 +319,17 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
+
+	var idStruct model.ID
+	idStruct.ID = img.ID
+
+	jsonID, err := json.Marshal(idStruct)
+	if err != nil {
+		err = errors.New("update: failed to convert json id into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, string(jsonID))
 }

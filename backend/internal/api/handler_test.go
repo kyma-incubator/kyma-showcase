@@ -838,7 +838,7 @@ func TestUpdate(t *testing.T) {
 		assert.Contains(t, hook.LastEntry().Message, err.Error())
 	})
 
-	t.Run("should return 200 code whewasupdating data in databse is correct", func(t *testing.T) {
+	t.Run("should return 200 code when updating data in database is correct", func(t *testing.T) {
 
 		//given
 		body := `{` +
@@ -855,8 +855,13 @@ func TestUpdate(t *testing.T) {
 			GCP:     []string{"{labels:[labels,moods]}"},
 			Status:  false,
 		}
+		idStruct := model.ID{ID: fixedID}
 		jsonImg, err := json.Marshal(img)
+		assert.NoError(t, err)
 		jsonImgWithGCP, err := json.Marshal(imgWithGCP)
+		assert.NoError(t, err)
+		jsonID, err:= json.Marshal(idStruct)
+		assert.NoError(t, err)
 		req, err := http.NewRequest("PUT", "/v1/images/"+fixedID, bytes.NewBuffer([]byte(body)))
 		vars := map[string]string{
 			"id": fixedID,
@@ -879,6 +884,7 @@ func TestUpdate(t *testing.T) {
 		//then
 		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
 		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
+		assert.Contains(t, recorder.Body.String(), string(jsonID))
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})
 
