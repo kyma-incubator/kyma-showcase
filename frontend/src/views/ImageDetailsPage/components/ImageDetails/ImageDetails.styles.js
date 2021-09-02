@@ -1,16 +1,23 @@
 import styled from "styled-components";
 
 export const Details = styled.section`
-  width: 70%;
-  padding: 0;
-  margin: 2%;
-  text-align: center;
   display: grid;
   grid-template-columns: 1fr 1fr;
-`;
+  margin: 2%;
+  width: 70%;
+  text-align: center;
 
-export const Ul = styled.ul`
-  list-style: none;
-`;
+  p{
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 2%;
+  }
 
-export const Li = styled.li``;
+  ul{
+    list-style:none;
+  }
+
+  li{
+    margin-top: 1%;
+  }
+`;

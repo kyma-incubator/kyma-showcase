@@ -1,16 +1,19 @@
-import { Details, Ul, Li } from './ImageDetails.styles';
+import { Details } from './ImageDetails.styles';
 
-const ImageDetails = () => {
+const ImageDetails = ({ gcp }) => {
+  gcp = gcp.map(JSON.parse)
+  const labels = gcp?.find(obj => Object.keys(obj).includes('label'))?.label || [];
+
   return (
     <Details>
-      <Ul>
-        Objects
-        <Li>Obj1</Li>
-      </Ul>
-      <Ul>
-        Labels
-        <Li>lbl1</Li>
-      </Ul>
+      <p>Objects</p>
+      <p>Labels</p>
+      <ul>
+        <li>Obj1</li>
+      </ul>
+      <ul>
+        {labels.map(label => <li key={label}>{label}</li>)}
+      </ul>
     </Details>
   );
 };
