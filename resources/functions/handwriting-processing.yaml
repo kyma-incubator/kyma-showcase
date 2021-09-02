@@ -64,8 +64,7 @@ spec:
           const [result] = await client.documentTextDetection(request);
           const fullTextAnnotation = result.fullTextAnnotation;
           const handJson = JSON.stringify({handwriting:fullTextAnnotation.text});
-          console.log("Hand details loaded");
-          console.log(handJson)
+          console.log("Handwriting details loaded");
           return handJson;
         }
 
