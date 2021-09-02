@@ -136,10 +136,20 @@ spec:
               console.log("Generated nano for " + eventInfo + " " + id);
               lambdaTrigger(id, textEventType, eventInfo);
           }
+
           if( labels.includes("Logo") ) {
             const textEventType = "sap.kyma.custom.showcase.logo.processing.v1";
             eventInfo = "logo-processing";
             console.log("Logo detected")
+            id = nanoid();
+            console.log("Generated nano for " + eventInfo + " " + id);
+            lambdaTrigger(id, textEventType, eventInfo);
+          }
+          
+          if( labels.includes("Handwriting") ) {
+            const textEventType = "sap.kyma.custom.showcase.handwriting.processing.v1";
+            eventInfo = "handwriting-processing";
+            console.log("handwriting detected")
             id = nanoid();
             console.log("Generated nano for " + eventInfo + " " + id);
             lambdaTrigger(id, textEventType, eventInfo);
