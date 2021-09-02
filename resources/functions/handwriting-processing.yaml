@@ -74,9 +74,7 @@ spec:
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL,{
             method:'PUT',
-            body: JSON.stringify({
-              gcp: data,
-            }),
+            body: data,
             headers: {
               'Content-type': 'application/json',
             },
