@@ -12,9 +12,3 @@ export const Details = styled.section`
     list-style:none;
   }
 `;
-
-export const Ul = styled.ul`
-  list-style: none;
-`;
-
-export const Li = styled.li``;

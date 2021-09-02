@@ -1,24 +1,18 @@
 import { Details } from './ImageDetails.styles';
-import { useContext, useEffect, useState } from 'react';
-import { DetailsContext } from 'contexts/detailsContext';
 
-const ImageDetails = () => {
-  const { imageDetails } = useContext(DetailsContext);
-  const [labels, setLabels] = useState({})
-  // useEffect(() => {
-  //   setLabels(imageDetails.gcp.find(obj => Object.keys(obj).includes('labels')))
-  // }, [])
-  console.log(imageDetails)
-  console.log(labels)
+const ImageDetails = ({ gcp }) => {
+  gcp = gcp.map(JSON.parse)
+  const labels = gcp?.find(obj => Object.keys(obj).includes('label'))?.label || [];
 
   return (
     <Details>
       <p>Objects</p>
+      <p>Labels</p>
       <ul>
         <li>Obj1</li>
       </ul>
-      <p>Labels</p>
       <ul>
+        {labels.map(label => <li>{label}</li>)}
       </ul>
     </Details>
   );
