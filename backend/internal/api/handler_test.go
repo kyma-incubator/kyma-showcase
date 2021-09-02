@@ -622,8 +622,8 @@ func TestUpdate(t *testing.T) {
 		testSubject.Update(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 0)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
@@ -641,15 +641,15 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("GETFROMDB:key " + key + " does not exist")
-		dbManagerMock.On("GetFromDB", key).Return(nil, err)
+		err = errors.New("GET from db:key " + key + " does not exist")
+		dbManagerMock.On("Get", key).Return(nil, err)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusNotFound, recorder.Code)
 	})
@@ -668,15 +668,15 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		err = errors.New("GETFROMDB: database not respond error")
-		dbManagerMock.On("GetFromDB", key).Return(nil, err)
+		err = errors.New("GET from db: database not respond error")
+		dbManagerMock.On("Get", key).Return(nil, err)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
@@ -704,14 +704,14 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(returnValue, nil)
+		dbManagerMock.On("Get", key).Return(returnValue, nil)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 		assert.Contains(t, hook.LastEntry().Message, "update: failed to convert marshal to json")
 	})
@@ -740,15 +740,15 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(string(jsonImg), nil)
+		dbManagerMock.On("Get", key).Return(string(jsonImg), nil)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
 		assert.Equal(t, http.StatusBadRequest, recorder.Code)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Contains(t, recorder.Body.String(), "PUT: invalid content type")
 	})
 
@@ -776,15 +776,15 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(string(jsonImg), nil)
+		dbManagerMock.On("Get", key).Return(string(jsonImg), nil)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 0)
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Contains(t, recorder.Body.String(), "failed to read")
 		assert.Contains(t, hook.LastEntry().Message, "update: failed to read request body")
 	})
@@ -822,17 +822,17 @@ func TestUpdate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(string(jsonImg), nil)
+		dbManagerMock.On("Get", key).Return(string(jsonImg), nil)
 		err = errors.New("failed to insert json to db")
-		dbManagerMock.On("InsertToDB", key, string(jsonImgWithGCP)).Return(err)
+		dbManagerMock.On("Insert", key, string(jsonImgWithGCP)).Return(err)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
 		assert.Error(t, err)
 		assert.Contains(t, recorder.Body.String(), err.Error())
 		assert.Contains(t, hook.LastEntry().Message, err.Error())
@@ -860,7 +860,7 @@ func TestUpdate(t *testing.T) {
 		assert.NoError(t, err)
 		jsonImgWithGCP, err := json.Marshal(imgWithGCP)
 		assert.NoError(t, err)
-		jsonID, err:= json.Marshal(idStruct)
+		jsonID, err := json.Marshal(idStruct)
 		assert.NoError(t, err)
 		req, err := http.NewRequest("PUT", "/v1/images/"+fixedID, bytes.NewBuffer([]byte(body)))
 		vars := map[string]string{
@@ -875,15 +875,15 @@ func TestUpdate(t *testing.T) {
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
 		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("GetFromDB", key).Return(string(jsonImg), nil)
-		dbManagerMock.On("InsertToDB", key, string(jsonImgWithGCP)).Return(nil)
+		dbManagerMock.On("Get", key).Return(string(jsonImg), nil)
+		dbManagerMock.On("Insert", key, string(jsonImgWithGCP)).Return(nil)
 
 		//when
 		testSubject.Update(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "GetFromDB", 1)
-		dbManagerMock.AssertNumberOfCalls(t, "InsertToDB", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 1)
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 1)
 		assert.Contains(t, recorder.Body.String(), string(jsonID))
 		assert.Equal(t, http.StatusOK, recorder.Code)
 	})

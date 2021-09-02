@@ -267,7 +267,7 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	fromDB, err := h.dbManager.Get(key)
 
 	if err != nil {
-		if err.Error() == "GETFROMDB:key "+key+" does not exist" {
+		if err.Error() == "GET from db:key "+key+" does not exist" {
 			err = errors.New("update: failed to get data from db: " + err.Error())
 			http.Error(w, err.Error(), http.StatusNotFound)
 		} else {

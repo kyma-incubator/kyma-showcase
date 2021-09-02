@@ -1,7 +1,6 @@
 package main
 
 import (
-	"net/http"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
@@ -9,6 +8,7 @@ import (
 	"github.com/rs/cors"
 	log "github.com/sirupsen/logrus"
 	"github.com/vrischmann/envconfig"
+	"net/http"
 )
 
 // Configuration struct containing environmental variables
