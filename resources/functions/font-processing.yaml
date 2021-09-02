@@ -1,0 +1,103 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: Function
+metadata:
+  name: font-processing
+spec:
+  deps: |-
+    { 
+      "name": "font-processing",
+      "version": "1.0.0",
+      "dependencies": {
+        "node-fetch": "2.6.1",
+        "@google-cloud/vision":"2.3.8",
+        "nanoid": "3.1.25"
+      }
+    }
+  env:
+    - name: GCP_EMAIL
+      valueFrom:
+        secretKeyRef:
+          key: GCP_EMAIL
+          name: kyma-showcase-secret
+    - name: GCP_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: GCP_API_KEY
+          name: kyma-showcase-secret
+    - name: API_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: config.json
+          name: showcase-frontend-config
+  runtime: nodejs14
+  source: |-
+    module.exports = { 
+      main: async function (event, context) {
+        async function getBase64(id) {
+          console.log("Getting base64 from DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL);
+          const data = await response.json();
+          const content = data.content;
+          const base64 = content.replace(/data:.*?base64,/, '');
+          console.log("Base64 loaded");
+          return base64;
+        }
+
+        async function getFontDetails(base64){
+          console.log("Getting font details from GCP");
+          const vision = require('@google-cloud/vision');
+          const options = {
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
+            },
+          };
+
+          const client = new vision.ImageAnnotatorClient(options);
+          const request = {
+            image: {
+              content: Buffer.from(base64, 'base64'),
+            },
+          };
+
+          const [result] = await client.textDetection(request);
+          const resultTexts = result.textAnnotations;
+          const fontDetails = resultTexts.map(text => text.description);
+          const fontTable = fontDetails[0];
+          fontDetails.shift();
+          const fontJson = JSON.stringify({font:fontTable, words:fontDetails})
+          console.log("Font details loaded");
+          return fontJson;
+        }
+
+        async function putDetailsToDB(id, data){
+          console.log("Putting font details to DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL,{
+            method:'PUT',
+            body: data,
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+          await console.log("Font details put to DB with status: " + response.status);
+          return response.json();
+        }
+
+        try{
+          const imgID = event.data.slice(1, -1);
+
+          console.log("Processing image: " + imgID);
+
+          const base64 = await getBase64(imgID);
+          const fontDetails = await getFontDetails(base64);
+          await putDetailsToDB(imgID, fontDetails);
+        }catch(err){
+          console.error(err);
+          return null;
+        }
+      }
+    }

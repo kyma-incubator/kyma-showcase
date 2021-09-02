@@ -9,7 +9,9 @@ spec:
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
-        "@google-cloud/vision":"2.3.8"
+        "@google-cloud/vision":"2.3.8",
+        "axios": "0.21.1",
+        "nanoid": "3.1.25"
       }
     }
   env:
@@ -28,22 +30,26 @@ spec:
         secretKeyRef:
           key: GCP_EMAIL
           name: kyma-showcase-secret
+    - name: EVENT_URL
+      value: http://eventing-event-publisher-proxy.kyma-system/publish
   runtime: nodejs14
   source: |-
     module.exports = { 
       main: async function (event, context) {
         async function getBase64(id) {
+          console.log("Getting base64 from DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
           const data = await response.json();
           const content = data.content;
-          const base64 = content.replace(/data:.*?base64,/, '')
-          console.log("Base64 loaded from DB");
+          const base64 = content.replace(/data:.*?base64,/, '');
+          console.log("Base64 loaded");
           return base64;
         }
 
         async function getLabels(base64){
+          console.log("Getting labels from GCP");
           const vision = require('@google-cloud/vision');
           const options = {
             credentials: {
@@ -54,21 +60,25 @@ spec:
 
           const client = new vision.ImageAnnotatorClient(options);
           const request = {
-            image: {
-              content: Buffer.from(base64, 'base64'),
+            image:{
+              content:Buffer.from(base64, 'base64')
             },
-          };
+            features:[
+            {
+              type:"LABEL_DETECTION",
+              maxResults:30
+            }]};
 
-          const [result] = await client.labelDetection(request);
+          const [result] = await client.annotateImage(request);
           const resultLabels = result.labelAnnotations;
           const labels = resultLabels.map(label => label.description);
           const labelJson = JSON.stringify({label:labels})
-          console.log("Labels loaded from DB");
+          console.log("Labels loaded");
           return labelJson;
         }
 
         async function putDetailsToDB(id, data){
-          console.log("Putting to DB");
+          console.log("Putting labels to DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL,{
@@ -78,16 +88,59 @@ spec:
               'Content-type': 'application/json',
             },
           });
+          console.log("Labels put to DB with status: " + response.status);
           return response.json();
         }
 
+        function lambdaTrigger(id, eventType, eventInfo){
+          console.log("Trigering function for: " + eventInfo);
+          const axios = require("axios");
+          const eventData = {
+            'type': eventType,
+            'source': event["ce-source"],
+            'eventtypeversion': event["ce-eventtypeversion"],
+            'specversion': event["ce-specversion"],
+            'id': id,
+            'data': event.data,
+          };
+          axios({
+            method: "post",
+            baseURL: process.env.EVENT_URL,
+            headers: {
+                "Content-Type": "application/cloudevents+json"
+            },
+            data: eventData,
+          }).then(function (response) {
+            console.log("Event post to function for: " + eventInfo + " with status: " + response.status);
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+        }
+
         try{
+          console.log("Processing image: " + event.data);
+          
           const base64 = await getBase64(event.data);
           const labels = await getLabels(base64);
+
+          const { nanoid } = require("nanoid");
+          let id;
+          let eventInfo;
+
+          if( labels.includes("Font") ) {
+              const textEventType = "sap.kyma.custom.showcase.font.processing.v1";
+              eventInfo = "Font-processing";
+              console.log("Text detected")
+              id = nanoid();
+              console.log("Generated nano for " + eventInfo + " " + id);
+              lambdaTrigger(id, textEventType, eventInfo);
+          }
+
           await putDetailsToDB(event.data, labels);
         }catch(err){
           console.error(err);
-          return err;
+          return null;
         }
       }
     }
