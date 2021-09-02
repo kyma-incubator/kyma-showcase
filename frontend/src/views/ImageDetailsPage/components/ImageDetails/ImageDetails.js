@@ -12,7 +12,7 @@ const ImageDetails = ({ gcp }) => {
         <li>Obj1</li>
       </ul>
       <ul>
-        {labels.map(label => <li>{label}</li>)}
+        {labels.map(label => <li key={label}>{label}</li>)}
       </ul>
     </Details>
   );
