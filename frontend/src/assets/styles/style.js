@@ -22,10 +22,12 @@ export const Button = styled.button`
   background-color: ${({ theme }) => theme.colors.primary};
   color: rgb(255, 255, 255);
   height: 30px;
+
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
     border: 2px solid ${({ theme }) => theme.colors.secondary};
   }
+
   &:disabled,
   button[disabled] {
     border: 1px solid #999999;
@@ -43,7 +45,7 @@ export const Loader = styled.div`
   border-radius: 50%;
   animation: load 1.1s infinite linear;
   transition: opacity 0.3s;
-  margin-top: 10%;
+  margin: 10% 0 2%;
 
   @keyframes load {
     0% {

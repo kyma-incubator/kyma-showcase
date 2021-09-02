@@ -1,15 +1,13 @@
-import React from 'react';
-import { Wrapper, Button } from 'assets/styles/style';
-import Header from 'components/Header/Header';
-import Footer from 'components/Footer/Footer';
-import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea/ImageDetailsArea';
-import ImageDetails from 'views/ImageDetailsPage/components/ImageDetails/ImageDetails';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { useState, useEffect } from 'react'
-import { DetailsContextProvider } from 'contexts/detailsContext';
+import { Link } from 'react-router-dom';
+
 import { getImageDetailsFromAPI } from 'API';
-import { Loader } from 'assets/styles/style';
+import { Button, Loader, Wrapper } from 'assets/styles/style';
+import Footer from 'components/Footer/Footer';
+import Header from 'components/Header/Header';
+import ImageDetails from 'views/ImageDetailsPage/components/ImageDetails/ImageDetails';
+import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea/ImageDetailsArea';
 
 const ImageDetailsPage = () => {
   const { id } = useParams();
@@ -31,10 +29,10 @@ const ImageDetailsPage = () => {
       }
     };
     callAPI();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   return (
-    <DetailsContextProvider>
+    <>
       <Wrapper>
         <Header />
         {errorMessage && <p>{errorMessage}</p>}
@@ -46,7 +44,7 @@ const ImageDetailsPage = () => {
         </Link>
       </Wrapper>
       <Footer />
-    </DetailsContextProvider>
+      </>
   );
 };
 

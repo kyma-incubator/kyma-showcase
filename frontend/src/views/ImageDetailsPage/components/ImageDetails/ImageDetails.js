@@ -17,6 +17,5 @@ const ImageDetails = ({ gcp }) => {
     </Details>
   );
 };
-//{labels && labels.labels.map(label => <li>{label}</li>)}
 
 export default ImageDetails;
