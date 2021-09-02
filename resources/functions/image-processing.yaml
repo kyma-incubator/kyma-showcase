@@ -60,12 +60,16 @@ spec:
 
           const client = new vision.ImageAnnotatorClient(options);
           const request = {
-            image: {
-              content: Buffer.from(base64, 'base64'),
+            image:{
+              content:Buffer.from(base64, 'base64')
             },
-          };
+            features:[
+            {
+              type:"LABEL_DETECTION",
+              maxResults:30
+            }]};
 
-          const [result] = await client.labelDetection(request);
+          const [result] = await client.annotateImage(request);
           const resultLabels = result.labelAnnotations;
           const labels = resultLabels.map(label => label.description);
           const labelJson = JSON.stringify({label:labels})
