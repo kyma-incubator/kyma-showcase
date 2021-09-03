@@ -12,51 +12,58 @@ import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea
 const ImageDetailsPage = () => {
   const { id } = useParams();
 
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
   const [imageDetails, setImageDetails] = useState(null);
-  const [analyzeLoading, setAnalyzeLoading] = useState(true);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
   useEffect(() => {
     const callAPI = async () => {
-      console.log("CallAPI called");
-      setIsLoading(true);
+      if (imageDetails && !imageDetails.content) {
+        setIsImageLoading(true);
+      }
+      console.log('CallAPI called');
+
       try {
-        const imgDetails = await getImageDetailsFromAPI(id)
+        const imgDetails = await getImageDetailsFromAPI(id);
         setImageDetails(imgDetails);
         console.log(imgDetails.gcp);
-        if (imgDetails.gcp?.length!==2) {
+        if (!imgDetails.gcp) {
           console.log(imgDetails.gcp);
-          setAnalyzeLoading(true);
-          setTimeout(callAPI, 2000);
-          console.log("Po set timeout");
-        } else {
-          setAnalyzeLoading(false);
-          console.log("Analyzeloading na false");
+          setTimeout(callAPI, 2500);
+          setIsDescriptionLoading(true)
+          console.log('Po set timeout');
+        }
+        else if (imgDetails.gcp?.length >1){
+          console.log(imgDetails.gcp?.length);
+          console.log('Analyzing loading na false');
+          setIsDescriptionLoading(false);
         }
       } catch (err) {
         setErrorMessage('Internal server error');
         console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsImageLoading(false);
       }
     };
     callAPI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
+
   return (
     <>
       <Wrapper>
         <Header />
         {errorMessage && <p>{errorMessage}</p>}
-        {isLoading && <Loader />}
-        {!errorMessage && !isLoading && (
-          <>
-            {' '}
-            <ImageDetailsArea content={imageDetails.content} />
-            <ImageDetails gcp={imageDetails.gcp} />
-          </>
+        {isImageLoading && <Loader />}
+        {!errorMessage && !isImageLoading && (
+          <ImageDetailsArea content={imageDetails.content} />
+        )}
+        <br/>
+        {isDescriptionLoading && <h2>Image details are analyzing</h2>}
+        {!errorMessage && !isDescriptionLoading && (
+          <ImageDetails gcp={imageDetails.gcp} />
         )}
         <Link to="/">
           <Button>Home Page</Button>
