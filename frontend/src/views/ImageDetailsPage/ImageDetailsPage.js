@@ -51,7 +51,7 @@ const ImageDetailsPage = () => {
         {isImageLoading && <Loader />}
         {!errorMessage && !isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
         <br />
-        {isDescriptionLoading && <h2>Image details are analyzing</h2>}
+        {isDescriptionLoading && <h2>Image details are being analyzed.</h2>}
         {!errorMessage && !isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
         <Link to="/">
           <Button>Home Page</Button>
