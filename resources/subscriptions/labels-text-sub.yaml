@@ -1,7 +1,7 @@
 apiVersion: eventing.kyma-project.io/v1alpha1
 kind: Subscription
 metadata:
-  name: font-processing-subscription
+  name: labels-text-subscription
 spec:
   filter:
     filters:
@@ -12,5 +12,5 @@ spec:
       eventType:
         property: type
         type: exact
-        value: sap.kyma.custom.showcase.font.processing.v1
-  sink: http://font-processing.default.svc.cluster.local
+        value: sap.kyma.custom.showcase.text.processing.v1
+  sink: http://labels-text.default.svc.cluster.local

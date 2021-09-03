@@ -1,11 +1,11 @@
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
-  name: image-processing
+  name: labels
 spec:
   deps: |-
     { 
-      "name": "image-processing",
+      "name": "labels",
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
@@ -129,8 +129,8 @@ spec:
           let eventInfo;
 
           if( labels.includes("Font") ) {
-              const textEventType = "sap.kyma.custom.showcase.font.processing.v1";
-              eventInfo = "Font-processing";
+              const textEventType = "sap.kyma.custom.showcase.text.processing.v1";
+              eventInfo = "font-processing";
               console.log("Text detected")
               id = nanoid();
               console.log("Generated nano for " + eventInfo + " " + id);

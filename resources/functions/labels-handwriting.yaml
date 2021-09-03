@@ -1,11 +1,11 @@
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
-  name: handwriting-processing
+  name: labels-handwriting
 spec:
   deps: |-
     { 
-      "name": "handwriting-processing",
+      "name": "labels-handwriting",
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
