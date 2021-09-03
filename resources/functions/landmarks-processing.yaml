@@ -73,9 +73,7 @@ spec:
               longitude: (ldm.locations.map(lon => lon.latLng.longitude))[0]
               })
           );
-          console.log(landmarks);
           const objectsJson = JSON.stringify({landmarks});
-          console.log(objectsJson);
           console.log("Landmarks loaded");
           return objectsJson;
         }
