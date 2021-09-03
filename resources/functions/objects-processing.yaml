@@ -64,10 +64,11 @@ spec:
 
           const [result] = await client.objectLocalization(request);
           const resultObjects = result.localizedObjectAnnotations;
+          if (resultObjects.length === 0)
+            return null;
           const objects = resultObjects.map(obj => obj.name);
           const objectsJson = JSON.stringify({objects});
           console.log("Multiple objects loaded");
-          console.log(objectsJson);
           return objectsJson;
         }
 
@@ -82,7 +83,7 @@ spec:
               'Content-type': 'application/json',
             },
           });
-          await console.log("Multiple objects put to DB with status: " + response.status);
+          console.log("Multiple objects put to DB with status: " + response.status);
           return response.json();
         }
 
@@ -93,7 +94,11 @@ spec:
 
           const base64 = await getBase64(imgID);
           const multipleObjects = await getMultipleObjects(base64);
-          await putDetailsToDB(imgID, multipleObjects);
+          if (multipleObjects){
+            await putDetailsToDB(imgID, multipleObjects);
+          } else {
+            console.log("Multiple objects array is empty");
+          }
         }catch(err){
           console.error(err);
           return null;
