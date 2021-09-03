@@ -67,10 +67,10 @@ spec:
           if (resultObjects.length === 0)
             return null;
           const landmarks = resultObjects.map(ldm =>
-            JSON.stringify({
-              name: ldm.description,
-              latitude: (ldm.locations.map(lat => lat.latLng.latitude))[0],
-              longitude: (ldm.locations.map(lon => lon.latLng.longitude))[0]
+              ({
+                name: ldm.description,
+                latitude: (ldm.locations.map(lat => lat.latLng.latitude))[0],
+                longitude: (ldm.locations.map(lon => lon.latLng.longitude))[0]
               })
           );
           const objectsJson = JSON.stringify({landmarks});
