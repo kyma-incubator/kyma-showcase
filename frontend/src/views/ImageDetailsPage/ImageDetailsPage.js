@@ -29,7 +29,7 @@ const ImageDetailsPage = () => {
         if (!imgDetails.gcp) {
           setTimeout(callAPI, 2500);
           setIsDescriptionLoading(true);
-        } else{
+        } else {
           setIsDescriptionLoading(false);
         }
       } catch (err) {
