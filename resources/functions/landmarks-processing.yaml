@@ -1,11 +1,11 @@
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
-  name: landmarks-processing
+  name: landmarks
 spec:
   deps: |-
     { 
-      "name": "landmarks-processing",
+      "name": "landmarks",
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
