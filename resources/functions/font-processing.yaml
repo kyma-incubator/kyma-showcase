@@ -65,6 +65,8 @@ spec:
           const [result] = await client.textDetection(request);
           const resultTexts = result.textAnnotations;
           const fontDetails = resultTexts.map(text => text.description);
+          if (fontDetails.length === 0)
+            return null
           const fontTable = fontDetails[0];
           fontDetails.shift();
           const fontJson = JSON.stringify({font:fontTable, words:fontDetails})
@@ -94,7 +96,12 @@ spec:
 
           const base64 = await getBase64(imgID);
           const fontDetails = await getFontDetails(base64);
-          await putDetailsToDB(imgID, fontDetails);
+          if(fontDetails){
+            await putDetailsToDB(imgID, fontDetails);
+          }else {
+            console.log("Text array is empty");
+          }
+
         }catch(err){
           console.error(err);
           return null;
