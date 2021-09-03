@@ -66,7 +66,7 @@ spec:
           const resultTexts = result.textAnnotations;
           const fontDetails = resultTexts.map(text => text.description);
           if (fontDetails.length === 0)
-            return null
+            return null;
           const fontTable = fontDetails[0];
           fontDetails.shift();
           const fontJson = JSON.stringify({font:fontTable, words:fontDetails})
