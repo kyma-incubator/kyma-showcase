@@ -65,6 +65,8 @@ spec:
           const [result] = await client.logoDetection(request);
           const resultLogos = result.logoAnnotations;
           const logoDetails = resultLogos.map(logo => logo.description);
+          if (logoDetails.length === 0)
+            return null;
           const logoJson = JSON.stringify({logo:logoDetails});
           console.log("Logo details loaded");
           return logoJson;
@@ -92,7 +94,11 @@ spec:
 
           const base64 = await getBase64(imgID);
           const logoDetails = await getLogoDetails(base64);
-          await putDetailsToDB(imgID, logoDetails);
+          if(logoDetails){
+            await putDetailsToDB(imgID, fontDetails);
+          }else {
+            console.log("Logo array is empty");
+          }
         }catch(err){
           console.error(err);
           return null;
