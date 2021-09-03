@@ -8,9 +8,7 @@ export const Details = styled.section`
   text-align: center;
 
   p{
-    font-size: 20px;
-    font-weight: bold;
-    margin-bottom: 2%;
+    margin: 2% 0;
   }
 
   ul{
@@ -21,3 +19,8 @@ export const Details = styled.section`
     margin-top: 1%;
   }
 `;
+
+export const DetailTitle = styled.p`
+  font-size: 20px;
+  font-weight: bold;
+`

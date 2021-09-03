@@ -1,8 +1,8 @@
+import React from 'react';
+import { useState, useContext, useEffect } from 'react';
 import ImageTile from 'views/HomePage/components/ImageTile/ImageTile';
 import { UploadedImagesSection } from 'views/HomePage/components/ImagesSection/ImagesSection.styles';
 import { Loader } from 'assets/styles/style';
-import { useState, useContext, useEffect } from 'react';
-import React from 'react';
 import { ImagesContext } from 'contexts/imagesContext';
 
 const ImagesSection = () => {

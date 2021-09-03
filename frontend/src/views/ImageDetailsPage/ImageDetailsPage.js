@@ -14,13 +14,26 @@ const ImageDetailsPage = () => {
 
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [imageDetails, setImageDetails] = useState(null)
+  const [imageDetails, setImageDetails] = useState(null);
+  const [analyzeLoading, setAnalyzeLoading] = useState(true);
 
   useEffect(() => {
     const callAPI = async () => {
+      console.log("CallAPI called");
       setIsLoading(true);
       try {
-        setImageDetails(await getImageDetailsFromAPI(id))
+        const imgDetails = await getImageDetailsFromAPI(id)
+        setImageDetails(imgDetails);
+        console.log(imgDetails.gcp);
+        if (imgDetails.gcp?.length!==2) {
+          console.log(imgDetails.gcp);
+          setAnalyzeLoading(true);
+          setTimeout(callAPI, 2000);
+          console.log("Po set timeout");
+        } else {
+          setAnalyzeLoading(false);
+          console.log("Analyzeloading na false");
+        }
       } catch (err) {
         setErrorMessage('Internal server error');
         console.error(err);
@@ -30,21 +43,27 @@ const ImageDetailsPage = () => {
     };
     callAPI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
+  
   return (
     <>
       <Wrapper>
         <Header />
         {errorMessage && <p>{errorMessage}</p>}
         {isLoading && <Loader />}
-        {!errorMessage && !isLoading && (<> <ImageDetailsArea content={imageDetails.content} />
-          <ImageDetails gcp={imageDetails.gcp} /></>)}
+        {!errorMessage && !isLoading && (
+          <>
+            {' '}
+            <ImageDetailsArea content={imageDetails.content} />
+            <ImageDetails gcp={imageDetails.gcp} />
+          </>
+        )}
         <Link to="/">
           <Button>Home Page</Button>
         </Link>
       </Wrapper>
       <Footer />
-      </>
+    </>
   );
 };
 
