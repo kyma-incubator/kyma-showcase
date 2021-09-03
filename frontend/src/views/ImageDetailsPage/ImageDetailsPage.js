@@ -37,6 +37,7 @@ const ImageDetailsPage = () => {
         console.error(err);
       } finally {
         setIsImageLoading(false);
+        setIsDescriptionLoading(false);
       }
     };
     callAPI();
