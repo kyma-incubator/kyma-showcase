@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"strings"
 )
@@ -28,6 +29,7 @@ type Handler struct {
 	getEndpoint    string
 	getAllEndpoint string
 	postEndpoint   string
+	putEndpoint    string
 }
 
 // EndpointInitialize adds api endpoints to the mux router
@@ -35,6 +37,7 @@ func (h Handler) EndpointInitialize(mux *mux.Router) {
 	mux.HandleFunc(h.getAllEndpoint, h.GetAll).Methods("GET")
 	mux.HandleFunc(h.getEndpoint, h.Get).Methods("GET")
 	mux.HandleFunc(h.postEndpoint, h.Create).Methods("POST")
+	mux.HandleFunc(h.putEndpoint, h.Update).Methods("PUT")
 }
 
 //go:generate mockery --name=EventBus
@@ -52,6 +55,7 @@ func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus)
 		getEndpoint:    "/v1/images/{id}",
 		getAllEndpoint: "/v1/images",
 		postEndpoint:   "/v1/images",
+		putEndpoint:    "/v1/images/{id}",
 	}
 }
 
@@ -242,4 +246,90 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Fprint(w, string(jsonID))
 
+}
+
+// Update processes a request, that modify values in database with given JSON from GCP API
+func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
+	params := mux.Vars(r)
+	key := params["id"]
+	url := strings.Replace(h.putEndpoint, "{id}", key, 1)
+	if r.URL.Path != url {
+		log.Error(h.putEndpoint)
+		err := errors.New("update: 404 not found")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusNotFound)
+		return
+	}
+	accessControl(w, r)
+
+	var img model.Image
+
+	fromDB, err := h.dbManager.Get(key)
+
+	if err != nil {
+		if err.Error() == "GET from db:key "+key+" does not exist" {
+			err = errors.New("update: failed to get data from db: " + err.Error())
+			http.Error(w, err.Error(), http.StatusNotFound)
+		} else {
+			err = errors.New("update: failed to get data from db: " + err.Error())
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+		log.Error(err)
+		return
+	}
+
+	err = json.Unmarshal([]byte(fromDB.(string)), &img)
+	if err != nil {
+		err = errors.New("update: failed to convert marshal to json: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	headerContentType := r.Header.Get("Content-Type")
+	if headerContentType != "application/json" {
+		err := errors.New("PUT: invalid content type")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	value, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		err = errors.New("update: failed to read request body" + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	defer r.Body.Close()
+
+	img.GCP = append(img.GCP, string(value))
+
+	jsonImg, err := json.Marshal(img)
+	if err != nil {
+		err = errors.New("update: failed to convert json into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	err = h.dbManager.Insert(img.ID, string(jsonImg))
+	if err != nil {
+		err = errors.New("update: failed to insert values to database: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	var idStruct model.ID
+	idStruct.ID = img.ID
+
+	jsonID, err := json.Marshal(idStruct)
+	if err != nil {
+		err = errors.New("update: failed to convert json id into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	fmt.Fprint(w, string(jsonID))
 }
