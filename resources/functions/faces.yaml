@@ -71,6 +71,9 @@ spec:
             anger: face.angerLikelihood,
             sorrow: face.sorrowLikelihood,
             suprise: face.surpriseLikelihood,
+            exposed: face.underExposedLikelihood,
+            blurred: face.blurredLikelihood,
+            headwear: face.headwearLikelihood
           }));
           const faceJson = JSON.stringify({faceDetails});
           console.log(faceJson);
