@@ -11,7 +11,6 @@ import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea
 
 const ImageDetailsPage = () => {
   const { id } = useParams();
-
   const [imageDetails, setImageDetails] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
@@ -22,21 +21,15 @@ const ImageDetailsPage = () => {
       if (imageDetails && !imageDetails.content) {
         setIsImageLoading(true);
       }
-      console.log('CallAPI called');
 
       try {
         const imgDetails = await getImageDetailsFromAPI(id);
         setImageDetails(imgDetails);
-        console.log(imgDetails.gcp);
+        console.log(imgDetails?.gcp);
         if (!imgDetails.gcp) {
-          console.log(imgDetails.gcp);
           setTimeout(callAPI, 2500);
-          setIsDescriptionLoading(true)
-          console.log('Po set timeout');
-        }
-        else if (imgDetails.gcp?.length >1){
-          console.log(imgDetails.gcp?.length);
-          console.log('Analyzing loading na false');
+          setIsDescriptionLoading(true);
+        } else{
           setIsDescriptionLoading(false);
         }
       } catch (err) {
@@ -50,21 +43,16 @@ const ImageDetailsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-
   return (
     <>
       <Wrapper>
         <Header />
         {errorMessage && <p>{errorMessage}</p>}
         {isImageLoading && <Loader />}
-        {!errorMessage && !isImageLoading && (
-          <ImageDetailsArea content={imageDetails.content} />
-        )}
-        <br/>
+        {!errorMessage && !isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
+        <br />
         {isDescriptionLoading && <h2>Image details are analyzing</h2>}
-        {!errorMessage && !isDescriptionLoading && (
-          <ImageDetails gcp={imageDetails.gcp} />
-        )}
+        {!errorMessage && !isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
         <Link to="/">
           <Button>Home Page</Button>
         </Link>
