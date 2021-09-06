@@ -1,10 +1,11 @@
-import { UploadedImagesSection } from './ImageDetails.styles';
 import { LabelsTile } from 'views/ImageDetailsPage/components/LabelsTile/LabelsTile';
-import { ObjectsTile } from '../ObjectsTile/ObjectsTile';
+import { FaceTile } from '../FaceTile/FaceTile';
+import { LandmarksTile } from '../LandmarksTile/LandmarksTile';
 import { LogosTile } from '../LogosTile/LogosTile';
+import { ObjectsTile } from '../ObjectsTile/ObjectsTile';
 import { TextTile } from '../TextTile/TextTile';
 import { WordsTile } from '../WordsTile/WordsTile';
-import { LandmarksTile } from '../LandmarksTile/LandmarksTile';
+import { UploadedImagesSection } from './ImageDetails.styles';
 
 const ImageDetails = ({ gcp }) => {
   gcp = gcp?.map(JSON.parse);
@@ -13,6 +14,7 @@ const ImageDetails = ({ gcp }) => {
   const objects = gcp?.find((obj) => Object.keys(obj).includes('objects'))?.objects;
   const logos = gcp?.find((obj) => Object.keys(obj).includes('logo'))?.logo;
   const landmarks = gcp?.find((obj) => Object.keys(obj).includes('landmarks'))?.landmarks;
+  const faceDetails = gcp?.find((obj) => Object.keys(obj).includes('faceDetails'))?.faceDetails;
 
   return (
     <UploadedImagesSection>
@@ -22,6 +24,7 @@ const ImageDetails = ({ gcp }) => {
       {textDetails && <WordsTile words={textDetails.words} />}
       {logos && <LogosTile logos={logos} />}
       {landmarks && <LandmarksTile landmarks={landmarks} />}
+      {faceDetails && <FaceTile faceDetails={faceDetails} />}
     </UploadedImagesSection>
   );
 };
