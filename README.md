@@ -20,10 +20,8 @@ git clone https://github.com/kyma-incubator/Kyma-Showcase.git
 - resources/frontend/apirule.yaml
 - resources/frontend/frontend-config.yaml
 
-3. Set secrets with command:
-```
-kubectl create secret generic kyma-showcase-secret --from-literal=REDIS_PASSWORD={YOUR_PASSWORD} --from-literal=GCP_API_KEY={YOUR_PRIVATE_KEY} --from-literal=GCP_EMAIL={YOUR_CLIENT_EMAIL}
-```
+3. Set secrets by replacing placeholders in file:
+- resources/secrets.yaml
 
 4. To deploy application on k8s cluster, run the following commands:
 ```
