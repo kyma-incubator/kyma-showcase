@@ -6,7 +6,7 @@ export const ObjectsTile = ({ objects }) => {
     <Template>
       <p>Objects</p>
       <ul>
-        {objects.map((obj, i) => (
+        {objects?.map((obj, i) => (
           <li key={i}>{obj}</li>
         ))}
       </ul>

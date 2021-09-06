@@ -1,36 +1,29 @@
 import { UploadedImagesSection } from './ImageDetails.styles';
 import { LabelsTile } from 'views/ImageDetailsPage/components/LabelsTile/LabelsTile';
 import { ObjectsTile } from '../ObjectsTile/ObjectsTile';
+import { LogosTile } from '../LogosTile/LogosTile';
+import { TextTile } from '../TextTile/TextTile';
+import { WordsTile } from '../WordsTile/WordsTile';
+import { LandmarksTile } from '../LandmarksTile/LandmarksTile';
+
 const ImageDetails = ({ gcp }) => {
   gcp = gcp?.map(JSON.parse);
-  const labels = gcp?.find((obj) => Object.keys(obj).includes('label'))?.label || [];
+  const labels = gcp?.find((obj) => Object.keys(obj).includes('label'))?.label;
   const textDetails = gcp?.find((obj) => Object.keys(obj).includes('font'));
-  const objects = gcp?.find((obj) => Object.keys(obj).includes('objects'))?.objects || [];
-  const logos = gcp?.find((obj) => Object.keys(obj).includes('logo'))?.logo || [];
+  const objects = gcp?.find((obj) => Object.keys(obj).includes('objects'))?.objects;
+  const logos = gcp?.find((obj) => Object.keys(obj).includes('logo'))?.logo;
+  const landmarks = gcp?.find((obj) => Object.keys(obj).includes('landmarks'))?.landmarks;
+
   return (
     <UploadedImagesSection>
       {labels && <LabelsTile labels={labels} />}
       {objects && <ObjectsTile objects={objects} />}
-    
+      {textDetails && <TextTile text={textDetails.font} />}
+      {textDetails && <WordsTile words={textDetails.words} />}
+      {logos && <LogosTile logos={logos} />}
+      {landmarks && <LandmarksTile landmarks={landmarks} />}
     </UploadedImagesSection>
   );
 };
-//   return (
-//     <UploadedImagesSection>
-//       <DetailTitle>Detected text</DetailTitle>
-//       <DetailTitle>Labels</DetailTitle>
-//         <div>
-//           <p>{textDetails && textDetails.font}</p>
-//           <DetailTitle>Words in text:</DetailTitle>
-//           <ul>
-//           {textDetails && textDetails.words.map((word, i) => <li key={i}>{word}</li>)}
-//           </ul>
-//         </div>
-//       <ul>
-//         {labels.map(label => <li key={label}>{label}</li>)}
-//       </ul>
-//     </UploadedImagesSection>
-//   );
-// };
 
 export default ImageDetails;

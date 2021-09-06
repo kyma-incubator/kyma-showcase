@@ -6,7 +6,7 @@ export const LabelsTile = ({ labels }) => {
     <Template>
       <p>Labels</p>
       <ul>
-        {labels.map((label) => (
+        {labels?.map((label) => (
           <li key={label}>{label}</li>
         ))}
       </ul>
