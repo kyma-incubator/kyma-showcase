@@ -95,7 +95,7 @@ spec:
           const base64 = await getBase64(imgID);
           const logoDetails = await getLogoDetails(base64);
           if(logoDetails){
-            await putDetailsToDB(imgID, fontDetails);
+            await putDetailsToDB(imgID, logoDetails);
           }else {
             console.log("Logo array is empty");
           }
