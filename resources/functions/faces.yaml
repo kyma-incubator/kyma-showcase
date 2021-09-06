@@ -70,10 +70,12 @@ spec:
             joy: face.joyLikelihood,
             anger: face.angerLikelihood,
             sorrow: face.sorrowLikelihood,
-            suprise: face.surpriseLikelihood
+            suprise: face.surpriseLikelihood,
+            exposed: face.underExposedLikelihood,
+            blurred: face.blurredLikelihood,
+            headwear: face.headwearLikelihood
           }));
           const faceJson = JSON.stringify({faceDetails});
-          console.log(faceJson);
           console.log("Face details loaded");
           return faceJson;
         }
@@ -100,7 +102,12 @@ spec:
 
           const base64 = await getBase64(imgID);
           const faceDetails = await getFaceDetails(base64);
-          await putDetailsToDB(imgID, faceDetails);
+          if(faceDetails)
+            {
+                await putDetailsToDB(imgID, faceDetails);
+            }else{
+                console.log("Face array is empty");
+            }
         }catch(err){
           console.error(err);
           return null;
