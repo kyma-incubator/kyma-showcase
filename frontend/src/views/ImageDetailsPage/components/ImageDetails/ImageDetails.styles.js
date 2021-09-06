@@ -1,26 +1,24 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
-export const Details = styled.section`
+export const UploadedImagesSection = styled.section`
   display: grid;
+  width: 1000px;
+  max-width: 90%;
   grid-template-columns: 1fr 1fr;
-  margin: 2%;
-  width: 70%;
-  text-align: center;
+  grid-row-gap: 20px;
+  grid-column-gap: 20px;
+  margin-bottom: 20px;
+  justify-content: center;
 
-  p{
-    margin: 2% 0;
+  @media screen and (max-width: 600px) {
+    grid-template-columns: 1fr;
   }
 
-  ul{
-    list-style:none;
-  }
-
-  li{
-    margin-top: 1%;
+  p {
+    text-align: center;
   }
 `;
-
 export const DetailTitle = styled.p`
   font-size: 20px;
   font-weight: bold;
-`
+`;
