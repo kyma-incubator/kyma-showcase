@@ -11,40 +11,55 @@ import ImageDetailsArea from 'views/ImageDetailsPage/components/ImageDetailsArea
 
 const ImageDetailsPage = () => {
   const { id } = useParams();
-
-  const [isLoading, setIsLoading] = useState(true);
+  const [imageDetails, setImageDetails] = useState(null);
+  const [isImageLoading, setIsImageLoading] = useState(true);
+  const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
-  const [imageDetails, setImageDetails] = useState(null)
 
   useEffect(() => {
     const callAPI = async () => {
-      setIsLoading(true);
+      if (imageDetails && !imageDetails.content) {
+        setIsImageLoading(true);
+      }
+
       try {
-        setImageDetails(await getImageDetailsFromAPI(id))
+        const imgDetails = await getImageDetailsFromAPI(id);
+        setImageDetails(imgDetails);
+        console.log(imgDetails?.gcp);
+        if (!imgDetails.gcp) {
+          setTimeout(callAPI, 2500);
+          setIsDescriptionLoading(true);
+        } else {
+          setIsDescriptionLoading(false);
+        }
       } catch (err) {
         setErrorMessage('Internal server error');
         console.error(err);
       } finally {
-        setIsLoading(false);
+        setIsImageLoading(false);
+        setIsDescriptionLoading(false);
       }
     };
     callAPI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, []);
+
   return (
     <>
       <Wrapper>
         <Header />
         {errorMessage && <p>{errorMessage}</p>}
-        {isLoading && <Loader />}
-        {!errorMessage && !isLoading && (<> <ImageDetailsArea content={imageDetails.content} />
-          <ImageDetails gcp={imageDetails.gcp} /></>)}
+        {isImageLoading && <Loader />}
+        {!errorMessage && !isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
+        <br />
+        {isDescriptionLoading && <h2>Image details are being analyzed.</h2>}
+        {!errorMessage && !isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
         <Link to="/">
           <Button>Home Page</Button>
         </Link>
       </Wrapper>
       <Footer />
-      </>
+    </>
   );
 };
 

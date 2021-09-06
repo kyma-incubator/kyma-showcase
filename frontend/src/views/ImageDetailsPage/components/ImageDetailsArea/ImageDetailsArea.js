@@ -10,7 +10,7 @@ const ImageDetailsArea = ({ content }) => {
 };
 
 ImageDetailsArea.propTypes = {
-  id: PropTypes.string.isRequired,
+  content: PropTypes.string.isRequired,
 };
 
 export default ImageDetailsArea;
