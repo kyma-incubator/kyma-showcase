@@ -76,7 +76,6 @@ spec:
             headwear: face.headwearLikelihood
           }));
           const faceJson = JSON.stringify({faceDetails});
-          console.log(faceJson);
           console.log("Face details loaded");
           return faceJson;
         }
