@@ -6,6 +6,8 @@ const faceDetailsValues = {
   UNLIKELY: 'Unlikely',
   VERY_LIKELY: 'Very Likely',
   LIKELY: 'Likely',
+  UNKNOWN: 'Unknown',
+  POSSIBLE: 'Possible',
 };
 
 export const FaceTile = ({ faceDetails }) => {

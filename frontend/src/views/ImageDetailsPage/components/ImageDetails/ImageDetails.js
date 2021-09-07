@@ -1,13 +1,10 @@
-import { LabelsTile } from 'views/ImageDetailsPage/components/LabelsTile/LabelsTile';
-import { FaceTile } from '../FaceTile/FaceTile';
-import { LandmarksTile } from '../LandmarksTile/LandmarksTile';
-import { LogosTile } from '../LogosTile/LogosTile';
-import { ObjectsTile } from '../ObjectsTile/ObjectsTile';
-import { TextTile } from '../TextTile/TextTile';
-import { WordsTile } from '../WordsTile/WordsTile';
 import { UploadedImagesSection } from './ImageDetails.styles';
+import { TextTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextTile/TextTile';
+import { LandmarksTile } from 'views/ImageDetailsPage/components/FeatureTiles/LandmarksTile/LandmarksTile';
+import { FeatureTile } from 'views/ImageDetailsPage/components/FeatureTiles/FeatureTile/FeatureTile';
+import { FaceTile } from 'views/ImageDetailsPage/components/FeatureTiles/FaceTile/FaceTile';
 
-const ImageDetails = ({ gcp }) => {
+const name = (gcp) => {
   gcp = gcp?.map(JSON.parse);
   const labels = gcp?.find((obj) => Object.keys(obj).includes('label'))?.label;
   const textDetails = gcp?.find((obj) => Object.keys(obj).includes('font'));
@@ -16,13 +13,25 @@ const ImageDetails = ({ gcp }) => {
   const landmarks = gcp?.find((obj) => Object.keys(obj).includes('landmarks'))?.landmarks;
   const faceDetails = gcp?.find((obj) => Object.keys(obj).includes('faceDetails'))?.faceDetails;
 
+  return {
+    labels,
+    textDetails,
+    objects,
+    logos,
+    landmarks,
+    faceDetails,
+  };
+};
+const ImageDetails = ({ gcp }) => {
+  const { labels, textDetails, objects, logos, landmarks, faceDetails } = name(gcp);
+
   return (
     <UploadedImagesSection>
-      {labels && <LabelsTile labels={labels} />}
-      {objects && <ObjectsTile objects={objects} />}
+      {labels && <FeatureTile title={'Labels'} features={labels} />}
+      {objects && <FeatureTile title={'Objects'} features={objects} />}
       {textDetails && <TextTile text={textDetails.font} />}
-      {textDetails && <WordsTile words={textDetails.words} />}
-      {logos && <LogosTile logos={logos} />}
+      {textDetails && <FeatureTile title={'Detected words'} features={textDetails.words} />}
+      {logos && <FeatureTile title={'Logos'} features={logos} />}
       {landmarks && <LandmarksTile landmarks={landmarks} />}
       {faceDetails && <FaceTile faceDetails={faceDetails} />}
     </UploadedImagesSection>

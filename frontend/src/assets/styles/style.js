@@ -56,3 +56,13 @@ export const Loader = styled.div`
     }
   }
 `;
+
+export const FeatureTemplate = styled.article`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 2%;
+  max-height: 260px;
+  overflow-x: hidden;
+  overflow-y: auto;
+`;

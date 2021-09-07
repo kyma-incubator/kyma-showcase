@@ -1,11 +1,11 @@
 import React from 'react';
-import { Template } from './TextTile.styles';
+import { FeatureTemplate } from 'assets/styles/style';
 
 export const TextTile = ({ text }) => {
   return (
-    <Template>
+    <FeatureTemplate>
       <p>Text</p>
       <p>{text}</p>
-    </Template>
+    </FeatureTemplate>
   );
 };

@@ -16,8 +16,3 @@ export const Template = styled.article`
     margin: 10% 0;
   }
 `;
-
-export const LandmarkTitle = styled.p`
-  font-weight: bold;
-  font-size: 20px;
-`;
