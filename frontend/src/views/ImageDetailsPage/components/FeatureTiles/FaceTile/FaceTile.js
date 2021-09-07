@@ -1,6 +1,5 @@
 import React from 'react';
-import { FeatureItem } from './FaceTile.styles';
-import { FeatureTemplate } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
