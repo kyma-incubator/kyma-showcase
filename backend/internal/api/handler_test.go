@@ -370,6 +370,7 @@ func TestCreate(t *testing.T) {
 			assert.Equal(t, tt.statusCode, recorder.Code)
 		})
 	}
+
 	t.Run("should return 406 status code when getting image from url failed", func(t *testing.T) {
 
 		//given
