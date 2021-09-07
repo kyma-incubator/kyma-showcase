@@ -66,3 +66,10 @@ export const FeatureTemplate = styled.article`
   overflow-x: hidden;
   overflow-y: auto;
 `;
+
+export const FeatureItem = styled.li`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10% 0;
+`;

@@ -1,5 +1,6 @@
 import React from 'react';
-import { Template } from './FaceTile.styles';
+import { FeatureItem } from './FaceTile.styles';
+import { FeatureTemplate } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
@@ -12,19 +13,19 @@ const faceDetailsValues = {
 
 export const FaceTile = ({ faceDetails }) => {
   return (
-    <Template>
+    <FeatureTemplate>
       <p>Face details</p>
       <ul>
         {faceDetails?.map((obj, i) => (
-          <li key={i}>
+          <FeatureItem key={i}>
             {Object.keys(obj).map((k, i) => (
               <p key={i}>
                 {k}: {faceDetailsValues[obj[k]]}
               </p>
             ))}
-          </li>
+          </FeatureItem>
         ))}
       </ul>
-    </Template>
+    </FeatureTemplate>
   );
 };

@@ -1,19 +1,20 @@
 import React from 'react';
-import { Template, LandmarkTitle } from './LandmarksTile.styles';
+import { LandmarkTitle } from './LandmarksTile.styles';
+import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
 
 export const LandmarksTile = ({ landmarks }) => {
   return (
-    <Template>
+    <FeatureTemplate>
       <p>Landmarks</p>
       <ul>
         {landmarks?.map((obj, i) => (
-          <li key={i}>
+          <FeatureItem key={i}>
             <LandmarkTitle>{obj.name}</LandmarkTitle>
             <p>Latitude: {obj.latitude}</p>
             <p>Longitude: {obj.longitude}</p>
-          </li>
+          </FeatureItem>
         ))}
       </ul>
-    </Template>
+    </FeatureTemplate>
   );
 };
