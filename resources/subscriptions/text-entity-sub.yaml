@@ -13,4 +13,4 @@ spec:
           property: type
           type: exact
           value: sap.kyma.custom.showcase.textdetails.processing.v1
-  sink: http://labels-text.default.svc.cluster.local
+  sink: http://text-entity.default.svc.cluster.local

@@ -34,7 +34,7 @@ spec:
     module.exports = {
       main: async function (event, context) {
         async function getText(id) {
-          console.log("Getting font from DB");
+          console.log("Getting text from DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
@@ -63,11 +63,12 @@ spec:
         const [result] = await client.analyzeEntitySentiment({document});
         const entities = result.entities;
         const results = entities.map(entity => ({
-        name: entity.name,
-        type: entity.type,
+          name: entity.name,
+          type: entity.type,
         sentiment: entity.sentiment.score,
         })
         );
+        console.log("Text entities loaded");
         return results;
       }
 

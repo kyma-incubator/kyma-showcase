@@ -34,7 +34,7 @@ specs:
     module.exports = {
       main: async function (event, context) {
         async function getText(id) {
-          console.log("Getting font from DB");
+          console.log("Getting text from DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
@@ -60,12 +60,12 @@ specs:
           content: text,
           type: 'PLAIN_TEXT',
         };
-
         const [classification] = await client.classifyText({document});
         const results = classification.categories.map(category => ({
           name: category.name,
           confidence: category.confidence,
         }));
+        console.log("Text category loaded");
         return results;
 
       }
@@ -81,7 +81,7 @@ specs:
             'Content-type': 'application/json',
           },
         });
-        await console.log("Entity details put to DB with status: " + response.status);
+        await console.log("Category details put to DB with status: " + response.status);
         return response.json();
         }
 

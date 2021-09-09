@@ -67,7 +67,7 @@ spec:
           const resultTexts = result.textAnnotations;
           const fontDetails = resultTexts.map(text => text.description);
           if (fontDetails.length === 0)
-            return null
+            return null;
           const fontTable = fontDetails[0];
           fontDetails.shift();
           const fontJson = JSON.stringify({font:fontTable, words:fontDetails})
@@ -117,9 +117,8 @@ spec:
         }
 
         try{
+          // Needed to remove unwanted apostrophes from our ID
           const imgID = event.data.slice(1, -1);
-          console.log("Extension" + event.extensions.request.body);
-          console.log("Eventdata" + event.data);
           console.log("Processing image: " + imgID);
 
           const base64 = await getBase64(imgID);
