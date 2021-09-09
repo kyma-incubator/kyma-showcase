@@ -97,9 +97,8 @@ spec:
         const textEntities = await getTextEntities(text);
         if(textEntities){
           await putDetailsToDB(imgID, textEntities);
-        }
-        else{
-          console.log("Text Entities empty")
+        }else{
+          console.log("Entities array empty");
         }
         }catch(err){
           console.error(err);

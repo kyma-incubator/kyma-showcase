@@ -96,9 +96,8 @@ specs:
         const textCategory = await getTextCategory(text);
         if(textCategory){
           await putDetailsToDB(imgID, textCategory);
-        }
-        else{
-          console.log("Category is empty");
+        }else{
+          console.log("Category array is empty");
         }
         }catch(err){
           console.error(err);
