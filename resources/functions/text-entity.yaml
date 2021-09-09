@@ -87,17 +87,16 @@ spec:
         return response.json();
         }
 
-          try{
-          // Needed to remove unwanted apostrophes from our ID
-          const imgID = event.data.slice(3, -3);
-          console.log("Processing image: " + imgID);
-
-          const text = await getText(imgID);
-          const textEntities = await getTextEntities(text);
-          await putDetailsToDB(imgID, textEntities);
-          }catch(err){
-            console.error(err);
-            return null;
+        try{
+        // Needed to remove unwanted apostrophes from our ID
+        const imgID = event.data.slice(3, -3);
+        console.log("Processing image: " + imgID);
+        const text = await getText(imgID);
+        const textEntities = await getTextEntities(text);
+        await putDetailsToDB(imgID, textEntities);
+        }catch(err){
+          console.error(err);
+          return null;
         }
       }
     }
