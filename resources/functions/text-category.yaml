@@ -1,0 +1,101 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: Function
+metadata:
+  name: text-category
+specs:
+  deps: |-
+    {
+      "name": "text-category",
+      "version": "1.0.0",
+      "dependencies": {
+        "node-fetch": "2.6.1",
+        "@google-cloud/language":"4.3.0",
+        "nanoid": "3.1.25"
+      }
+    }
+  env:
+    - name: API_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: config.json
+          name: showcase-frontend-config
+    - name: GCP_EMAIL
+      valueFrom:
+        secretKeyRef:
+          key: GCP_EMAIL
+          name: kyma-showcase-secret
+    - name: GCP_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: GCP_API_KEY
+          name: kyma-showcase-secret
+  runtime: nodejs14
+  source: |-
+    module.exports = {
+      main: async function (event, context) {
+        async function getText(id) {
+          console.log("Getting font from DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL);
+          const data = await response.json();
+          const content = data.gcp.map(JSON.parse);
+          const font = content?.find(obj => Object.keys(obj).includes('font'))?.font || [];
+          console.log("Text loaded");
+          return font;
+        }
+
+      async function getTextCategory(text) {
+        console.log("Getting text category");
+        const language = require('@google-cloud/language');
+        const options = {
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
+            },
+        };
+
+        const client = new language.LanguageServiceClient(options);
+        const document = {
+          content: text,
+          type: 'PLAIN_TEXT',
+        };
+
+        const [classification] = await client.classifyText({document});
+        const results = classification.categories.map(category => ({
+          name: category.name,
+          confidence: category.confidence,
+        }));
+        return results;
+
+      }
+
+      async function putDetailsToDB(id, data){
+        console.log("Putting category details to DB");
+        const fetch = require('node-fetch');
+        const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+        const response = await fetch(URL,{
+          method:'PUT',
+          body: data,
+          headers: {
+            'Content-type': 'application/json',
+          },
+        });
+        await console.log("Entity details put to DB with status: " + response.status);
+        return response.json();
+        }
+
+          try{
+          // Needed to remove unwanted apostrophes from our ID
+          const imgID = event.data.slice(3, -3);
+          console.log("Processing image: " + imgID);
+
+          const text = await getText(imgID);
+          const textCategory = await getTextCategory(text);
+          await putDetailsToDB(imgID, textCategory);
+          }catch(err){
+            console.error(err);
+            return null;
+        }
+      }
+    }
