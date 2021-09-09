@@ -61,13 +61,16 @@ specs:
           type: 'PLAIN_TEXT',
         };
         const [classification] = await client.classifyText({document});
-        const results = classification.categories.map(category => ({
-          name: category.name,
-          confidence: category.confidence,
-        }));
+        const categories = classification.categories.map(category => ({
+            name: category.name,
+            confidence: category.confidence,
+          })
+        );
+        if (categories.length === 0)
+          return null;
+        const categoriesJSON = JSON.stringify({categories});
         console.log("Text category loaded");
-        return results;
-
+        return categoriesJSON
       }
 
       async function putDetailsToDB(id, data){
@@ -91,7 +94,12 @@ specs:
         console.log("Processing image: " + imgID);
         const text = await getText(imgID);
         const textCategory = await getTextCategory(text);
-        await putDetailsToDB(imgID, textCategory);
+        if(textCategory){
+          await putDetailsToDB(imgID, textCategory);
+        }
+        else{
+          console.log("Category is empty");
+        }
         }catch(err){
           console.error(err);
           return null;

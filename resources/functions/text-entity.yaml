@@ -62,14 +62,16 @@ spec:
         };
         const [result] = await client.analyzeEntitySentiment({document});
         const entities = result.entities;
-        const results = entities.map(entity => ({
+        const entityDetails = entities.map(entity => ({
             name: entity.name,
             type: entity.type,
             sentiment: entity.sentiment.score,
           })
         );
-        console.log("Text entities loaded");
-        return results;
+        if (entityDetails.length === 0)
+          return null;
+        const entityJSON = JSON.stringify({entityDetails});
+        return entityJSON;
       }
 
       async function putDetailsToDB(id, data){
@@ -93,7 +95,12 @@ spec:
         console.log("Processing image: " + imgID);
         const text = await getText(imgID);
         const textEntities = await getTextEntities(text);
-        await putDetailsToDB(imgID, textEntities);
+        if(textEntities){
+          await putDetailsToDB(imgID, textEntities);
+        }
+        else{
+          console.log("Text Entities empty")
+        }
         }catch(err){
           console.error(err);
           return null;
