@@ -7,8 +7,7 @@ export function ImagesContextProvider({ children }) {
 
   const getImages = async () => {
     let allImages = await getAllImagesFromAPI();
-    allImages = allImages.sort((d1, d2) => new Date(d1.date) - new Date(d2.date));
-    
+    allImages = allImages?.sort((d1, d2) => new Date(d1.time) - new Date(d2.time));
     setImages(allImages);
   };
 
