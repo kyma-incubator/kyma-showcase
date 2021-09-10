@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { getImageDetailsFromAPI } from 'API';
 import { Button, Loader, Wrapper } from 'assets/styles/style';
@@ -14,7 +14,7 @@ const ImageDetailsPage = () => {
   const [imageDetails, setImageDetails] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
+  const history = useHistory();
 
   useEffect(() => {
     const callAPI = async () => {
@@ -33,7 +33,7 @@ const ImageDetailsPage = () => {
           setIsDescriptionLoading(false);
         }
       } catch (err) {
-        setErrorMessage('Internal server error');
+        history.push('/error');
         console.error(err);
       } finally {
         setIsImageLoading(false);
@@ -48,12 +48,11 @@ const ImageDetailsPage = () => {
     <>
       <Wrapper>
         <Header />
-        {errorMessage && <p>{errorMessage}</p>}
         {isImageLoading && <Loader />}
-        {!errorMessage && !isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
+        {!isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
         <br />
         {isDescriptionLoading && <h2>Image details are being analyzed.</h2>}
-        {!errorMessage && !isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
+        {!isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
         <Link to="/">
           <Button>Home Page</Button>
         </Link>
