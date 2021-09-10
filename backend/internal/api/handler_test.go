@@ -371,7 +371,7 @@ func TestCreate(t *testing.T) {
 		})
 	}
 
-	t.Run("should return 406 status code when getting image from url failed", func(t *testing.T) {
+	t.Run("should return error with status code 406 when request content is corrupted", func(t *testing.T) {
 
 		//given
 		img := model.Image{
@@ -402,6 +402,67 @@ func TestCreate(t *testing.T) {
 		assert.Contains(t, recorder.Body.String(), "CREATE handler: could not get image from")
 		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: could not get image from")
 		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
+	})
+
+	t.Run("should return error with status code 500 when content in unmarshaled struct is empty", func(t *testing.T) {
+
+		//given
+		hook := test.NewGlobal()
+		img := model.Image{
+			ID:      fixedID,
+			Content: "",
+		}
+		jsonImg, err := json.Marshal(img)
+		assert.NoError(t, err)
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
+		assert.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		eventBusMock := mocks.EventBus{}
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+
+		//when
+		testSubject.Create(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
+		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is empty")
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
+	})
+
+
+	t.Run("should log proper error when sending event failed", func(t *testing.T) {
+		//given
+		hook := test.NewGlobal()
+		img := model.Image{
+			ID:      fixedID,
+			Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
+			GCP:     []string{"labels", "moods"},
+		}
+		jsonImg, err := json.Marshal(img)
+		assert.NoError(t, err)
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
+		assert.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		eventBusMock := mocks.EventBus{}
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
+		eventBusMock.On("SendNewImage", fixedID, img).Return(errors.New("SENDEVENT: error"))
+
+		//when
+		testSubject.Create(recorder, req)
+
+		//then
+		assert.Contains(t, hook.LastEntry().Message, "SENDEVENT")
+		assert.Equal(t, http.StatusBadGateway, recorder.Code)
+		eventBusMock.AssertExpectations(t)
 	})
 }
 
