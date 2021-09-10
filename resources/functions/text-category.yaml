@@ -2,7 +2,7 @@ apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
   name: text-category
-specs:
+spec:
   deps: |-
     {
       "name": "text-category",
@@ -18,7 +18,7 @@ specs:
       valueFrom:
         configMapKeyRef:
           key: config.json
-          name: showcase-frontend-config
+          name: showcase-functions-config
     - name: GCP_EMAIL
       valueFrom:
         secretKeyRef:
