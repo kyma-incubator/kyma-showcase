@@ -1,6 +1,5 @@
 # Kyma Showcase
-
-[![Go Report Card](https://goreportcard.com/badge/github.com/kyma-incubator/Kyma-Showcase ](https://goreportcard.com/report/github.com/kyma-incubator/Kyma-Showcase))
+[![Go Report Card](https://goreportcard.com/badge/github.com/kyma-incubator/Kyma-Showcase)](https://goreportcard.com/report/github.com/kyma-incubator/Kyma-Showcase)
 
 ## Overview
 
