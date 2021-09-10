@@ -73,25 +73,6 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-////requestContent check if request body contains image saved in base64
-//func requestContent(w http.ResponseWriter, r *http.Request) error {
-//	bodyContent, err := ioutil.ReadAll(r.Body)
-//
-//	if err != nil {
-//		err := errors.New("requestContent: failed to read body content")
-//		log.Error(err)
-//		return err
-//	}
-//	_, err = base64.StdEncoding.DecodeString(string(bodyContent))
-//
-//	if err != nil {
-//		err := errors.New("requestContent: body content is not an image")
-//		log.Error(err)
-//		return err
-//	}
-//	return nil
-//}
-
 // Get processes a request and passes request ID to the GetFromDB function, returns the value of the given ID.
 func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
