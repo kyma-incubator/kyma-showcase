@@ -73,7 +73,7 @@ spec:
           }));
           const sentimentJSON = JSON.stringify({docLanguage, docScore, docMagnitude, sentencetDetails});
           console.log("Sentiments loaded");
-          return sentimentJSON
+          return sentimentJSON;
         }
 
         async function putDetailsToDB(id, data){
