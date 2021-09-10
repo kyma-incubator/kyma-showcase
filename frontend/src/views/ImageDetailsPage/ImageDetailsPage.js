@@ -14,7 +14,6 @@ const ImageDetailsPage = () => {
   const [imageDetails, setImageDetails] = useState(null);
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
-  const [errorMessage, setErrorMessage] = useState('');
   const history = useHistory();
 
   useEffect(() => {
@@ -35,7 +34,6 @@ const ImageDetailsPage = () => {
         }
       } catch (err) {
         history.push('/error');
-        setErrorMessage('Internal server error');
         console.error(err);
       } finally {
         setIsImageLoading(false);
@@ -50,12 +48,11 @@ const ImageDetailsPage = () => {
     <>
       <Wrapper>
         <Header />
-        {errorMessage && <p>{errorMessage}</p>}
         {isImageLoading && <Loader />}
-        {!errorMessage && !isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
+        {!isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
         <br />
         {isDescriptionLoading && <h2>Image details are being analyzed.</h2>}
-        {!errorMessage && !isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
+        {!isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
         <Link to="/">
           <Button>Home Page</Button>
         </Link>
