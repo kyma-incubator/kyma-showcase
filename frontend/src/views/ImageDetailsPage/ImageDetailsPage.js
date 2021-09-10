@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 
 import { getImageDetailsFromAPI } from 'API';
 import { Button, Loader, Wrapper } from 'assets/styles/style';
@@ -15,6 +15,7 @@ const ImageDetailsPage = () => {
   const [isImageLoading, setIsImageLoading] = useState(true);
   const [isDescriptionLoading, setIsDescriptionLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
+  const history = useHistory();
 
   useEffect(() => {
     const callAPI = async () => {
@@ -33,6 +34,7 @@ const ImageDetailsPage = () => {
           setIsDescriptionLoading(false);
         }
       } catch (err) {
+        history.push('/error');
         setErrorMessage('Internal server error');
         console.error(err);
       } finally {
