@@ -9,7 +9,7 @@ export const TextCategoryTile = ({ categories }) => {
         {categories?.map((obj, i) => (
           <FeatureItem key={i}>
             <p>Name: {obj.name}</p>
-            <p>confidence: {obj.confidence}</p>
+            <p>Confidence: {obj.confidence}</p>
           </FeatureItem>
         ))}
       </ul>

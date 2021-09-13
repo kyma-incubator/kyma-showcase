@@ -5,7 +5,8 @@ import { FeatureTile } from 'views/ImageDetailsPage/components/FeatureTiles/Feat
 import { FaceTile } from 'views/ImageDetailsPage/components/FeatureTiles/FaceTile/FaceTile';
 import { TextCategoryTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextCategoryTile/TextCategoryTile';
 import { TextEntityTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextEntityTile/TextEntityTile';
-import { TextSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextSentimentTile/TextSentimentTile';
+import { TextDocSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextDocSentimentTile/TextDocSentimentTile';
+import { TextSentenceSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextSentenceSentimentTile/TextSentenceSentimentTile';
 
 const name = (gcp) => {
   gcp = gcp?.map(JSON.parse);
@@ -28,12 +29,12 @@ const name = (gcp) => {
     faceDetails,
     textCategory,
     textEntity,
-    textSentiment
+    textSentiment,
   };
 };
 
 const ImageDetails = ({ gcp }) => {
-  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment} = name(gcp);
+  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment } = name(gcp);
 
   return (
     <UploadedImagesSection>
@@ -44,9 +45,10 @@ const ImageDetails = ({ gcp }) => {
       {logos && <FeatureTile title={'Logos'} features={logos} />}
       {landmarks && <LandmarksTile landmarks={landmarks} />}
       {faceDetails && <FaceTile faceDetails={faceDetails} />}
-      {textCategory && <TextCategoryTile categories={textCategory} />}
       {textEntity && <TextEntityTile entity={textEntity} />}
-      {textSentiment && <TextSentimentTile textSentiment={textSentiment} />}
+      {textCategory && <TextCategoryTile categories={textCategory} />}
+      {textSentiment && <TextDocSentimentTile docSentiment={textSentiment} />}
+      {textSentiment && <TextSentenceSentimentTile sentenceSentiment={textSentiment.sentencetDetails} />}
     </UploadedImagesSection>
   );
 };
