@@ -71,7 +71,7 @@ spec:
             score: sentence.sentiment.score,
             magnitude: sentence.sentiment.magnitude,
           }));
-          const sentimentJSON = JSON.stringify({docLanguage, docScore, docMagnitude, sentencetDetails});
+          const sentimentJSON = JSON.stringify({docLanguage, docScore, docMagnitude, sentenceDetails});
           console.log("Sentiments loaded");
           return sentimentJSON;
         }

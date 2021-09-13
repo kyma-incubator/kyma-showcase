@@ -25,7 +25,6 @@ const ImageDetailsPage = () => {
       try {
         const imgDetails = await getImageDetailsFromAPI(id);
         setImageDetails(imgDetails);
-        console.log(imgDetails?.gcp);
         if (!imgDetails.gcp) {
           setTimeout(callAPI, 2500);
           setIsDescriptionLoading(true);
