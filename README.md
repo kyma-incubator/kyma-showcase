@@ -1,14 +1,16 @@
 # Kyma Showcase
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyma-incubator/Kyma-Showcase)](https://goreportcard.com/report/github.com/kyma-incubator/Kyma-Showcase)
+[![GoDoc](https://godoc.org/github.com/kgithub.com/kyma-incubator/Kyma-Showcase?status.svg)](https://godoc.org/github.com/kyma-incubator/Kyma-Showcase)
 
 ## Overview
 
-Kyma Showcase about object-recognition relying on GCP API and Lambda Workflow.
+Kyma Showcase about object-recognition relying on GCP API and Lambda Workflow. Customer uploads an image on the front page which is then displayed in a feed. Clicking on any image in feed redirects you to details page which displays all the information acquired from processing that image.
 
 ## Prerequisites
 
-- Kubernetes cluster
-- Kyma installed on cluster
+- [Kyma](https://kyma-project.io/) cluster 
+>**TODO:Add version after first release.**
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/) to deploy the application
 
 ## Installation
 
@@ -36,8 +38,16 @@ kubectl get apirule frontend -o jsonpath='{.spec.service.host}'
 
 ## Usage
 
-TODO: Explain how to use the project. You can create multiple subsections. Include the instructions or provide links to the related documentation.
+![Diagram Kyma Showcase](./docs/assets/diagram_showcase.svg)
+
+[Frontend](./frontend) presents the user with a clickable drag and drop field and a feed of all previously uploaded pictures. After uploading desired image it gets added to feed in order of upload time. Clicking any image takes the user to a details page where they can read all details info acquired.
+
+[Backend](./backend) receives the image and saves it in a database. Upon sucessfully saving the image event is sent from it triggering the serverless functions.
+
+[Functions](./resources/functions) work with the image ID received from the event to acquire the right image from the database which is then sent to Google Cloud Platform in base64. Function updates the database entry with newly acquired information and depending on its content can send another event triggering more functions in order to get even more details from the image.
 
 ## Development
 
-TODO: Add instructions on how to develop the project. It must be clear what to do and how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
+Detailed development guide can be found [here](./docs/01-development.md).
+
+To be able to contribute follow the workflow described in [`git-workflow.md`](https://github.com/kyma-project/community/blob/master/contributing/03-git-workflow.md) document.
