@@ -8,17 +8,21 @@ import { TextEntityTile } from 'views/ImageDetailsPage/components/FeatureTiles/T
 import { TextDocSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextDocSentimentTile/TextDocSentimentTile';
 import { TextSentenceSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextSentenceSentimentTile/TextSentenceSentimentTile';
 
-const name = (gcp) => {
+const findObject = (gcp, key) => {
+  return gcp?.find((obj) => Object.keys(obj).includes(key));
+};
+
+const extractData = (gcp) => {
   gcp = gcp?.map(JSON.parse);
-  const labels = gcp?.find((obj) => Object.keys(obj).includes('label'))?.label;
-  const textDetails = gcp?.find((obj) => Object.keys(obj).includes('font'));
-  const objects = gcp?.find((obj) => Object.keys(obj).includes('objects'))?.objects;
-  const logos = gcp?.find((obj) => Object.keys(obj).includes('logo'))?.logo;
-  const landmarks = gcp?.find((obj) => Object.keys(obj).includes('landmarks'))?.landmarks;
-  const faceDetails = gcp?.find((obj) => Object.keys(obj).includes('faceDetails'))?.faceDetails;
-  const textCategory = gcp?.find((obj) => Object.keys(obj).includes('categories'))?.categories;
-  const textEntity = gcp?.find((obj) => Object.keys(obj).includes('entityDetails'))?.entityDetails;
-  const textSentiment = gcp?.find((obj) => Object.keys(obj).includes('docLanguage'));
+  const labels = findObject(gcp, 'label')?.label;
+  const textDetails = findObject(gcp, 'font');
+  const objects = findObject(gcp, 'objects')?.objects;
+  const logos = findObject(gcp, 'logo')?.logo;
+  const landmarks = findObject(gcp, 'landmarks')?.landmarks;
+  const faceDetails = findObject(gcp, 'faceDetails')?.faceDetails;
+  const textCategory = findObject(gcp, 'categories')?.categories;
+  const textEntity = findObject(gcp, 'entityDetails')?.entityDetails;
+  const textSentiment = findObject(gcp, 'docLanguage');
 
   return {
     labels,
@@ -34,7 +38,7 @@ const name = (gcp) => {
 };
 
 const ImageDetails = ({ gcp }) => {
-  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment } = name(gcp);
+  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment } = extractData(gcp);
 
   return (
     <UploadedImagesSection>

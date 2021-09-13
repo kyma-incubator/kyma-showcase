@@ -9,8 +9,8 @@ export const TextEntityTile = ({ entity }) => {
         {entity?.map((obj, i) => (
           <FeatureItem key={i}>
             <p>{obj.name}</p>
-            <p>type: {obj.type}</p>
-            <p>sentiment: {obj.sentiment}</p>
+            <p>Type: {obj.type}</p>
+            <p>Sentiment: {obj.sentiment}</p>
           </FeatureItem>
         ))}
       </ul>
