@@ -2,7 +2,9 @@ FROM golang:alpine as builder
 RUN mkdir /build
 ADD . /build
 WORKDIR /build/cmd
-RUN go test && go build -o main .
+RUN go build -o main .
+RUN apk add gcc musl-dev && \
+    go test
 
 FROM alpine
 #RUN adduser -S -D -H -h /app appuser 
