@@ -12,6 +12,9 @@ const name = (gcp) => {
   const logos = gcp?.find((obj) => Object.keys(obj).includes('logo'))?.logo;
   const landmarks = gcp?.find((obj) => Object.keys(obj).includes('landmarks'))?.landmarks;
   const faceDetails = gcp?.find((obj) => Object.keys(obj).includes('faceDetails'))?.faceDetails;
+  const textCategory = gcp?.find((obj) => Object.keys(obj).includes('categories'))?.textCategory;
+  const textEntity = gcp?.find((obj) => Object.keys(obj).includes('entityDetails'))?.textEntity;
+  const textSentiment = gcp?.find((obj) => Object.keys(obj).includes('docLanguage'))?.textSentiment;
 
   return {
     labels,
@@ -23,7 +26,7 @@ const name = (gcp) => {
   };
 };
 const ImageDetails = ({ gcp }) => {
-  const { labels, textDetails, objects, logos, landmarks, faceDetails } = name(gcp);
+  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, entityDetails, textSentiment} = name(gcp);
 
   return (
     <UploadedImagesSection>
