@@ -45,7 +45,7 @@ const ImageDetails = ({ gcp }) => {
       {landmarks && <LandmarksTile landmarks={landmarks} />}
       {faceDetails && <FaceTile faceDetails={faceDetails} />}
       {textCategory && <TextCategoryTile categories={textCategory} />}
-      {textEntity && <TextEntityTile textEntity={textEntity} />}
+      {textEntity && <TextEntityTile entity={textEntity} />}
       {textSentiment && <TextSentimentTile textSentiment={textSentiment} />}
     </UploadedImagesSection>
   );
