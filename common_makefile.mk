@@ -1,7 +1,6 @@
 # Generic makefile - contains most used targets
 # Required variables:
 # IMG - name of the image, with docker push repository, full path and tag
-# IMG_PR_TAG - name of the image, with docker push repository, full path and DOCKER_TAG to satisfy Protescan requirements
 # KMS_KEY_URL - required only when the target build is meant to be on post-submit or release job
 
 # Build the docker image
