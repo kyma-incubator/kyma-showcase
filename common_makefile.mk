@@ -6,6 +6,7 @@
 # Build the docker image
 .PHONY: docker-build
 docker-build:
+	@echo "test1"
 	docker build . -t ${IMG}
 
 # Push the docker image
