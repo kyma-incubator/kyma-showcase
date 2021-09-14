@@ -9,8 +9,7 @@ export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
         {sentenceSentiment?.map((obj, i) => (
           <FeatureItem key={i}>
             <p>Sentence: {obj.sentence}</p>
-            <p>Score: {obj.score}</p>
-            <p>Magnitude: {obj.magnitude}</p>
+            <p>Sentiment: {obj.sentiment}</p>
           </FeatureItem>
         ))}
       </ul>

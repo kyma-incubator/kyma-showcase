@@ -6,8 +6,7 @@ export const TextDocSentimentTile = ({ docSentiment }) => {
     <FeatureTemplate>
       <p>Document analyze</p>
       <p>Language: {docSentiment.docLanguage}</p>
-      <p>Score: {docSentiment.docScore}</p>
-      <p>Magnitude: {docSentiment.docMagnitude}</p>
+      <p>Sentiment: {docSentiment.docSentiment}</p>
     </FeatureTemplate>
   );
 };

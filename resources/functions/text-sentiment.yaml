@@ -30,83 +30,110 @@ spec:
           name: showcase-frontend-config
   runtime: nodejs14
   source: |-
-    module.exports = { 
+    module.exports = {
       main: async function (event, context) {
         async function getText(id) {
           console.log("Getting font from DB");
-          const fetch = require('node-fetch');
-          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const fetch = require("node-fetch");
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + "/" + id;
           const response = await fetch(URL);
           const data = await response.json();
           const content = data.gcp.map(JSON.parse);
-          const font = content?.find(obj => Object.keys(obj).includes('font'))?.font || [];
+          const font =
+            content?.find((obj) => Object.keys(obj).includes("font"))?.font || [];
           console.log("Font loaded");
-          return font;  
+          return font;
+        }
+
+        function calculateSentiment(score, magnitude, text) {
+          score = parseFloat(score);
+          magnitude = parseFloat(magnitude);
+          scoreThreshold = 0.2;
+          magnitudeThreshold = 0.5;
+          if (score > scoreThreshold) return "positive";
+          else if (score < -scoreThreshold) return "negative";
+          else if (-scoreThreshold < score && score < scoreThreshold) {
+            if (magnitude / (text.split(/\S+/).length - 1) < magnitudeThreshold)
+              return "neutral";
+            else return "mixed";
+          }
         }
 
         async function getTextSentiment(text) {
           console.log("Getting sentiments category");
-          const language = require('@google-cloud/language');
+          const language = require("@google-cloud/language");
           const options = {
-              credentials: {
-                client_email: process.env.GCP_EMAIL,
-                private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
-              },
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, "\n"),
+            },
           };
 
           const client = new language.LanguageServiceClient(options);
           const document = {
             content: text,
-            type: 'PLAIN_TEXT',
+            type: "PLAIN_TEXT",
           };
 
-          const [result] = await client.analyzeSentiment({document});
+          const [result] = await client.analyzeSentiment({ document });
           const docLanguage = result.language;
-          const docSentiment = result.documentSentiment;
-          const docScore = docSentiment.score;
-          const docMagnitude = docSentiment.magnitude;
+          const docScore = result.documentSentiment.score;
+          const docMagnitude = result.documentSentiment.magnitude;
+          const docSentiment = calculateSentiment(docScore, docMagnitude, text);
           const sentences = result.sentences;
-          const sentencetDetails = sentences.map(sentence => ({
+          const sentencetDetails = sentences.map((sentence) => ({
             sentence: sentence.text.content,
             score: sentence.sentiment.score,
             magnitude: sentence.sentiment.magnitude,
+            sentiment: calculateSentiment(
+              sentence.sentiment.score,
+              sentence.sentiment.magnitude,
+              sentence.text.content
+            ),
           }));
-          const sentimentJSON = JSON.stringify({docLanguage, docScore, docMagnitude, sentenceDetails});
+          const sentimentJSON = JSON.stringify({
+            docLanguage,
+            docScore,
+            docMagnitude,
+            docSentiment,
+            sentencetDetails,
+          });
           console.log("Sentiments loaded");
           return sentimentJSON;
         }
 
-        async function putDetailsToDB(id, data){
+        async function putDetailsToDB(id, data) {
           console.log("Putting sentiments details to DB");
-          const fetch = require('node-fetch');
-          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
-          const response = await fetch(URL,{
-            method:'PUT',
+          const fetch = require("node-fetch");
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + "/" + id;
+          const response = await fetch(URL, {
+            method: "PUT",
             body: data,
             headers: {
-              'Content-type': 'application/json',
+              "Content-type": "application/json",
             },
           });
-          await console.log("Sentiments details put to DB with status: " + response.status);
+          await console.log(
+            "Sentiments details put to DB with status: " + response.status
+          );
           return response.json();
         }
 
-        try{
+        try {
           // Needed to remove unwanted apostrophes from our ID
           const imgID = event.data.slice(3, -3);
           console.log("Processing image: " + imgID);
 
           const text = await getText(imgID);
           const textSentiment = await getTextSentiment(text);
-          if(textSentiment){
+          if (textSentiment) {
             await putDetailsToDB(imgID, textSentiment);
-          }
-          else{
+          } else {
             console.log("Sentiments array is empty");
           }
-        }catch(err){
+        } catch (err) {
           console.error(err);
           return null;
         }
-      }
-    }
+      },
+    };
