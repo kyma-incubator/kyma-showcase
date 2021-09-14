@@ -34,13 +34,13 @@ spec:
       main: async function (event, context) {
         async function getText(id) {
           console.log("Getting font from DB");
-          const fetch = require("node-fetch");
-          const URL = JSON.parse(process.env.API_CONFIG).API_URL + "/" + id;
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
           const data = await response.json();
           const content = data.gcp.map(JSON.parse);
           const font =
-            content?.find((obj) => Object.keys(obj).includes("font"))?.font || [];
+            content?.find((obj) => Object.keys(obj).includes('font'))?.font || [];
           console.log("Font loaded");
           return font;
         }
@@ -50,29 +50,29 @@ spec:
           magnitude = parseFloat(magnitude);
           scoreThreshold = 0.2;
           magnitudeThreshold = 0.5;
-          if (score > scoreThreshold) return "positive";
-          else if (score < -scoreThreshold) return "negative";
+          if (score > scoreThreshold) return 'positive';
+          else if (score < -scoreThreshold) return 'negative';
           else if (-scoreThreshold < score && score < scoreThreshold) {
             if (magnitude / (text.split(/\S+/).length - 1) < magnitudeThreshold)
-              return "neutral";
-            else return "mixed";
+              return 'neutral';
+            else return 'mixed';
           }
         }
 
         async function getTextSentiment(text) {
           console.log("Getting sentiments category");
-          const language = require("@google-cloud/language");
+          const language = require('@google-cloud/language');
           const options = {
             credentials: {
               client_email: process.env.GCP_EMAIL,
-              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, "\n"),
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
             },
           };
 
           const client = new language.LanguageServiceClient(options);
           const document = {
             content: text,
-            type: "PLAIN_TEXT",
+            type: 'PLAIN_TEXT',
           };
 
           const [result] = await client.analyzeSentiment({ document });
@@ -104,13 +104,13 @@ spec:
 
         async function putDetailsToDB(id, data) {
           console.log("Putting sentiments details to DB");
-          const fetch = require("node-fetch");
-          const URL = JSON.parse(process.env.API_CONFIG).API_URL + "/" + id;
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL, {
-            method: "PUT",
+            method: 'PUT',
             body: data,
             headers: {
-              "Content-type": "application/json",
+              'Content-type': 'application/json',
             },
           });
           await console.log(
