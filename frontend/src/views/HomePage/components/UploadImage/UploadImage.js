@@ -1,5 +1,5 @@
 import { StyledUploadImage } from './UploadImage.styles';
-import { useState, useContext } from 'react';
+import { useState, useContext, useRef } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
 import { Button } from 'assets/styles/style';
@@ -35,9 +35,11 @@ const UploadImage = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
   const [fileName, setFileName] = useState('');
+  const inputRef = useRef(null);
 
   const callAPIPost = async () => {
     setDisableButton(true);
+    inputRef.current.value = null;
     try {
       await postImageToAPI(base64Image);
       await getImages();
@@ -54,7 +56,6 @@ const UploadImage = () => {
         const extension = createExtension(image);
         const size = image.size;
         const name = image.name;
-
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
         setBase64Image(convertedImage);
@@ -81,7 +82,7 @@ const UploadImage = () => {
       <form>
         <p className="file-message">Choose a file or drag and drop</p>
         {fileName && <p className="file-name">{fileName}</p>}
-        <input size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload}></input>
+        <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
       </form>
       {base64Image && <img src={base64Image} alt="Chosen file" />}
       <p>{errorMessage}</p>
