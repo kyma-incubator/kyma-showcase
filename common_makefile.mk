@@ -14,16 +14,17 @@ docker-push:
 	docker push ${IMG}
 
 # CI specified targets
-.PHONY: ci-pr
-ci-pr: docker-build docker-push
-
-.PHONY: ci-main
-ci-main: docker-build docker-push cosign
-
-.PHONY: ci-release
-ci-release: docker-build docker-push cosign
+.PHONY: release
+release: docker-build docker-push cosign
 
 # Cosign signing
 .PHONY: cosign
 cosign:
-	cosign sign -key ${KMS_KEY_URL} ${IMG}
+	cosign version
+ifeq ($(JOB_TYPE), postsubmit)
+	@echo "Sign image with Cosign"
+	cosign version
+	cosign sign -key ${KMS_KEY_URL} $(IMG)
+else
+	@echo "Image signing skipped"
+endif
