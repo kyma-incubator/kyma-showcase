@@ -8,7 +8,7 @@ const Footer = () => (
       <Logo src={`${process.env.PUBLIC_URL}/img/KymaLogo.png`} alt="Kyma Logo" />
     </a>
     <h4>
-      Procject by Raccoons
+      Project by Raccoons
       <br />
       2021
     </h4>
