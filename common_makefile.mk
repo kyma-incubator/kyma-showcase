@@ -20,7 +20,6 @@ release: docker-build docker-push cosign
 # Cosign signing
 .PHONY: cosign
 cosign:
-	cosign version
 ifeq ($(JOB_TYPE), postsubmit)
 	@echo "Sign image with Cosign"
 	cosign version
