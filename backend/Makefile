@@ -7,9 +7,10 @@ VERIFY_IGNORE := /vendor\|/automock
 DIRS_TO_CHECK = go list ./... | grep -v "$(VERIFY_IGNORE)"
 
 .PHONY: format
-format:: fmt
+	format:: fmt
 
-.PHONY: fmt-local:
+.PHONY: fmt-local
+fmt-local:
 	@echo "echo fmt"
 	go fmt $$($(DIRS_TO_CHECK))
 
