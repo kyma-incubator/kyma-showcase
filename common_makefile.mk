@@ -14,11 +14,6 @@ docker-build:
 docker-push:
 	docker push ${IMG}
 
-# add second tag to the image
-.PHONY: ci-tag
-ci-tag:
-	docker tag ${IMG} ${IMG_PR_TAG}
-
 # CI specified targets
 .PHONY: ci-pr
 ci-pr: docker-build docker-push
