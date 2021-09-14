@@ -10,6 +10,7 @@ spec:
       "dependencies": {
         "node-fetch": "2.6.1",
         "@google-cloud/vision":"2.3.8",
+        "axios": "0.21.1",
         "nanoid": "3.1.25"
       }
     }
@@ -29,9 +30,11 @@ spec:
         configMapKeyRef:
           key: config.json
           name: showcase-frontend-config
+    - name: EVENT_URL
+      value: http://eventing-event-publisher-proxy.kyma-system/publish
   runtime: nodejs14
   source: |-
-    module.exports = { 
+    module.exports = {
       main: async function (event, context) {
         async function getBase64(id) {
           console.log("Getting base64 from DB");
@@ -89,15 +92,52 @@ spec:
           return response.json();
         }
 
-        try{
-          const imgID = event.data.slice(1, -1);
+        function lambdaTrigger(id, eventType, eventInfo){
+          console.log("Trigering function for: " + eventInfo);
+          const axios = require("axios");
+          const eventData = {
+            'type': eventType,
+            'source': event["ce-source"],
+            'eventtypeversion': event["ce-eventtypeversion"],
+            'specversion': event["ce-specversion"],
+            'id': id,
+            'data': event.data,
+          };
+          axios({
+            method: "post",
+            baseURL: process.env.EVENT_URL,
+            headers: {
+                "Content-Type": "application/cloudevents+json"
+            },
+            data: eventData,
+          }).then(function (response) {
+            console.log("Event post to function for: " + eventInfo + " with status: " + response.status);
+          })
+          .catch(function (error) {
+            console.error(error);
+          });
+        }
 
+        try{
+          // Needed to remove unwanted apostrophes from our ID
+          const imgID = event.data.slice(1, -1);
           console.log("Processing image: " + imgID);
 
           const base64 = await getBase64(imgID);
           const fontDetails = await getFontDetails(base64);
+          const { nanoid } = require("nanoid");
+
+          let id;
+          let eventInfo;
+
           if(fontDetails){
             await putDetailsToDB(imgID, fontDetails);
+
+            const textEventType = "sap.kyma.custom.showcase.textdetails.processing.v1";
+            eventInfo = "entity-processing";
+            id = nanoid();
+            console.log("Generated nano for " + eventInfo + " " + id);
+            lambdaTrigger(id, textEventType, eventInfo);
           }else {
             console.log("Text array is empty");
           }

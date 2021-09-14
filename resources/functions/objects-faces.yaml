@@ -96,6 +96,7 @@ spec:
         }
 
         try{
+          // Needed to remove unwanted apostrophes from our ID
           const imgID = event.data.slice(1, -1);
 
           console.log("Processing image: " + imgID);
