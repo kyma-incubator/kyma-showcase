@@ -8,6 +8,7 @@ DIRS_TO_CHECK = go list ./... | grep -v "$(VERIFY_IGNORE)"
 
 .PHONY: fmt-local
 fmt-local:
+	@echo "FMT makefile"
 	go fmt $$($(DIRS_TO_CHECK))
 
 # Use common makefile
