@@ -3,14 +3,15 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/mux"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 //go:generate mockery --name=DBManager
@@ -127,6 +128,7 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 
 	var img model.Image
 	var result []model.Image
+	// test
 	for _, key := range keys {
 		fromDB, err := h.dbManager.Get(key)
 		if err != nil {
