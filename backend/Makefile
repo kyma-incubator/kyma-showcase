@@ -6,15 +6,9 @@ VERIFY_IGNORE := /vendor\|/automock
 # DIRS_TO_CHECK is a command used to determine which directories should be verified
 DIRS_TO_CHECK = go list ./... | grep -v "$(VERIFY_IGNORE)"
 
-.PHONY: format
-	format:: fmt
-
 .PHONY: fmt-local
 fmt-local:
-	@echo "echo fmt"
 	go fmt $$($(DIRS_TO_CHECK))
-
-release: fmt-local
 
 # Use common makefile
 include $(realpath $(shell pwd)/../)/common_makefile.mk
