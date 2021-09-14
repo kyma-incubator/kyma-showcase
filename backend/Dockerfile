@@ -3,7 +3,8 @@ RUN mkdir /build
 ADD . /build
 WORKDIR /build/cmd
 RUN apk add gcc musl-dev
-RUN go test
+RUN go test ../...
+RUN go fmt ../...
 RUN go build -o main .
 
 FROM alpine
