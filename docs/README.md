@@ -2,6 +2,10 @@
 
 ## Overview
 
-The `docs` folder is solely dedicated to project documentation and follows the [content strategy](https://kyma-project.io/community/guidelines/content/#content-strategy-content-strategy-documentation-types) naming convention. 
+This folder contains documents that relate to the project.
 
-Inside the `assets` directory are located all the diagrams and images related to the documentation.
+[architecture.md](./architecture.md) - Architecture and workflow.
+
+[details.md](./details.md) - Detailed overview of each component.
+
+[development.md](./development.md) - Development and configuration.

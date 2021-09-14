@@ -4,7 +4,7 @@
 
 ## Overview
 
-Kyma Showcase about object-recognition relying on GCP API and Serverless Functions Workflow. Customer uploads an image on the front page which is then displayed in a feed. Clicking on any image in feed redirects you to details page which displays all the information acquired from processing that image.
+Kyma Showcase is a project about object-recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page which is then displayed in a feed. Clicking on any image in feed redirects you to its details page which displays all the information acquired from processing that image.
 
 ## Prerequisites
 
@@ -13,39 +13,28 @@ Kyma Showcase about object-recognition relying on GCP API and Serverless Functio
 
 ## Installation
 
-1. To run Kyma-Showcase application, you have to clone repository:
+1. To run Kyma Showcase application, clone the repository:
 ```
 git clone https://github.com/kyma-incubator/Kyma-Showcase.git
 ```
-2. Get cluster domain and replace placeholder values in following files:
-- resources/backend/apirule.yaml
-- resources/frontend/apirule.yaml
-- resources/frontend/frontend-config.yaml
+2. Get cluster domain and replace placeholder values in the following files:
+- `resources/backend/apirule.yaml`
+- `resources/frontend/apirule.yaml`
+- `resources/frontend/frontend-config.yaml`
 
-3. Set secrets by replacing placeholders in file:
-- resources/secrets.yaml
+3. Set secrets by replacing placeholders in the file:
+- `resources/secrets.yaml`
 
-4. To deploy application on k8s cluster, run the following commands:
+4. To deploy application on Kubernetes cluster, run the following command:
 ```
 kubectl apply -f resources -R
 ```
 
-5. To get the URL of the application run the following command:
+5. To get the application URL run the following command:
 ```
 kubectl get apirule frontend -o jsonpath='{.spec.service.host}'
 ```
 
-## Usage
-
-![Diagram Kyma Showcase](./docs/assets/diagram_showcase.svg)
-
-[Frontend](./frontend) presents the user with a clickable drag and drop field and a feed of all previously uploaded pictures. After uploading desired image it gets added to the feed in order of upload time. Clicking any image takes the user to a details page where they can read all details info acquired.
-
-[Backend](./backend) receives the image and saves it in a database. Upon sucessfully saving the image event is sent from it triggering the serverless functions.
-
-[Functions](./resources/functions) work with the image ID received from the event to acquire the right image from the database which is then sent to Google Cloud Platform in base64. Function updates the database entry with newly acquired information and depending on its content can send another event triggering more functions in order to get even more details from the image.
-
-For more information regarding project architecture refer to [this document](./docs/architecture.md).
 ## Development
 
 Detailed development guide can be found [here](./docs/development.md).

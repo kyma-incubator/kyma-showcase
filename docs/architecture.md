@@ -1,4 +1,4 @@
-#Architecture
+# Architecture
 
 The diagram below presents the basic workflow of the project.
 

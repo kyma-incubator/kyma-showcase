@@ -20,7 +20,7 @@ To configure Kyma Showcase you need to apply the following parameters in [secret
 
 | Parameter | Description |
 |-----------|-------------|
-| GCP_API_KEY | Your Google Cloud Platform API key, for more information on key generation refer [here](https://cloud.google.com/docs/authentication/api-keys#creating_an_api_key). |
+| GCP_API_KEY | Your Google Cloud Platform API key, for more information on key generation refer to [here](https://cloud.google.com/docs/authentication/api-keys#creating_an_api_key). |
 | GCP_EMAIL | Mandatory credential for Google cloud platform access.|
 | REDIS_PASSWORD | Required as a set up for the authorization layer |
 | API_URL | Defines the API URL that frontend will make calls to. |
