@@ -32,7 +32,7 @@ export const createExtension = (file) => file.name.substr(file.name.lastIndexOf(
 const UploadImage = () => {
   const [base64Image, setBase64Image] = useState('');
   const [disabledPost, setDisablePost] = useState(true);
-  const [disabledUpload, setDidableUpload] = useState(true);
+  const [disabledUpload, setDidableUpload] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
   const [fileName, setFileName] = useState('');
@@ -82,20 +82,27 @@ const UploadImage = () => {
         <h3>Upload an image </h3>
         <h5>Acceptable files: png, gif, jpg</h5>
         <nav>
-          <Button disabled={disabledUpload} className="upload-image" onClick={() => setDidableUpload(true)}>Upload image</Button>
-          <Button disabled={!disabledUpload} className="upload-url" onClick={() => setDidableUpload(false)}>Upload URL</Button>
+          <Button disabled={disabledUpload} className="upload-image" onClick={() => setDidableUpload(true)}>
+            Upload file
+          </Button>
+          <Button disabled={!disabledUpload} className="upload-url" onClick={() => setDidableUpload(false)}>
+            Upload URL
+          </Button>
         </nav>
-        {disabledUpload && <form className="file-form">
-          <p className="file-message">Choose a file or drag and drop</p>
-          {fileName && <p className="file-name">{fileName}</p>}
-          <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
-        </form>}
-        {!disabledUpload && <form className="url-form">
-          <label>Paste image URL: 
-          <input type="text" />
-          </label>
-        </form>
-        }
+
+        {disabledUpload && (
+          <form className="file-form">
+            <p className="file-message">Choose a file or drag and drop</p>
+            {fileName && <p className="file-name">{fileName}</p>}
+            <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
+          </form>
+        )}
+        {!disabledUpload && (
+          <form className="url-form">
+            <label for="image-url">Paste image URL: </label>
+            <input type="text" id="image-url" />
+          </form>
+        )}
         {base64Image && <img src={base64Image} alt="Chosen file" />}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>

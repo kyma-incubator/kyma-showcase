@@ -83,4 +83,9 @@ export const StyledUploadImage = styled.section`
       margin-top: 10%;
     }
   }
+
+  .url-form {
+    margin: 2% 0;
+    width: 50%;
+  }
 `;
