@@ -19,7 +19,7 @@ spec:
       valueFrom:
         configMapKeyRef:
           key: config.json
-          name: showcase-frontend-config
+          name: showcase-functions-config
     - name: GCP_API_KEY
       valueFrom:
         secretKeyRef:

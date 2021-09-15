@@ -28,7 +28,7 @@ spec:
       valueFrom:
         configMapKeyRef:
           key: config.json
-          name: showcase-frontend-config
+          name: showcase-functions-config
   runtime: nodejs14
   source: |-
     module.exports = {
