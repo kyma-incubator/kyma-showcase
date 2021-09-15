@@ -1,4 +1,3 @@
-import validator from 'validator';
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext, useRef } from 'react';
 import { postImageToAPI } from 'API';
@@ -34,18 +33,18 @@ export const createExtension = (file) => file.name.substr(file.name.lastIndexOf(
 const UploadImage = () => {
   const [contentImage, setContentImage] = useState('');
   const [disabledPost, setDisablePost] = useState(true);
-  const [disabledUpload, setDidableUpload] = useState(true);
+  const [disabledUpload, setDisableUpload] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
   const [fileName, setFileName] = useState('');
   const inputRef = useRef(null);
 
-  const clearFileDetail = () =>{
+  const clearFileDetail = () => {
     setFileName('');
     setErrorMessage('');
     setContentImage('');
     setDisablePost(true);
-  }
+  };
 
   const callAPIPost = async () => {
     setDisablePost(true);
@@ -84,11 +83,12 @@ const UploadImage = () => {
 
   const handleUrlBlur = async (event) => {
     if (event.target.value) {
-      if (validator.isURL(event.target.value)) {
+      try {
+        new URL(event.target.value);
         setContentImage(event.target.value);
         setDisablePost(false);
         setErrorMessage('');
-      } else {
+      } catch(_) {
         clearFileDetail();
         setErrorMessage('Invalid URL');
       }
@@ -105,12 +105,12 @@ const UploadImage = () => {
   };
 
   const handleImageClick = () => {
-    setDidableUpload(true);
+    setDisableUpload(true);
     clearFileDetail();
   };
 
   const handleUrlClick = () => {
-    setDidableUpload(false);
+    setDisableUpload(false);
     clearFileDetail();
   };
 
