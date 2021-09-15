@@ -9,9 +9,14 @@ export const StyledUploadImage = styled.section`
   border-radius: 30px;
   border: 1px solid black;
   width: 90%;
+  padding-bottom: 1.5%;
 
   h3 {
     margin-top: 1.5%;
+  }
+
+  h5{
+    margin-bottom: 1.5%;
   }
 
   p {
@@ -26,7 +31,7 @@ export const StyledUploadImage = styled.section`
     margin-bottom: 2%;
   }
 
-  form {
+  .file-form {
     position: relative;
     display: flex;
     align-items: center;
@@ -41,7 +46,7 @@ export const StyledUploadImage = styled.section`
     transition: 0.2s;
   }
 
-  input {
+  .file-input {
     position: absolute;
     inset: 0;
     width: 100%;
