@@ -4,7 +4,7 @@ import { ImageArea } from './ImageDetailsArea.styles.js';
 const ImageDetailsArea = ({ content }) => {
   return (
     <ImageArea>
-      <img src={content} alt="Uploaded photo" />
+      <img src={content} alt="Uploaded content" />
     </ImageArea>
   );
 };
