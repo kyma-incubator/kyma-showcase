@@ -99,9 +99,9 @@ const UploadImage = () => {
   };
 
   const handleErrorFile = () => {
+    setDisablePost(true);
     setErrorMessage('Invalid file');
     setContentImage('');
-    setDisablePost(true);
   };
 
   const handleImageClick = () => {
