@@ -1,8 +1,10 @@
+import validator from 'validator';
 import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext, useRef } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
 import { Button } from 'assets/styles/style';
+
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
   const acceptableExtensions = ['.jpg', '.png', '.gif', '.jpeg'];
@@ -78,9 +80,15 @@ const UploadImage = () => {
 
   const handleUrlBlur = async (event) => {
     if (event.target.value) {
-      setContentImage(event.target.value);
-      setDisablePost(false);
-      setErrorMessage('');
+      if (validator.isURL(event.target.value)) {
+        setContentImage(event.target.value);
+        setDisablePost(false);
+        setErrorMessage('');
+      } else {
+        setContentImage('');
+        setDisablePost(true);
+        setErrorMessage('Invalid URL');
+      }
     } else {
       setDisablePost(true);
     }
@@ -109,7 +117,8 @@ const UploadImage = () => {
         )}
         {!disabledUpload && (
           <form className="url-form">
-            <label for="image-url">Paste image URL: </label><br />
+            <label for="image-url">Paste image URL: </label>
+            <br />
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
           </form>
         )}
