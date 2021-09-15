@@ -26,6 +26,7 @@ const ImagesSection = () => {
     callAPI();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
   return (
     <>
       <p>{errorMessage}</p>

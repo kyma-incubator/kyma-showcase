@@ -3,14 +3,16 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"strings"
+	"time"
+
+	"github.com/gorilla/mux"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/pkg/errors"
+	log "github.com/sirupsen/logrus"
 )
 
 //go:generate mockery --name=DBManager
@@ -202,6 +204,9 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	img.ID = id
+	imgTime := time.Now()
+	img.Time = imgTime.Format(time.RFC3339)
+
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
 		err = errors.New("CREATE handler: failed to convert json into marshal: " + err.Error())
@@ -245,7 +250,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonID))
-
+	log.Info("create: succeeded")
 }
 
 // Update processes a request, that modify values in database with given JSON from GCP API
@@ -332,4 +337,5 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonID))
+	log.Info("update: succeeded")
 }

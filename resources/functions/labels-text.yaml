@@ -30,6 +30,8 @@ spec:
         configMapKeyRef:
           key: config.json
           name: showcase-functions-config
+    - name: EVENT_URL
+      value: http://eventing-event-publisher-proxy.kyma-system/publish
   runtime: nodejs14
   source: |-
     module.exports = {

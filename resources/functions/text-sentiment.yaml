@@ -1,16 +1,15 @@
 apiVersion: serverless.kyma-project.io/v1alpha1
 kind: Function
 metadata:
-  name: text-entity
+  name: text-sentiment
 spec:
   deps: |-
-    {
-      "name": "text-entity",
+    { 
+      "name": "text-sentiment",
       "version": "1.0.0",
       "dependencies": {
         "node-fetch": "2.6.1",
-        "@google-cloud/language":"4.3.0",
-        "nanoid": "3.1.25"
+        "@google-cloud/language":"4.3.0"
       }
     }
   env:
@@ -28,13 +27,13 @@ spec:
       valueFrom:
         configMapKeyRef:
           key: config.json
-          name: showcase-functions-config
+          name: showcase-frontend-config
   runtime: nodejs14
   source: |-
     module.exports = {
       main: async function (event, context) {
         async function getText(id) {
-          console.log("Getting text from DB");
+          console.log("Getting font from DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL);
@@ -42,7 +41,7 @@ spec:
           const content = data.gcp.map(JSON.parse);
           const font =
             content?.find((obj) => Object.keys(obj).includes('font'))?.font || [];
-          console.log("Text loaded");
+          console.log("Font loaded");
           return font;
         }
 
@@ -60,8 +59,8 @@ spec:
           }
         }
 
-        async function getTextEntities(text) {
-          console.log("Getting text entities");
+        async function getTextSentiment(text) {
+          console.log("Getting sentiments category");
           const language = require('@google-cloud/language');
           const options = {
             credentials: {
@@ -75,26 +74,36 @@ spec:
             content: text,
             type: 'PLAIN_TEXT',
           };
-          const [result] = await client.analyzeEntitySentiment({ document });
-          const entities = result.entities;
-          const entityDetails = entities.map((entity) => ({
-            name: entity.name,
-            type: entity.type,
-            score: entity.sentiment.score,
-            magnitude: entity.sentiment.magnitude,
+
+          const [result] = await client.analyzeSentiment({ document });
+          const docLanguage = result.language;
+          const docScore = result.documentSentiment.score;
+          const docMagnitude = result.documentSentiment.magnitude;
+          const docSentiment = calculateSentiment(docScore, docMagnitude, text);
+          const sentences = result.sentences;
+          const sentencetDetails = sentences.map((sentence) => ({
+            sentence: sentence.text.content,
+            score: sentence.sentiment.score,
+            magnitude: sentence.sentiment.magnitude,
             sentiment: calculateSentiment(
-              entity.sentiment.score,
-              entity.sentiment.magnitude,
-              entity.name
+              sentence.sentiment.score,
+              sentence.sentiment.magnitude,
+              sentence.text.content
             ),
           }));
-          if (entityDetails.length === 0) return null;
-          const entityJSON = JSON.stringify({ entityDetails });
-          return entityJSON;
+          const sentimentJSON = JSON.stringify({
+            docLanguage,
+            docScore,
+            docMagnitude,
+            docSentiment,
+            sentencetDetails,
+          });
+          console.log("Sentiments loaded");
+          return sentimentJSON;
         }
 
         async function putDetailsToDB(id, data) {
-          console.log("Putting entity details to DB");
+          console.log("Putting sentiments details to DB");
           const fetch = require('node-fetch');
           const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
           const response = await fetch(URL, {
@@ -105,7 +114,7 @@ spec:
             },
           });
           await console.log(
-            "Entity details put to DB with status: " + response.status
+            "Sentiments details put to DB with status: " + response.status
           );
           return response.json();
         }
@@ -114,12 +123,13 @@ spec:
           // Needed to remove unwanted apostrophes from our ID
           const imgID = event.data.slice(3, -3);
           console.log("Processing image: " + imgID);
+
           const text = await getText(imgID);
-          const textEntities = await getTextEntities(text);
-          if (textEntities) {
-            await putDetailsToDB(imgID, textEntities);
+          const textSentiment = await getTextSentiment(text);
+          if (textSentiment) {
+            await putDetailsToDB(imgID, textSentiment);
           } else {
-            console.log("Entities array empty");
+            console.log("Sentiments array is empty");
           }
         } catch (err) {
           console.error(err);
