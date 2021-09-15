@@ -30,7 +30,7 @@ const convertImageToBase64 = (image) => {
 export const createExtension = (file) => file.name.substr(file.name.lastIndexOf('.'));
 
 const UploadImage = () => {
-  const [base64Image, setBase64Image] = useState('');
+  const [contentImage, setContentImage] = useState('');
   const [disabledPost, setDisablePost] = useState(true);
   const [disabledUpload, setDidableUpload] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -40,9 +40,9 @@ const UploadImage = () => {
 
   const callAPIPost = async () => {
     setDisablePost(true);
-    inputRef.current.value = null;
+    if (inputRef.current) inputRef.current.value = null;
     try {
-      await postImageToAPI(base64Image);
+      await postImageToAPI(contentImage);
       await getImages();
     } catch (err) {
       console.error(err);
@@ -59,19 +59,29 @@ const UploadImage = () => {
         const name = image.name;
         validateFile(extension, size);
         const convertedImage = await convertImageToBase64(image);
-        setBase64Image(convertedImage);
+        setContentImage(convertedImage);
         setDisablePost(false);
         setErrorMessage('');
         setFileName(name);
       } catch (err) {
         setErrorMessage(err.message);
-        setBase64Image('');
+        setContentImage('');
         setDisablePost(true);
       }
     } else {
       setFileName('');
       setErrorMessage('');
-      setBase64Image('');
+      setContentImage('');
+      setDisablePost(true);
+    }
+  };
+
+  const handleUrlBlur = async (event) => {
+    if (event.target.value) {
+      setContentImage(event.target.value);
+      setDisablePost(false);
+      setErrorMessage('');
+    } else {
       setDisablePost(true);
     }
   };
@@ -99,11 +109,11 @@ const UploadImage = () => {
         )}
         {!disabledUpload && (
           <form className="url-form">
-            <label for="image-url">Paste image URL: </label>
-            <input type="text" id="image-url" />
+            <label for="image-url">Paste image URL: </label><br />
+            <input type="text" id="image-url" onBlur={handleUrlBlur} />
           </form>
         )}
-        {base64Image && <img src={base64Image} alt="Chosen file" />}
+        {contentImage && <img src={contentImage} alt="Chosen file" />}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>
           POST

@@ -86,6 +86,10 @@ export const StyledUploadImage = styled.section`
 
   .url-form {
     margin: 2% 0;
-    width: 50%;
+    text-align: center;
+  }
+
+  #image-url{
+    width: 250px;
   }
 `;
