@@ -94,23 +94,23 @@ const UploadImage = () => {
     }
   };
 
-  const handleErrorFile = () =>{
+  const handleErrorFile = () => {
     setErrorMessage('Invalid file');
     setContentImage('');
     setDisablePost(true);
-  }
+  };
 
-  const handleImageClick = () =>{
-    setDidableUpload(true)
+  const handleImageClick = () => {
+    setDidableUpload(true);
     setErrorMessage('');
     setDisablePost(true);
-  }
+  };
 
-  const handleUrlClick = () =>{
-    setDidableUpload(false)
+  const handleUrlClick = () => {
+    setDidableUpload(false);
     setErrorMessage('');
     setDisablePost(true);
-  }
+  };
 
   return (
     <>
@@ -140,7 +140,7 @@ const UploadImage = () => {
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
           </form>
         )}
-        {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile}/>}
+        {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile} />}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>
           POST
