@@ -34,11 +34,18 @@ export const createExtension = (file) => file.name.substr(file.name.lastIndexOf(
 const UploadImage = () => {
   const [contentImage, setContentImage] = useState('');
   const [disabledPost, setDisablePost] = useState(true);
-  const [disabledUpload, setDidableUpload] = useState(false);
+  const [disabledUpload, setDidableUpload] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const { getImages } = useContext(ImagesContext);
   const [fileName, setFileName] = useState('');
   const inputRef = useRef(null);
+
+  const clearFileDetail = () =>{
+    setFileName('');
+    setErrorMessage('');
+    setContentImage('');
+    setDisablePost(true);
+  }
 
   const callAPIPost = async () => {
     setDisablePost(true);
@@ -71,10 +78,7 @@ const UploadImage = () => {
         setDisablePost(true);
       }
     } else {
-      setFileName('');
-      setErrorMessage('');
-      setContentImage('');
-      setDisablePost(true);
+      clearFileDetail();
     }
   };
 
@@ -85,11 +89,11 @@ const UploadImage = () => {
         setDisablePost(false);
         setErrorMessage('');
       } else {
-        setContentImage('');
-        setDisablePost(true);
+        clearFileDetail();
         setErrorMessage('Invalid URL');
       }
     } else {
+      setErrorMessage('');
       setDisablePost(true);
     }
   };
@@ -102,14 +106,12 @@ const UploadImage = () => {
 
   const handleImageClick = () => {
     setDidableUpload(true);
-    setErrorMessage('');
-    setDisablePost(true);
+    clearFileDetail();
   };
 
   const handleUrlClick = () => {
     setDidableUpload(false);
-    setErrorMessage('');
-    setDisablePost(true);
+    clearFileDetail();
   };
 
   return (
