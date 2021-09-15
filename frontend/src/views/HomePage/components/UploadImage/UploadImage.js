@@ -94,6 +94,12 @@ const UploadImage = () => {
     }
   };
 
+  const handleErrorFile = () =>{
+    setErrorMessage('Invalid file');
+    setContentImage('');
+    setDisablePost(true);
+  }
+
   return (
     <>
       <StyledUploadImage>
@@ -122,7 +128,7 @@ const UploadImage = () => {
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
           </form>
         )}
-        {contentImage && <img src={contentImage} alt="Chosen file" />}
+        {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile}/>}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>
           POST
