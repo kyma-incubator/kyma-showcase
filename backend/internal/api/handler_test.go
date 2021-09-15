@@ -51,7 +51,7 @@ func TestGet(t *testing.T) {
 			testMessage:   "should return error with status code 404 when url is wrong",
 			requestURL:    "/v1/images/{id}/wrong",
 			assertNoOfGet: 0,
-			bodyContains:  "GET handler: 404 not found",
+			bodyContains:  "get handler: 404 not found",
 			statusCode:    http.StatusNotFound,
 		},
 		{

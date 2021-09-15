@@ -137,7 +137,7 @@ func TestGet(t *testing.T) {
 		_, err := database.Get(key)
 
 		//then
-		assert.Contains(t, err.Error(), "GET from db:error: ")
+		assert.Contains(t, err.Error(), "GET from db: error occurred in getting ")
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}

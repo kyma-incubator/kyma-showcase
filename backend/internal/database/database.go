@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	"errors"
 	"github.com/go-redis/redis/v8"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -64,7 +64,7 @@ func (d Database) Get(key string) (interface{}, error) {
 	case err == redis.Nil:
 		err = errors.New("GET from db:key " + key + " does not exist")
 	case err != nil:
-		err = errors.New("GET from db:error: " + err.Error() + " occurred in getting data from db")
+		err = errors.Wrap(err, "GET from db: error occurred in getting data from db")
 	case val == "":
 		err = errors.New("GET from db:for key " + key + " value is empty")
 	}
