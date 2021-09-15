@@ -26,7 +26,7 @@ type Configuration struct {
 }
 
 // initEnvConfiguration initialize environmental variables
-func initEnvConfiguration() (Configuration, error){
+func initEnvConfiguration() (Configuration, error) {
 	configuration := Configuration{}
 	if err := envconfig.InitWithPrefix(&configuration, "APP"); err != nil {
 		return Configuration{}, err
@@ -36,7 +36,7 @@ func initEnvConfiguration() (Configuration, error){
 }
 
 // initAPIHandler initializes a handler for the API.
-func initAPIHandler(conf Configuration) (api.Handler, error){
+func initAPIHandler(conf Configuration) (api.Handler, error) {
 
 	database := db.NewDatabaseConnection(conf.Redis.URL, conf.Redis.Password)
 	err := database.Connect()
