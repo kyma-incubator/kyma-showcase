@@ -257,7 +257,6 @@ func TestCreate(t *testing.T) {
 	img := model.Image{
 		ID:      fixedID,
 		Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
-		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    time.Now().Format(time.RFC3339),
 	}
 	jsonImg, err := json.Marshal(img)
@@ -376,7 +375,7 @@ func TestCreate(t *testing.T) {
 		//given
 		img := model.Image{
 			ID:      fixedID,
-			Content: "https://git.com/kyma/Kyma-Showcase",
+			Content: "notAnImage",
 			Time:    time.Now().Format(time.RFC3339),
 		}
 		jsonImg, err := json.Marshal(img)
@@ -411,6 +410,7 @@ func TestCreate(t *testing.T) {
 		img := model.Image{
 			ID:      fixedID,
 			Content: "",
+			Time:    time.Now().Format(time.RFC3339),
 		}
 		jsonImg, err := json.Marshal(img)
 		assert.NoError(t, err)
@@ -431,38 +431,6 @@ func TestCreate(t *testing.T) {
 		dbManagerMock.AssertNumberOfCalls(t, "Get", 0)
 		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is empty")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
-	})
-
-
-	t.Run("should log proper error when sending event failed", func(t *testing.T) {
-		//given
-		hook := test.NewGlobal()
-		img := model.Image{
-			ID:      fixedID,
-			Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
-			GCP:     []string{"labels", "moods"},
-		}
-		jsonImg, err := json.Marshal(img)
-		assert.NoError(t, err)
-		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
-		assert.NoError(t, err)
-		req.Header.Set("Content-Type", "application/json")
-		recorder := httptest.NewRecorder()
-		dbManagerMock := mocks.DBManager{}
-		idMock := mocks.IdGenerator{}
-		idMock.On("NewID").Return(fixedID, nil)
-		eventBusMock := mocks.EventBus{}
-		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
-		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
-		eventBusMock.On("SendNewImage", fixedID, img).Return(errors.New("SENDEVENT: error"))
-
-		//when
-		testSubject.Create(recorder, req)
-
-		//then
-		assert.Contains(t, hook.LastEntry().Message, "SENDEVENT")
-		assert.Equal(t, http.StatusBadGateway, recorder.Code)
-		eventBusMock.AssertExpectations(t)
 	})
 }
 
