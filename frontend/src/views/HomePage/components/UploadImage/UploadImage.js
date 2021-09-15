@@ -100,16 +100,28 @@ const UploadImage = () => {
     setDisablePost(true);
   }
 
+  const handleImageClick = () =>{
+    setDidableUpload(true)
+    setErrorMessage('');
+    setDisablePost(true);
+  }
+
+  const handleUrlClick = () =>{
+    setDidableUpload(false)
+    setErrorMessage('');
+    setDisablePost(true);
+  }
+
   return (
     <>
       <StyledUploadImage>
         <h3>Upload an image </h3>
         <h5>Acceptable files: png, gif, jpg</h5>
         <nav>
-          <Button disabled={disabledUpload} className="upload-image" onClick={() => setDidableUpload(true)}>
+          <Button disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
             Upload file
           </Button>
-          <Button disabled={!disabledUpload} className="upload-url" onClick={() => setDidableUpload(false)}>
+          <Button disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
             Upload URL
           </Button>
         </nav>
