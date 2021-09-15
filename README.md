@@ -15,7 +15,7 @@ Kyma Showcase is a project about object-recognition relying on GCP API and Serve
 
 1. To run Kyma Showcase application, clone the repository:
 ```
-git clone https://github.com/kyma-incubator/Kyma-Showcase.git
+git clone https://github.com/kyma-incubator/kyma-showcase.git
 ```
 2. Get cluster domain and replace placeholder values in the following files:
 - `resources/backend/apirule.yaml`

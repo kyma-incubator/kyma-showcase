@@ -15,7 +15,7 @@ For detailed instruction on installation refer to [here](../README.md#Installati
 
 ## Configuration
 
-To configure Kyma Showcase you need to apply the following parameters in [secrets.yaml](../resources/secrets.yaml) and [frontend-config.yaml](../resources/frontend/frontend-config.yaml).
+To configure Kyma Showcase you need to apply the following parameters in [secrets.yaml](../resources/secrets.yaml), [frontend-config.yaml](../resources/frontend/frontend-config.yaml) and fill the config domain in [frontend/apirule.yaml](../resources/frontend/apirule.yaml) and [backend/apirule.yaml](../resources/backend/apirule.yaml).
 
 
 | Parameter | Description |
@@ -23,4 +23,5 @@ To configure Kyma Showcase you need to apply the following parameters in [secret
 | GCP_API_KEY | Your Google Cloud Platform API key, for more information on key generation refer to [here](https://cloud.google.com/docs/authentication/api-keys#creating_an_api_key). |
 | GCP_EMAIL | Mandatory credential for Google cloud platform access.|
 | REDIS_PASSWORD | Required as a set up for the authorization layer |
-| API_URL | Defines the API URL that frontend will make calls to. |
+| API_URL | Defines the API URL that frontend will make calls to |
+| EVENT_URL | Event publisher URL |

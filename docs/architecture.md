@@ -16,10 +16,10 @@ The diagram below presents the basic workflow of the project.
 
 Initial event triggers `Multiple object detection, Landmark detection` and `General labels` functions. The remaining ones get triggered based on the contents of response recieved from Google Cloud Platform.
 
-| Content required | Serverless functions triggered |
-|-----------|-------------|
-| Text/Font (label) | Text detection |
-| Handwriting | Handwriting detection |
-| Logo | Logo detection|
-| Text (string) | Text category detection, Sentiment detection, Text entities and Entity sentiment |
-| Person (object) | Face detection |
+| Content required | Information type | Serverless functions triggered |
+|-----------|-------------|-------------|
+| Text/Font | Label | Text detection |
+| Handwriting | Label | Handwriting detection |
+| Logo | Label | Logo detection|
+| Text | String | Text category detection, Sentiment detection, Text entities and Entity sentiment |
+| Person | Object | Face detection |
