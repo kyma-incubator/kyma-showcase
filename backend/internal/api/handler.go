@@ -12,6 +12,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	"github.com/pkg/errors"
@@ -171,26 +172,35 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 }
 
 // getExtension returns extension of given by url image
+//func getExtension(bytes []byte) string {
+//	if bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
+//		return "png"
+//	} else if bytes[0] == 0xFF && bytes[1] == 0xD8 {
+//		return "jpg"
+//	} else if bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38 {
+//		return "gif"
+//	}
+//	return ""
+//}
 func getExtension(bytes []byte) string {
-	if bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
-		return "png"
+	mType := mimetype.Detect(bytes)
+	if mType.String() == "image/png" || mType.String() == "image/jpg" ||
+		mType.String() == "image/jpeg" || mType.String() == "image/gif" {
+		return mType.String()
+	} else {
+		return ""
 	}
-	if bytes[0] == 0xFF && bytes[1] == 0xD8 {
-		return "jpg"
-	}
-	if bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38 {
-		return "gif"
-	}
-	return ""
 }
 
-// calculateSize returns size of image given in base64
+// calculateSize returns size of image given in base64, calculated based on equation:
+// ((3/4) * length of base64 string) - number of equal signs at the end
 func calculateSize(imgBase64 string) int {
 	if imgBase64 == "" {
 		return 0
 	} else {
 		l := len(imgBase64)
-		e := strings.Count(imgBase64[len(imgBase64)-2:], "=")
+		eq := "="
+		e := strings.Count(imgBase64[len(imgBase64)-2:], eq)
 		return (3 * l / 4) - e
 	}
 }
@@ -263,7 +273,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		img.Content = "data:image/" + ext + ";base64,"
+		img.Content = fmt.Sprintf("data:%s;base64,", ext)
 		img.Content += imgBase64
 	} else {
 		r := regexp.MustCompile("data:.*?base64,")

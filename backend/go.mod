@@ -3,6 +3,7 @@ module github.com/kyma-incubator/Kyma-Showcase
 go 1.16
 
 require (
+	github.com/gabriel-vasile/mimetype v1.3.1
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-redis/redismock/v8 v8.0.6
 	github.com/gorilla/mux v1.8.0
