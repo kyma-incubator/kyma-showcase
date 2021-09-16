@@ -1,3 +1,4 @@
+![Showcase Logo](./docs/assets/logo.png)
 # Kyma Showcase
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyma-incubator/Kyma-Showcase)](https://goreportcard.com/report/github.com/kyma-incubator/Kyma-Showcase)
 [![GoDoc](https://godoc.org/github.com/kgithub.com/kyma-incubator/Kyma-Showcase?status.svg)](https://godoc.org/github.com/kyma-incubator/Kyma-Showcase)
