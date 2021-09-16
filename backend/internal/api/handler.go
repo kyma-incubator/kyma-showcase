@@ -1,14 +1,18 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
+	"github.com/gabriel-vasile/mimetype"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
 	"github.com/pkg/errors"
@@ -167,6 +171,30 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(allImages))
 }
 
+// getExtension returns extension of given image in url
+func getExtension(bytes []byte) string {
+	mType := mimetype.Detect(bytes)
+	if mType.String() == "image/png" || mType.String() == "image/jpg" ||
+		mType.String() == "image/jpeg" || mType.String() == "image/gif" {
+		return mType.String()
+	} else {
+		return ""
+	}
+}
+
+// calculateSize returns size of image given in base64, calculated based on equation:
+// ((3/4) * length of base64 string) - number of equal signs at the end
+func calculateSize(imgBase64 string) int {
+	if imgBase64 == "" {
+		return 0
+	} else {
+		l := len(imgBase64)
+		eq := "="
+		e := strings.Count(imgBase64[len(imgBase64)-2:], eq)
+		return (3 * l / 4) - e
+	}
+}
+
 // Create processes a request and passes the parsed data to the InsertToDB function.
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.postEndpoint {
@@ -185,6 +213,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	decoder := json.NewDecoder(r.Body)
 	for {
 		if err := decoder.Decode(&img); err == io.EOF {
@@ -195,6 +224,65 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+	}
+
+	_, err := url.ParseRequestURI(img.Content)
+	u, err := url.Parse(img.Content)
+	if err == nil && u.Scheme != "" && u.Host != "" {
+		resp, err := http.Get(img.Content)
+		if err != nil {
+			err = errors.New("CREATE handler: could not get image from: " + img.Content + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+		defer resp.Body.Close()
+
+		imgByte, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			err = errors.New("CREATE handler: failed to read request body" + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
+
+		if calculateSize(imgBase64) > 5000000 {
+			err = errors.New("image from url is too large")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusTeapot)
+			return
+		}
+
+		ext := getExtension(imgByte)
+		if ext == "" {
+			err = errors.New("extension is not supported")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
+			return
+		}
+
+		img.Content = fmt.Sprintf("data:%s;base64,", ext)
+		img.Content += imgBase64
+	} else {
+		r := regexp.MustCompile("data:.*?base64,")
+		contentBase64 := r.ReplaceAllString(img.Content, "")
+		_, err = base64.StdEncoding.DecodeString(contentBase64)
+
+		if err != nil {
+			err = errors.New("CREATE handler: content is not an image" + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+	}
+
+	if img.Content == "" {
+		err = errors.New("CREATE handler: content is empty")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	id, err := h.idGenerator.NewID()

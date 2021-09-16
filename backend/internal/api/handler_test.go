@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api/mocks"
@@ -255,7 +256,7 @@ func TestGetAll(t *testing.T) {
 func TestCreate(t *testing.T) {
 	img := model.Image{
 		ID:      fixedID,
-		Content: "base64",
+		Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
 		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    time.Now().Format(time.RFC3339),
 	}
@@ -369,6 +370,38 @@ func TestCreate(t *testing.T) {
 			assert.Equal(t, tt.statusCode, recorder.Code)
 		})
 	}
+	t.Run("should return 406 status code when getting image from url failed", func(t *testing.T) {
+
+		//given
+		img := model.Image{
+			ID:      fixedID,
+			Content: "https://git.com/kyma/Kyma-Showcase",
+			Time:    time.Now().Format(time.RFC3339),
+		}
+		jsonImg, err := json.Marshal(img)
+		assert.NoError(t, err)
+		hook := test.NewGlobal()
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
+		assert.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		eventBusMock := mocks.EventBus{}
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
+		eventBusMock.On("SendNewImage", fixedID, img).Return(nil)
+
+		//when
+		testSubject.Create(recorder, req)
+
+		//then
+		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
+		assert.Contains(t, recorder.Body.String(), "CREATE handler: could not get image from")
+		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: could not get image from")
+		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
+	})
 }
 
 func TestUpdate(t *testing.T) {
