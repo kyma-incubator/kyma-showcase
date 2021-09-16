@@ -171,7 +171,7 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(allImages))
 }
 
-// getExtension returns extension of given by url image
+// getExtension returns extension of given image in url
 func getExtension(bytes []byte) string {
 	mType := mimetype.Detect(bytes)
 	if mType.String() == "image/png" || mType.String() == "image/jpg" ||
