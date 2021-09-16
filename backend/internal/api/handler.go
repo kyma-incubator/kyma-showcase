@@ -243,16 +243,27 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			err = errors.New("CREATE handler: failed to read request body" + err.Error())
 			log.Error(err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
 		}
 
 		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
 
 		if calculateSize(imgBase64) > 5000000 {
-			http.Error(w, "it's too large", 2137)
+			err = errors.New("image from url is too large")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusTeapot)
 			return
 		}
 
-		img.Content = "data:image/" + getExtension(imgByte) + ";base64,"
+		ext := getExtension(imgByte)
+		if ext == "" {
+			err = errors.New("extension is not supported")
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
+			return
+		}
+
+		img.Content = "data:image/" + ext + ";base64,"
 		img.Content += imgBase64
 	} else {
 		r := regexp.MustCompile("data:.*?base64,")
