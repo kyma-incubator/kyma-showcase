@@ -122,7 +122,7 @@ const UploadImage = () => {
             Upload file
           </Button>
           <Button disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
-            Upload URL
+            Upload from URL
           </Button>
         </nav>
 

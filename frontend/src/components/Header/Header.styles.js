@@ -24,5 +24,7 @@ export const Logo = styled.section`
     width: 173px;
     max-height: 61px;
     fill: rgb(11, 116, 222);
+    margin-top: 0.5%;
+    margin-left: 0.5%;
   }
 `;
