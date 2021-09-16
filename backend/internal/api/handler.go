@@ -1,11 +1,14 @@
 package api
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"regexp"
 	"strings"
 	"time"
 
@@ -167,6 +170,31 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(allImages))
 }
 
+//todo documentation
+func getExtension(imgContent string) string {
+	if strings.Contains(imgContent, "jpg") {
+		return "jpg"
+	} else if strings.Contains(imgContent, "jpeg") {
+		return "jpeg"
+	} else if strings.Contains(imgContent, "png") {
+		return "png"
+	} else if strings.Contains(imgContent, "gif") {
+		return "gif"
+	} else {
+		return ""
+	}
+}
+
+//todo documentation
+func calculateSize(imgContent string) int{
+	if imgContent == "" {return 0
+	} else {
+		l := len(imgContent)
+		e := strings.Count(imgContent[len(imgContent)-2:], "=")
+		return (3 * l / 4) - e
+	}
+}
+
 // Create processes a request and passes the parsed data to the InsertToDB function.
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.postEndpoint {
@@ -185,6 +213,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
+
 	decoder := json.NewDecoder(r.Body)
 	for {
 		if err := decoder.Decode(&img); err == io.EOF {
@@ -195,6 +224,54 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
+	}
+
+	_, err := url.ParseRequestURI(img.Content)
+	u, err := url.Parse(img.Content)
+	if err == nil && u.Scheme != "" && u.Host != "" {
+		resp, err := http.Get(img.Content)
+		if err != nil {
+			err = errors.New("CREATE handler: could not get image from: " + img.Content + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+		defer resp.Body.Close()
+
+		imgByte, err := ioutil.ReadAll(resp.Body)
+		if err != nil {
+			err = errors.New("CREATE handler: failed to read request body" + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+		}
+
+		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
+
+		if calculateSize(imgBase64) > 5 << (10*2){//todo jak sprawdza front 5000000?
+			http.Error(w, "it's too large", 2137)
+			return
+		}
+
+		img.Content = "data:image/" + getExtension(img.Content) + ";base64,"
+		img.Content += imgBase64
+	} else {
+		r := regexp.MustCompile("data:.*?base64,")
+		contentBase64 := r.ReplaceAllString(img.Content, "")
+		_, err = base64.StdEncoding.DecodeString(contentBase64)
+
+		if err != nil {
+			err = errors.New("CREATE handler: content is not an image" + err.Error())
+			log.Error(err)
+			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			return
+		}
+	}
+
+	if img.Content == "" {
+		err = errors.New("CREATE handler: content is empty")
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	id, err := h.idGenerator.NewID()
