@@ -2,7 +2,7 @@ import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext, useRef } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
-import { Button } from 'assets/styles/style';
+import { Button, UploadButton, UrlButton } from 'assets/styles/style';
 
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
@@ -118,12 +118,12 @@ const UploadImage = () => {
     <>
       <StyledUploadImage>
         <nav>
-          <Button disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
+          <UploadButton disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
             Upload file
-          </Button>
-          <Button disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
+          </UploadButton>
+          <UrlButton disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
             Upload from URL
-          </Button>
+          </UrlButton>
         </nav>
 
         {disabledUpload && (
