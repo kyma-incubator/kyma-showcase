@@ -1,43 +1,42 @@
 # Kyma Showcase
 [![Go Report Card](https://goreportcard.com/badge/github.com/kyma-incubator/Kyma-Showcase)](https://goreportcard.com/report/github.com/kyma-incubator/Kyma-Showcase)
+[![GoDoc](https://godoc.org/github.com/kgithub.com/kyma-incubator/Kyma-Showcase?status.svg)](https://godoc.org/github.com/kyma-incubator/Kyma-Showcase)
 
 ## Overview
 
-Kyma Showcase about object-recognition relying on GCP API and Lambda Workflow.
+Kyma Showcase is a project about object-recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page which is then displayed in a feed. Clicking on any image in feed redirects you to its details page which displays all the information acquired from processing that image.
 
 ## Prerequisites
 
-- Kubernetes cluster
-- Kyma installed on cluster
+- [Kyma](https://kyma-project.io/) cluster 
+- [Kubectl](https://kubernetes.io/docs/tasks/tools/) to deploy the application
 
 ## Installation
 
-1. To run Kyma-Showcase application, you have to clone repository:
+1. To run Kyma Showcase application, clone the repository:
 ```
-git clone https://github.com/kyma-incubator/Kyma-Showcase.git
+git clone https://github.com/kyma-incubator/kyma-showcase.git
 ```
-2. Get cluster domain and replace placeholder values in following files:
-- resources/backend/apirule.yaml
-- resources/frontend/apirule.yaml
-- resources/frontend/frontend-config.yaml
+2. Get cluster domain and replace placeholder values in the following files:
+- `resources/backend/apirule.yaml`
+- `resources/frontend/apirule.yaml`
+- `resources/frontend/frontend-config.yaml`
 
-3. Set secrets by replacing placeholders in file:
-- resources/secrets.yaml
+3. Set secrets by replacing placeholders in the file:
+- `resources/secrets.yaml`
 
-4. To deploy application on k8s cluster, run the following commands:
+4. To deploy application on Kubernetes cluster, run the following command:
 ```
 kubectl apply -f resources -R
 ```
 
-5. To get the URL of the application run the following command:
+5. To get the application URL run the following command:
 ```
 kubectl get apirule frontend -o jsonpath='{.spec.service.host}'
 ```
 
-## Usage
-
-TODO: Explain how to use the project. You can create multiple subsections. Include the instructions or provide links to the related documentation.
-
 ## Development
 
-TODO: Add instructions on how to develop the project. It must be clear what to do and how to trigger the tests so that other contributors know how to make their pull requests acceptable. Include the instructions or provide links to related documentation.
+Detailed development guide can be found [here](./docs/development.md).
+
+To be able to contribute follow the workflow described in [`git-workflow.md`](https://github.com/kyma-project/community/blob/master/contributing/03-git-workflow.md) document.
