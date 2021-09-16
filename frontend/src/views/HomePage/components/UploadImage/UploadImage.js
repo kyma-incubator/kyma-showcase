@@ -88,7 +88,7 @@ const UploadImage = () => {
         setContentImage(event.target.value);
         setDisablePost(false);
         setErrorMessage('');
-      } catch(_) {
+      } catch (_) {
         clearFileDetail();
         setErrorMessage('Invalid URL');
       }
@@ -117,8 +117,6 @@ const UploadImage = () => {
   return (
     <>
       <StyledUploadImage>
-        <h3>Upload an image </h3>
-        <h5>Acceptable files: png, gif, jpg</h5>
         <nav>
           <Button disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
             Upload file
@@ -130,7 +128,10 @@ const UploadImage = () => {
 
         {disabledUpload && (
           <form className="file-form">
-            <p className="file-message">Choose a file or drag and drop</p>
+            <p className="file-message">
+              Choose a file or drag and drop
+              <h5>Acceptable files: png, gif, jpg</h5>
+            </p>
             {fileName && <p className="file-name">{fileName}</p>}
             <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
           </form>
@@ -140,6 +141,7 @@ const UploadImage = () => {
             <label for="image-url">Paste image URL: </label>
             <br />
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
+            <h5>Acceptable files: png, gif, jpg</h5>
           </form>
         )}
         {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile} />}

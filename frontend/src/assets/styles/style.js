@@ -12,8 +12,6 @@ export const Wrapper = styled.div`
 
 export const Button = styled.button`
   border-radius: 25px;
-  font-size: 18px;
-  font-weight: 500;
   padding: 4px 15px;
   line-height: 15px;
   transition: background-color 0.2s;
