@@ -51,7 +51,7 @@ func TestGet(t *testing.T) {
 			testMessage:   "should return error with status code 404 when url is wrong",
 			requestURL:    "/v1/images/{id}/wrong",
 			assertNoOfGet: 0,
-			bodyContains:  "get handler: 404 not found",
+			bodyContains:  "404 not found",
 			statusCode:    http.StatusNotFound,
 		},
 		{
@@ -59,7 +59,7 @@ func TestGet(t *testing.T) {
 			requestURL:    "/v1/images/" + fixedID,
 			getError:      errors.New("GET handler: database not respond error"),
 			assertNoOfGet: 1,
-			bodyContains:  "GET handler: database not respond error",
+			bodyContains:  "database not respond error",
 			statusCode:    http.StatusInternalServerError,
 		},
 		{
@@ -84,7 +84,7 @@ func TestGet(t *testing.T) {
 			requestURL:    "/v1/images/" + fixedID,
 			getReturned:   "not json",
 			assertNoOfGet: 1,
-			bodyContains:  "GET handler: failed to convert marshal to json:",
+			bodyContains:  "failed to convert marshal to json:",
 			statusCode:    http.StatusInternalServerError,
 		},
 		{
@@ -157,7 +157,7 @@ func TestGetAll(t *testing.T) {
 			getAllReturned:   nil,
 			assertNoOfGetAll: 0,
 			assertNoOfGet:    0,
-			bodyContains:     "GETALL handler: 404 not found",
+			bodyContains:     "404 not found",
 			statusCode:       http.StatusNotFound,
 		},
 		{
@@ -179,7 +179,7 @@ func TestGetAll(t *testing.T) {
 			getSecondError:    errors.New("value is empty"),
 			assertNoOfGetAll:  1,
 			assertNoOfGet:     1,
-			bodyContains:      "GETALL handler: failed to get value from db value is empty",
+			bodyContains:      "failed to get value from db",
 			statusCode:        http.StatusInternalServerError,
 		},
 		{
@@ -191,7 +191,7 @@ func TestGetAll(t *testing.T) {
 			getSecondError:    errors.New("value is empty"),
 			assertNoOfGetAll:  1,
 			assertNoOfGet:     2,
-			bodyContains:      "GETALL handler: failed to get value from db value is empty",
+			bodyContains:      "failed to get value from db",
 			statusCode:        http.StatusInternalServerError,
 		},
 		{
@@ -218,7 +218,7 @@ func TestGetAll(t *testing.T) {
 			getSecondReturned: string(jsonImg),
 			assertNoOfGetAll:  1,
 			assertNoOfGet:     1,
-			bodyContains:      "GETALL handler: fail to unmarshal",
+			bodyContains:      "fail to unmarshal",
 			statusCode:        http.StatusInternalServerError,
 		},
 		{
@@ -290,8 +290,8 @@ func TestCreate(t *testing.T) {
 			body:             bytes.NewBuffer(jsonImg),
 			contentType:      "application/json",
 			assertNoOfInsert: 0,
-			bodyContains:     "CREATE handler: 404 not found",
-			logContains:      "CREATE handler: 404 not found",
+			bodyContains:     "404 not found",
+			logContains:      "404 not found",
 			statusCode:       http.StatusNotFound,
 		},
 		{
@@ -300,8 +300,8 @@ func TestCreate(t *testing.T) {
 			body:             bytes.NewBuffer(jsonImg),
 			contentType:      "application/golang",
 			assertNoOfInsert: 0,
-			bodyContains:     "CREATE handler: invalid content type",
-			logContains:      "CREATE handler: invalid content type",
+			bodyContains:     "invalid content type",
+			logContains:      "invalid content type",
 			statusCode:       http.StatusBadRequest,
 		},
 		{
@@ -310,8 +310,8 @@ func TestCreate(t *testing.T) {
 			body:             bytes.NewBuffer([]byte("string")),
 			contentType:      "application/json",
 			assertNoOfInsert: 0,
-			bodyContains:     "CREATE handler: invalid input:",
-			logContains:      "CREATE handler: invalid input:",
+			bodyContains:     "invalid input:",
+			logContains:      "invalid input:",
 			statusCode:       http.StatusBadRequest,
 		},
 		{
@@ -322,8 +322,8 @@ func TestCreate(t *testing.T) {
 			insertArg:        string(jsonImg),
 			insertError:      errors.New("failed to insert json to db"),
 			assertNoOfInsert: 1,
-			bodyContains:     "CREATE handler: failed to insert values to database:",
-			logContains:      "CREATE handler: failed to insert values to database:",
+			bodyContains:     "failed to insert values to database:",
+			logContains:      "failed to insert values to database:",
 			statusCode:       http.StatusInternalServerError,
 		},
 		{
@@ -488,8 +488,8 @@ func TestUpdate(t *testing.T) {
 			contentType:      "application/json",
 			assertNoOfGet:    0,
 			assertNoOfInsert: 0,
-			bodyContains:     "update: 404 not found",
-			logContains:      "update: 404 not found",
+			bodyContains:     "404 not found",
+			logContains:      "404 not found",
 			statusCode:       http.StatusNotFound,
 		},
 		{
@@ -525,8 +525,8 @@ func TestUpdate(t *testing.T) {
 			}`,
 			assertNoOfGet:    1,
 			assertNoOfInsert: 0,
-			bodyContains:     "update: failed to convert marshal to json",
-			logContains:      "update: failed to convert marshal to json",
+			bodyContains:     "failed to convert marshal to json",
+			logContains:      "failed to convert marshal to json",
 			statusCode:       http.StatusInternalServerError,
 		},
 		{
@@ -536,8 +536,8 @@ func TestUpdate(t *testing.T) {
 			getReturned:      string(jsonImgWithGCP),
 			assertNoOfGet:    1,
 			assertNoOfInsert: 0,
-			bodyContains:     "PUT: invalid content type",
-			logContains:      "PUT: invalid content type",
+			bodyContains:     "invalid content type",
+			logContains:      "invalid content type",
 			statusCode:       http.StatusBadRequest,
 		},
 		{
@@ -549,7 +549,7 @@ func TestUpdate(t *testing.T) {
 			assertNoOfGet:    1,
 			assertNoOfInsert: 0,
 			bodyContains:     "failed to read",
-			logContains:      "update: failed to read request body",
+			logContains:      "failed to read request body",
 			statusCode:       http.StatusInternalServerError,
 		},
 		{
