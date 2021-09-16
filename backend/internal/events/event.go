@@ -57,7 +57,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	event := newEvent(id, img)
 	postBody, err := json.Marshal(event)
 	if err != nil {
-		return errors.Wrap(err, "SENDEVENT: marshal error" )
+		return errors.Wrap(err, "marshal error" )
 	}
 
 	responseBody := bytes.NewBuffer(postBody)
@@ -73,7 +73,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		return errors.New(fmt.Sprintf("SENDEVENT: sending event returned unexpected status: %s", resp.Status))
+		return errors.New(fmt.Sprintf("sending event returned unexpected status: %s", resp.Status))
 	}
 
 	return nil

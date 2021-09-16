@@ -74,7 +74,7 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// handleError wraps error logging and response sending
+// handleError wraps error formatting, logging and response sending
 func handleError(w http.ResponseWriter, code int, format string, a ...interface{}){
 	err := errors.New(fmt.Sprintf(format, a...))
 	log.Error(err)
@@ -106,7 +106,7 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	fromDB, err := h.dbManager.Get(key)
 
 	if err != nil {
-		if err.Error() == "GET from db: key "+key+" does not exist" {
+		if err.Error() == "key "+key+" does not exist" {
 			handleError(w, http.StatusNotFound, "%s: failed to get data from db: %s", getFuncName(), err)
 		} else {
 			handleError(w, http.StatusInternalServerError, "%s: failed to get data from db: %s", getFuncName(), err)

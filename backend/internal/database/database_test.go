@@ -47,7 +47,7 @@ func TestInsert(t *testing.T) {
 		err := database.Insert(key, value)
 
 		//then
-		assert.Error(t, err, errors.New("INSERT to db: connection not initialized"))
+		assert.Error(t, err, errors.New("connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -102,7 +102,7 @@ func TestGet(t *testing.T) {
 		_, err := database.Get(key)
 
 		//then
-		assert.Error(t, err, errors.New("GET from db: connection not initialized"))
+		assert.Error(t, err, errors.New("connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -119,7 +119,7 @@ func TestGet(t *testing.T) {
 		_, err := database.Get(key)
 
 		//then
-		assert.Equal(t, "GET from db:key "+key+" does not exist", err.Error())
+		assert.Equal(t, "key "+key+" does not exist", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -137,7 +137,7 @@ func TestGet(t *testing.T) {
 		_, err := database.Get(key)
 
 		//then
-		assert.Contains(t, err.Error(), "GET from db: error occurred in getting ")
+		assert.Contains(t, err.Error(), "error occurred in getting ")
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -156,7 +156,7 @@ func TestGet(t *testing.T) {
 
 		//then
 		assert.Equal(t, "", val)
-		assert.Equal(t, "GET from db:for key "+key+" value is empty", err.Error())
+		assert.Equal(t, "for key "+key+" value is empty", err.Error())
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
@@ -193,7 +193,7 @@ func TestGetAll(t *testing.T) {
 		_, err := database.GetAll()
 
 		//then
-		assert.Error(t, err, errors.New("GETALL from db: connection not initialized"))
+		assert.Error(t, err, errors.New("connection not initialized"))
 		if err := clientMock.ExpectationsWereMet(); err != nil {
 			t.Error(err)
 		}
