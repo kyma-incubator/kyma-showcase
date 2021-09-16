@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"encoding/base64"
 	"encoding/json"
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api/mocks"
@@ -255,7 +256,7 @@ func TestGetAll(t *testing.T) {
 func TestCreate(t *testing.T) {
 	img := model.Image{
 		ID:      fixedID,
-		Content: "base64",
+		Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
 		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    time.Now().Format(time.RFC3339),
 	}

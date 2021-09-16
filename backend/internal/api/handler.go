@@ -170,27 +170,27 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprint(w, string(allImages))
 }
 
-//todo documentation
-func getExtension(imgContent string) string {
-	if strings.Contains(imgContent, "jpg") {
-		return "jpg"
-	} else if strings.Contains(imgContent, "jpeg") {
-		return "jpeg"
-	} else if strings.Contains(imgContent, "png") {
+// getExtension returns extension of given by url image
+func getExtension(bytes []byte) string {
+	if bytes[0] == 0x89 && bytes[1] == 0x50 && bytes[2] == 0x4E && bytes[3] == 0x47 {
 		return "png"
-	} else if strings.Contains(imgContent, "gif") {
-		return "gif"
-	} else {
-		return ""
 	}
+	if bytes[0] == 0xFF && bytes[1] == 0xD8 {
+		return "jpg"
+	}
+	if bytes[0] == 0x47 && bytes[1] == 0x49 && bytes[2] == 0x46 && bytes[3] == 0x38 {
+		return "gif"
+	}
+	return ""
 }
 
-//todo documentation
-func calculateSize(imgContent string) int{
-	if imgContent == "" {return 0
+// calculateSize returns size of image given in base64
+func calculateSize(imgBase64 string) int {
+	if imgBase64 == "" {
+		return 0
 	} else {
-		l := len(imgContent)
-		e := strings.Count(imgContent[len(imgContent)-2:], "=")
+		l := len(imgBase64)
+		e := strings.Count(imgBase64[len(imgBase64)-2:], "=")
 		return (3 * l / 4) - e
 	}
 }
@@ -247,12 +247,12 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
 
-		if calculateSize(imgBase64) > 5 << (10*2){//todo jak sprawdza front 5000000?
+		if calculateSize(imgBase64) > 5000000 {
 			http.Error(w, "it's too large", 2137)
 			return
 		}
 
-		img.Content = "data:image/" + getExtension(img.Content) + ";base64,"
+		img.Content = "data:image/" + getExtension(imgByte) + ";base64,"
 		img.Content += imgBase64
 	} else {
 		r := regexp.MustCompile("data:.*?base64,")
