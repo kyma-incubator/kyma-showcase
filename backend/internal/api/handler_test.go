@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bou.ke/monkey"
 	"bytes"
 	"encoding/base64"
 	"encoding/json"
@@ -20,12 +21,19 @@ import (
 
 const fixedID = "FEA98D88-0669-4FFD-B17A-8F80BB97C381"
 
+func fixedTime() string {
+	monkey.Patch(time.Now, func() time.Time {
+		return time.Date(2009, 11, 10, 20, 34, 58, 651387237, time.UTC)
+	})
+	return time.Now().Format(time.RFC3339)
+}
+
 func TestGet(t *testing.T) {
 	img := model.Image{
 		ID:      fixedID,
 		Content: "base64",
 		GCP:     []string{"{labels:[labels,moods]}"},
-		Time:    time.Now().Format(time.RFC3339),
+		Time:    fixedTime(),
 	}
 	jsonImg, err := json.Marshal(img)
 	assert.NoError(t, err)
@@ -122,7 +130,7 @@ func TestGetAll(t *testing.T) {
 		ID:      fixedID,
 		Content: "base64",
 		GCP:     []string{"{labels:[labels,moods]}"},
-		Time:    time.Now().Format(time.RFC3339),
+		Time:    fixedTime(),
 	}
 	jsonImg, err := json.Marshal(img)
 	expected := []model.Image{img, img}
@@ -254,11 +262,11 @@ func TestGetAll(t *testing.T) {
 }
 
 func TestCreate(t *testing.T) {
+
 	img := model.Image{
 		ID:      fixedID,
 		Content: "data:image/png;base64," + base64.StdEncoding.EncodeToString([]byte("data")),
-		GCP:     []string{"{labels:[labels,moods]}"},
-		Time:    time.Now().Format(time.RFC3339),
+		Time:    fixedTime(),
 	}
 	jsonImg, err := json.Marshal(img)
 	assert.NoError(t, err)
@@ -370,12 +378,13 @@ func TestCreate(t *testing.T) {
 			assert.Equal(t, tt.statusCode, recorder.Code)
 		})
 	}
-	t.Run("should return 406 status code when getting image from url failed", func(t *testing.T) {
+
+	t.Run("should return error with status code 406 when request content is corrupted", func(t *testing.T) {
 
 		//given
 		img := model.Image{
 			ID:      fixedID,
-			Content: "https://git.com/kyma/Kyma-Showcase",
+			Content: "notAnImage",
 			Time:    time.Now().Format(time.RFC3339),
 		}
 		jsonImg, err := json.Marshal(img)
@@ -397,15 +406,44 @@ func TestCreate(t *testing.T) {
 		testSubject.Create(recorder, req)
 
 		//then
-		dbManagerMock.AssertNumberOfCalls(t, "Insert", 0)
-		assert.Contains(t, recorder.Body.String(), "CREATE handler: could not get image from")
-		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: could not get image from")
+		dbManagerMock.AssertNotCalled(t, "Insert")
+		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is not an image")
 		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
+	})
+
+	t.Run("should return error with status code 500 when content in unmarshaled struct is empty", func(t *testing.T) {
+
+		//given
+		hook := test.NewGlobal()
+		img := model.Image{
+			ID:      fixedID,
+			Content: "",
+			Time:    time.Now().Format(time.RFC3339),
+		}
+		jsonImg, err := json.Marshal(img)
+		assert.NoError(t, err)
+		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
+		assert.NoError(t, err)
+		req.Header.Set("Content-Type", "application/json")
+		recorder := httptest.NewRecorder()
+		dbManagerMock := mocks.DBManager{}
+		idMock := mocks.IdGenerator{}
+		idMock.On("NewID").Return(fixedID, nil)
+		eventBusMock := mocks.EventBus{}
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+
+		//when
+		testSubject.Create(recorder, req)
+
+		//then
+		dbManagerMock.AssertNotCalled(t, "Insert")
+		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is empty")
+		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 }
 
 func TestUpdate(t *testing.T) {
-	time := time.Now().Format(time.RFC3339)
+	imgTime := fixedTime()
 	body := `{` +
 		`labels:[labels,moods]` +
 		`}`
@@ -413,13 +451,13 @@ func TestUpdate(t *testing.T) {
 		ID: fixedID,
 
 		Content: "base64",
-		Time:    time,
+		Time:    imgTime,
 	}
 	imgWithGCP := model.Image{
 		ID:      fixedID,
 		Content: "base64",
 		GCP:     []string{"{labels:[labels,moods]}"},
-		Time:    time,
+		Time:    imgTime,
 	}
 	jsonImg, err := json.Marshal(img)
 	assert.NoError(t, err)

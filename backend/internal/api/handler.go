@@ -203,6 +203,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+
 	accessControl(w, r)
 	var img model.Image
 
@@ -292,12 +293,31 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	img.ID = id
+
 	imgTime := time.Now()
 	img.Time = imgTime.Format(time.RFC3339)
+
+	m1 := regexp.MustCompile("data:.*?base64,")
+	contentBase64 := m1.ReplaceAllString(img.Content, "")
+	_, err = base64.StdEncoding.DecodeString(contentBase64)
+
+	if err != nil {
+		err := errors.New("CREATE handler: content is not an image" + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusNotAcceptable)
+		return
+	}
 
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
 		err = errors.New("CREATE handler: failed to convert json into marshal: " + err.Error())
+		log.Error(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	if img.Content == "" {
+		err := errors.New("CREATE handler: content is empty")
 		log.Error(err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
