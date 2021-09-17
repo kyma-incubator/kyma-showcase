@@ -5,7 +5,7 @@
 
 ## Overview
 
-Kyma Showcase is a project about object recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page. Then the image is displayed in the feed. Clicking on any image in the feed redirects you to its details page showing all the information acquired from processing that image such as prevalent mood, labels describing the image or objects present in the image. More information about Kyma Showcase can be found in [Details](./docs/details.md) and [Architecture](./docs/architecture.md). 
+Kyma Showcase is a project about object recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page. Then the image is displayed in the feed. Clicking on any image in the feed redirects you to its details page showing all the information acquired from processing that image such as prevalent mood, labels describing the image itself, or objects in it. See the [Details](./docs/details.md) and [Architecture](./docs/architecture.md) sections for more information about Kyma Showcase.
 
 ## Prerequisites
 
