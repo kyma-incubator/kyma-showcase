@@ -147,7 +147,7 @@ const UploadImage = () => {
         {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile} />}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>
-          POST
+          Upload
         </Button>
       </StyledUploadImage>
     </>
