@@ -31,6 +31,7 @@ export const Button = styled.button`
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
+    cursor: default;
   }
 `;
 
@@ -56,6 +57,7 @@ export const UploadButton = styled.button`
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
+    cursor: default;
   }
 `;
 
@@ -81,6 +83,7 @@ export const UrlButton = styled.button`
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
+    cursor: default;
   }
 `;
 
