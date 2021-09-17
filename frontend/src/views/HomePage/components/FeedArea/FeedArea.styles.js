@@ -5,12 +5,10 @@ export const FeedArea = styled.main`
   flex-direction: column;
   align-items: center;
   margin: 30px 50px;
-  border-radius: 30px;
   width: 90%;
-  border: 1px solid black;
 
-  &::after{
-    content: "";
+  &::after {
+    content: '';
     height: 90px;
   }
 `;
@@ -28,8 +26,8 @@ export const FeedTitleArea = styled.div`
   border-top-right-radius: 30px;
 
   h2 {
-    font-size: 20px;
-    text-transform: uppercase;
+    font-size: 1.5rem;
+    font-weight: normal;
     text-align: center;
     color: white;
     letter-spacing: 3px;

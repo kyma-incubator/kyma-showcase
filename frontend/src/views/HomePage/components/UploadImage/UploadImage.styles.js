@@ -6,17 +6,12 @@ export const StyledUploadImage = styled.section`
   align-items: center;
   justify-content: space-around;
   margin: 30px 50px;
-  border-radius: 30px;
-  border: 1px solid black;
   width: 90%;
   padding-bottom: 1.5%;
 
-  h3 {
-    margin-top: 1.5%;
-  }
-
-  h5{
-    margin-bottom: 1.5%;
+  h5 {
+    font-weight: normal;
+    margin-top: 1%;
   }
 
   p {
@@ -38,12 +33,13 @@ export const StyledUploadImage = styled.section`
     flex-direction: row;
     justify-content: flex-start;
     margin: 2% 0;
-    width: 50%;
+    min-width: 50%;
+    min-height: 60px;
     padding: 3%;
     background-color: #6797f7;
-    border: 3px dashed ${({ theme }) => theme.colors.primary};
-    border-radius: 3px;
     transition: 0.2s;
+    background: linear-gradient(263.44deg, rgba(37, 175, 68, 0.52) 0%, #3c90e4 47.98%, rgba(105, 106, 209, 0.85) 100%);
+    border-radius: 15px;
   }
 
   .file-input {
@@ -87,9 +83,21 @@ export const StyledUploadImage = styled.section`
   .url-form {
     margin: 2% 0;
     text-align: center;
+    position: relative;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 2% 0;
+    min-width: 50%;
+    min-height: 60px;
+    padding: 2% 3%;
+    background-color: #6797f7;
+    color: white;
+    transition: 0.2s;
+    background: linear-gradient(263.44deg, rgba(37, 175, 68, 0.52) 0%, #3c90e4 47.98%, rgba(105, 106, 209, 0.85) 100%);
+    border-radius: 15px;
   }
 
-  #image-url{
+  #image-url {
     width: 250px;
   }
 `;

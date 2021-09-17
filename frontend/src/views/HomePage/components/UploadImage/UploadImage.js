@@ -2,7 +2,7 @@ import { StyledUploadImage } from './UploadImage.styles';
 import { useState, useContext, useRef } from 'react';
 import { postImageToAPI } from 'API';
 import { ImagesContext } from 'contexts/imagesContext';
-import { Button } from 'assets/styles/style';
+import { Button, UploadButton, UrlButton } from 'assets/styles/style';
 
 const validateFile = (extension, size) => {
   const acceptableSize = 5000000;
@@ -88,7 +88,7 @@ const UploadImage = () => {
         setContentImage(event.target.value);
         setDisablePost(false);
         setErrorMessage('');
-      } catch(_) {
+      } catch (_) {
         clearFileDetail();
         setErrorMessage('Invalid URL');
       }
@@ -117,35 +117,37 @@ const UploadImage = () => {
   return (
     <>
       <StyledUploadImage>
-        <h3>Upload an image </h3>
-        <h5>Acceptable files: png, gif, jpg</h5>
         <nav>
-          <Button disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
+          <UploadButton disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
             Upload file
-          </Button>
-          <Button disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
-            Upload URL
-          </Button>
+          </UploadButton>
+          <UrlButton disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
+            Upload from URL
+          </UrlButton>
         </nav>
 
         {disabledUpload && (
           <form className="file-form">
-            <p className="file-message">Choose a file or drag and drop</p>
+            <p className="file-message">
+              Choose a file or drag and drop
+              <h5>Accepted file formats: png, gif, jpg</h5>
+            </p>
             {fileName && <p className="file-name">{fileName}</p>}
             <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
           </form>
         )}
         {!disabledUpload && (
           <form className="url-form">
-            <label for="image-url">Paste image URL: </label>
+            <label htmlFor="image-url">Paste image URL: </label>
             <br />
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
+            <h5>Accepted file formats: png, gif, jpg</h5>
           </form>
         )}
         {contentImage && <img src={contentImage} alt="Chosen file" onError={handleErrorFile} />}
         <p>{errorMessage}</p>
         <Button disabled={disabledPost} onClick={callAPIPost}>
-          POST
+          Upload
         </Button>
       </StyledUploadImage>
     </>

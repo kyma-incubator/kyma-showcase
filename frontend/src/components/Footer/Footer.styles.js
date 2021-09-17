@@ -1,18 +1,28 @@
-import styled from "styled-components";
+import styled from 'styled-components';
 
 export const FooterSection = styled.footer`
-  position: relative;
-  left: 0;
-  bottom: 0;
-  width: 100%;
-  border-top: 1px solid black;
+  display: flex;
   text-align: center;
-  background-color: ${({ theme }) => theme.colors.primary};
-  color: white;
+  flex-direction: column;
+  -webkit-box-pack: center;
+  justify-content: center;
+  position: relative;
+  z-index: 50;
+  min-height: 150px;
+  margin-top: 72px;
+  padding-top: 24px;
+  background: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBwcmVzZXJ2ZUFzcGVjdFJhdGlvPSJub25lIj48bGluZWFyR3JhZGllbnQgaWQ9ImEiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iLTYwIiB5MT0iLTMiIHgyPSIxOTAiIHkyPSIxNjEiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzRkMTBlMSIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjE5MSIgc3RvcC1jb2xvcj0iIzRiMTNlMSIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjMzMiIgc3RvcC1jb2xvcj0iIzQ1MWNlMSIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjQ1NyIgc3RvcC1jb2xvcj0iIzNhMmNlMCIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjU3MiIgc3RvcC1jb2xvcj0iIzJiNDNkZiIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjY4IiBzdG9wLWNvbG9yPSIjMTg2MGRlIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIuNzE1IiBzdG9wLWNvbG9yPSIjMTE2YmRlIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjMGI3NGRlIiBzdG9wLW9wYWNpdHk9Ii41Ii8+PC9saW5lYXJHcmFkaWVudD48cGF0aCBmaWxsPSJ1cmwoI2EpIiBkPSJNMTI4IDEyOC4wNDVWMjguODk3Qzk2LjMgNy45OTIgNTYuOTc5LTMuMTQyIDIxLjM3NC43NzcgMTMuMzk0IDEuNjU2IDYuMjcgMy42ODgtLjAxNSA2LjY4NHYxMjEuMzYxSDEyOHoiLz48bGluZWFyR3JhZGllbnQgaWQ9ImIiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4MT0iMzAyIiB5MT0iOTkiIHgyPSItNTMiIHkyPSItMTAiPjxzdG9wIG9mZnNldD0iMCIgc3RvcC1jb2xvcj0iIzAwZTgzMyIgc3RvcC1vcGFjaXR5PSIuNSIvPjxzdG9wIG9mZnNldD0iLjIxIiBzdG9wLWNvbG9yPSIjMDBlMzNhIiBzdG9wLW9wYWNpdHk9Ii41MTkiLz48c3RvcCBvZmZzZXQ9Ii4yNzEiIHN0b3AtY29sb3I9IiMwMWRkNDIiIHN0b3Atb3BhY2l0eT0iLjU3NiIvPjxzdG9wIG9mZnNldD0iLjM2NiIgc3RvcC1jb2xvcj0iIzAyY2U1OSIgc3RvcC1vcGFjaXR5PSIuNjY0Ii8+PHN0b3Agb2Zmc2V0PSIuNDg1IiBzdG9wLWNvbG9yPSIjMDViNjdlIiBzdG9wLW9wYWNpdHk9Ii43NzQiLz48c3RvcCBvZmZzZXQ9Ii42MiIgc3RvcC1jb2xvcj0iIzA4OTRiMCIgc3RvcC1vcGFjaXR5PSIuODk5Ii8+PHN0b3Agb2Zmc2V0PSIuNzI0IiBzdG9wLWNvbG9yPSIjMGI3NmRjIiBzdG9wLW9wYWNpdHk9Ii45OTYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMwYjc0ZGUiLz48L2xpbmVhckdyYWRpZW50PjxwYXRoIGZpbGw9InVybCgjYikiIGQ9Ik0xMjggMTI4LjA0NVY3LjcwNEM5OS45MTggMy43NTEgNjMuNjU2IDUuMzg3IDIzLjk0MiAxMy41NDljLTguNCAxLjY0OC0xNi4zOTUgMy40NTYtMjMuOTU3IDUuNDA5djEwOS4wODZIMTI4di4wMDF6Ii8+PC9zdmc+)
+    0% 0% / 100% 100% no-repeat;
+  h4 {
+    font-weight: normal;
+    color: white;
+  }
 `;
 
-export const Logo = styled.img`
-  height: 30px;
-  background-color: white;
-  border: 2px solid white;
+export const Logo = styled.div`
+  svg {
+    width: 79px;
+    max-height: 101px;
+    fill: rgb(255, 255, 255);
+  }
 `;

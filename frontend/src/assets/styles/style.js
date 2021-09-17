@@ -12,8 +12,6 @@ export const Wrapper = styled.div`
 
 export const Button = styled.button`
   border-radius: 25px;
-  font-size: 18px;
-  font-weight: 500;
   padding: 4px 15px;
   line-height: 15px;
   transition: background-color 0.2s;
@@ -33,6 +31,59 @@ export const Button = styled.button`
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
+    cursor: default;
+  }
+`;
+
+export const UploadButton = styled.button`
+  border-bottom-left-radius: 25px;
+  border-top-left-radius: 25px;
+  padding: 4px 15px;
+  line-height: 15px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: rgb(255, 255, 255);
+  height: 30px;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+    border: 2px solid ${({ theme }) => theme.colors.secondary};
+  }
+
+  &:disabled,
+  button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+    cursor: default;
+  }
+`;
+
+export const UrlButton = styled.button`
+  border-bottom-right-radius: 25px;
+  border-top-right-radius: 25px;
+  padding: 4px 15px;
+  line-height: 15px;
+  transition: background-color 0.2s;
+  cursor: pointer;
+  border: 2px solid ${({ theme }) => theme.colors.primary};
+  background-color: ${({ theme }) => theme.colors.primary};
+  color: rgb(255, 255, 255);
+  height: 30px;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.secondary};
+    border: 2px solid ${({ theme }) => theme.colors.secondary};
+  }
+
+  &:disabled,
+  button[disabled] {
+    border: 1px solid #999999;
+    background-color: #cccccc;
+    color: #666666;
+    cursor: default;
   }
 `;
 
