@@ -138,7 +138,7 @@ const UploadImage = () => {
         )}
         {!disabledUpload && (
           <form className="url-form">
-            <label for="image-url">Paste image URL: </label>
+            <label htmlFor="image-url">Paste image URL: </label>
             <br />
             <input type="text" id="image-url" onBlur={handleUrlBlur} />
             <h5>Accepted file formats: png, gif, jpg</h5>
