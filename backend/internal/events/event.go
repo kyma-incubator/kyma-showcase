@@ -57,7 +57,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	event := newEvent(id, img)
 	postBody, err := json.Marshal(event)
 	if err != nil {
-		return errors.Wrap(err, "marshal error" )
+		return errors.Wrap(err, "marshal error")
 	}
 
 	responseBody := bytes.NewBuffer(postBody)

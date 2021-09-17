@@ -75,14 +75,14 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleError wraps error formatting, logging and response sending
-func handleError(w http.ResponseWriter, code int, format string, a ...interface{}){
+func handleError(w http.ResponseWriter, code int, format string, a ...interface{}) {
 	err := errors.New(fmt.Sprintf(format, a...))
 	log.Error(err)
 	http.Error(w, err.Error(), code)
 }
 
 // getFuncName returns current function name in lowercase, used for logs
-func getFuncName() string{
+func getFuncName() string {
 	pc, _, _, ok := runtime.Caller(1)
 	if !ok {
 		log.Error("failed to get function name")
@@ -97,7 +97,7 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	key := params["id"]
 	url := strings.Replace(h.getEndpoint, "{id}", key, 1)
 	if r.URL.Path != url {
-		handleError(w,http.StatusNotFound, "%s: 404 not found", getFuncName())
+		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
 		return
 	}
 	accessControl(w, r)
@@ -126,7 +126,7 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 //GetAll processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
 func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.getAllEndpoint {
-		handleError(w,http.StatusNotFound, "%s: 404 not found", getFuncName())
+		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
 		return
 	}
 	accessControl(w, r)
@@ -197,7 +197,7 @@ func calculateSize(imgBase64 string) int {
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != h.postEndpoint {
-		handleError(w,http.StatusNotFound, "%s: 404 not found", getFuncName())
+		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
 		return
 	}
 
@@ -206,7 +206,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
-		handleError(w,http.StatusBadRequest, "%s: invalid content type", getFuncName())
+		handleError(w, http.StatusBadRequest, "%s: invalid content type", getFuncName())
 		return
 	}
 
@@ -215,7 +215,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		if err := decoder.Decode(&img); err == io.EOF {
 			break
 		} else if err != nil {
-			handleError(w,http.StatusBadRequest, "%s: invalid input: %s", getFuncName(), err)
+			handleError(w, http.StatusBadRequest, "%s: invalid input: %s", getFuncName(), err)
 			return
 		}
 	}
@@ -341,7 +341,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonID))
-	log.Info(getFuncName()+": succeeded")
+	log.Info(getFuncName() + ": succeeded")
 }
 
 // Update processes a request, that modify values in database with given JSON from GCP API
@@ -350,7 +350,7 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	key := params["id"]
 	url := strings.Replace(h.putEndpoint, "{id}", key, 1)
 	if r.URL.Path != url {
-		handleError(w,http.StatusNotFound, "%s: 404 not found", getFuncName())
+		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
 		return
 	}
 	accessControl(w, r)
@@ -412,5 +412,5 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Fprint(w, string(jsonID))
-	log.Infof(getFuncName()+": succeeded")
+	log.Infof(getFuncName() + ": succeeded")
 }
