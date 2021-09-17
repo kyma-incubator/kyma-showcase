@@ -5,39 +5,43 @@
 
 ## Overview
 
-Kyma Showcase is a project about object-recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page which is then displayed in a feed. Clicking on any image in feed redirects you to its details page which displays all the information acquired from processing that image.
+Kyma Showcase is a project about object recognition relying on GCP API and Serverless Functions Workflow. A customer uploads an image on the front page. Then the image is displayed in the feed. Clicking on any image in the feed redirects you to its details page showing all the information acquired from processing that image. <!--maybe we could add some information examples>
 
 ## Prerequisites
 
-- [Kyma](https://kyma-project.io/) cluster 
-- [Kubectl](https://kubernetes.io/docs/tasks/tools/) to deploy the application
+- [Kyma](https://kyma-project.io/) cluster
+- [kubectl](https://kubernetes.io/docs/tasks/tools/)
 
 ## Installation
 
-1. To run Kyma Showcase application, clone the repository:
-```
+ To run Kyma Showcase application, follow these steps:
+
+1. Clone the repository:
+
+```bash
 git clone https://github.com/kyma-incubator/kyma-showcase.git
 ```
-2. Get cluster domain and replace placeholder values in the following files:
-- `resources/backend/apirule.yaml`
-- `resources/frontend/apirule.yaml`
-- `resources/frontend/frontend-config.yaml`
 
-3. Set secrets by replacing placeholders in the file:
-- `resources/secrets.yaml`
+2. Replace the placeholder values with the name of your cluster domain in the following files:
 
-4. To deploy application on Kubernetes cluster, run the following command:
-```
+- [`resources/backend/apirule.yaml`](./resources/backend/apirule.yaml)
+- [`resources/frontend/apirule.yaml`](./resources/frontend/apirule.yaml)
+- [`resources/frontend/frontend-config.yaml`](./resources/frontend/frontend-config.yaml)
+
+3. Set secrets by replacing the placeholder values in the [`resources/secrets.yaml`](./resources/secrets.yaml) file.
+
+4. Deploy the application on a Kubernetes cluster. Run the following command:
+
+```bash
 kubectl apply -f resources -R
 ```
 
-5. To get the application URL run the following command:
-```
+5. Get the application URL. Run:
+
+```bash
 kubectl get apirule frontend -o jsonpath='{.spec.service.host}'
 ```
 
 ## Development
 
-Detailed development guide can be found [here](./docs/development.md).
-
-To be able to contribute follow the workflow described in [`git-workflow.md`](https://github.com/kyma-project/community/blob/master/contributing/03-git-workflow.md) document.
+To learn more, read the [Development Guide](./docs/development.md).

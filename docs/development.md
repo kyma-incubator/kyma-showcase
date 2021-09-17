@@ -1,27 +1,26 @@
-# Development guide
+# Development Guide
 
 ## Project structure
 
-Project is divided into three main components. Frontend with user interface, backend with Redis server and serverless functionalities.
+Kyma Showcase consists of three main components. 
 
-## Prerequisites
-
-- [Kyma](https://kyma-project.io/) cluster 
-- [Kubectl](https://kubernetes.io/docs/tasks/tools/) to deploy the application
+- Frontend with the user interface,
+- Backend with the Redis server,
+- Serverless Functions.
 
 ## Installation
 
-For detailed instruction on installation refer to [here](../README.md#Installation).
+For the installation guidelines, refer to [Installation](../README.md#Installation) section in the main README.md file.
 
 ## Configuration
 
-To configure Kyma Showcase you need to apply the following parameters in [secrets.yaml](../resources/secrets.yaml), [frontend-config.yaml](../resources/frontend/frontend-config.yaml) and fill the config domain in [frontend/apirule.yaml](../resources/frontend/apirule.yaml) and [backend/apirule.yaml](../resources/backend/apirule.yaml).
+To configure Kyma Showcase, you need to apply the relevant parameters in [secrets.yaml](../resources/secrets.yaml) and fill the config domain in the [frontend-config.yaml](../resources/frontend/frontend-config.yaml) [frontend/apirule.yaml](../resources/frontend/apirule.yaml) and [backend/apirule.yaml](../resources/backend/apirule.yaml) files.
 
 
 | Parameter | Description |
 |-----------|-------------|
-| GCP_API_KEY | Your Google Cloud Platform API key, for more information on key generation refer to [here](https://cloud.google.com/docs/authentication/api-keys#creating_an_api_key). |
-| GCP_EMAIL | Mandatory credential for Google cloud platform access.|
-| REDIS_PASSWORD | Required as a set up for the authorization layer |
-| API_URL | Defines the API URL that frontend will make calls to |
-| EVENT_URL | Event publisher URL |
+| GCP_API_KEY | Your Google Cloud Platform API key. For more information on the key generation refer to the [official documentation](https://cloud.google.com/docs/authentication/api-keys#creating_an_api_key). |
+| GCP_EMAIL | Mandatory credential for the Google Cloud Platform access.|
+| REDIS_PASSWORD | Required for the authorization layer. |
+| API_URL | Defines the API URL that Frontend makes calls to. |
+| EVENT_URL | Event publisher URL. |
