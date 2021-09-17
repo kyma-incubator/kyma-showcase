@@ -1,22 +1,22 @@
 # Architecture
 
-The diagram below presents the basic workflow of the project.
+The diagram presents the basic workflow of Kyma Showcase. <!--1. the numbers could be also presented in the diagram, 2. don't capitalize "event">
 
 ![Diagram Kyma Showcase](./assets/diagram_showcase.svg)
 
-1. Frontend gets all current images stored in database and displays them on feed.
-2. User uploads an image using frontend's UI.
-3. Image is stored in the database and displayed on the feed.
+1. Frontend gets all images stored in the Redis Database and displays them in the feed.
+2. A user uploads an image using Frontend's UI.
+3. The image is stored in the database and then displayed in the feed. <!--the step is similar to the first one>
 4. Backend sends an event containing the database ID used to access the image.
-5. Serverless functions are triggered by the event and get the image from the database using given ID.
-6. Functions send the image in base64 to Google Cloud Platform for processing.
-7. Database entry is updated with newly obtained image details.
-8. Depending of the details content a new event may be sent triggering next functions.
-9. Upon clicking a single image in frontend UI a details page is displayed listing all the information recieved from the Google Cloud Platform.
+5. Serverless Functions are triggered by the event and get the image from the database using the given ID.
+6. The Functions send the image in base64 to Google Cloud Platform for processing.
+7. The database entry is updated with newly obtained image details.
+8. Depending on the details content, a new event may be sent triggering next Functions.
+9. Upon clicking a single image in the Frontend UI, a details page is displayed listing all the information recieved from the Google Cloud Platform.
 
-Initial event triggers `Multiple object detection, Landmark detection` and `General labels` functions. The remaining ones get triggered based on the contents of response recieved from Google Cloud Platform.
+The initial event triggers `Multiple object detection`, `Landmark detection` and `General labels` Functions. The remaining ones get triggered based on the content of the response recieved from the Google Cloud Platform.
 
-| Content required | Information type | Serverless functions triggered |
+| Content required | Information type | Serverless Functions triggered |
 |-----------|-------------|-------------|
 | Text/Font | Label | Text detection |
 | Handwriting | Label | Handwriting detection |

@@ -4,8 +4,8 @@
 
 This folder contains documents that relate to the project.
 
-[architecture.md](./architecture.md) - Architecture and workflow.
+## Table of contents
 
-[details.md](./details.md) - Detailed overview of each component.
-
-[development.md](./development.md) - Development and configuration.
+- [Architecture](./architecture.md) - architecture and workflow
+- [Details](./details.md) - detailed information on each component
+- [Development Guide](./development.md) - development and configuration details

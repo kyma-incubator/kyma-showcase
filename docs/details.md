@@ -1,9 +1,9 @@
 # Details
 
-Project consists of three main components that work together to provide the final result.
+Kyma Showcase consists of three main components that work together to provide the final result.
 
-[Frontend](./frontend) presents the user with a clickable drag and drop field and a feed of all previously uploaded pictures. After uploading desired image it gets added to the feed in order of upload time. Clicking any image takes the user to a details page where they can read all details info acquired.
+[Frontend](./frontend) presents the user with a clickable drag and drop field and a feed of all previously uploaded pictures. After uploading the desired images, they get added one by one to the feed. Clicking any image takes the user to its details page showing all the information acquired from processing the image.
 
-[Backend](./backend) manages all calls to the database. Upon sucessfully saving the image backend sends an initial event triggering the serverless functions.
+[Backend](./backend) manages all calls to the Redis Database. Upon successfully saving an image, Backend sends an initial event triggering serverless Functions.
 
-[Functions](./resources/functions) work with the image ID received from the event to acquire the right image from the database and then send it to Google Cloud Platform. Functions update the database entry with newly acquired information and depending on its content can send events triggering more functions in order to get further details from the image.
+[Functions](./resources/functions) work with the image ID received from the event to acquire the right image from the Redis Database and send it to the Google Cloud Platform. The Functions update the Redis Database entry with newly acquired information and depending on its content they can send events triggering more Functions in order to get further details on the image.
