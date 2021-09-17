@@ -407,7 +407,7 @@ func TestCreate(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
-		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is not an image")
+		assert.Contains(t, hook.LastEntry().Message, "content is not an image")
 		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
 	})
 
@@ -437,7 +437,7 @@ func TestCreate(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
-		assert.Contains(t, hook.LastEntry().Message, "CREATE handler: content is empty")
+		assert.Contains(t, hook.LastEntry().Message, "content is empty")
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 }

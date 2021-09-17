@@ -225,35 +225,27 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err == nil && u.Scheme != "" && u.Host != "" {
 		resp, err := http.Get(img.Content)
 		if err != nil {
-			err = errors.New("CREATE handler: could not get image from: " + img.Content + err.Error())
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			handleError(w, http.StatusNotAcceptable, "%s: could not get image from: %s", getFuncName(), err)
 			return
 		}
 		defer resp.Body.Close()
 
 		imgByte, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			err = errors.New("CREATE handler: failed to read request body" + err.Error())
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusInternalServerError)
+			handleError(w, http.StatusInternalServerError, "%s: failed to read request body: %s", getFuncName(), err)
 			return
 		}
 
 		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
 
 		if calculateSize(imgBase64) > 5000000 {
-			err = errors.New("image from url is too large")
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusTeapot)
+			handleError(w, http.StatusTeapot, "%s: image from url is too large", getFuncName())
 			return
 		}
 
 		ext := getExtension(imgByte)
 		if ext == "" {
-			err = errors.New("extension is not supported")
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusUnsupportedMediaType)
+			handleError(w, http.StatusUnsupportedMediaType, "%s: extension is not supported", getFuncName())
 			return
 		}
 
@@ -265,17 +257,13 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		_, err = base64.StdEncoding.DecodeString(contentBase64)
 
 		if err != nil {
-			err = errors.New("CREATE handler: content is not an image" + err.Error())
-			log.Error(err)
-			http.Error(w, err.Error(), http.StatusNotAcceptable)
+			handleError(w, http.StatusNotAcceptable, "%s: content is not an image: %s", getFuncName(), err)
 			return
 		}
 	}
 
 	if img.Content == "" {
-		err = errors.New("CREATE handler: content is empty")
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		handleError(w, http.StatusInternalServerError, "%s: content is empty", getFuncName())
 		return
 	}
 
@@ -290,27 +278,9 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	imgTime := time.Now()
 	img.Time = imgTime.Format(time.RFC3339)
 
-	m1 := regexp.MustCompile("data:.*?base64,")
-	contentBase64 := m1.ReplaceAllString(img.Content, "")
-	_, err = base64.StdEncoding.DecodeString(contentBase64)
-
-	if err != nil {
-		err := errors.New("CREATE handler: content is not an image" + err.Error())
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusNotAcceptable)
-		return
-	}
-
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
 		handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", getFuncName(), err)
-		return
-	}
-
-	if img.Content == "" {
-		err := errors.New("CREATE handler: content is empty")
-		log.Error(err)
-		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -377,7 +347,6 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
 		handleError(w, http.StatusBadRequest, "%s: invalid content type", getFuncName())
-
 		return
 	}
 	value, err := ioutil.ReadAll(r.Body)
