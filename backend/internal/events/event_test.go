@@ -34,7 +34,7 @@ func TestSendNewImage(t *testing.T) {
 		assert.Error(t, err)
 
 	})
-	t.Run("should send event", func(t *testing.T) {
+	t.Run("should return error when server returns unexpected status code", func(t *testing.T) {
 
 		img := model.Image{}
 
@@ -46,6 +46,6 @@ func TestSendNewImage(t *testing.T) {
 		eventHandler := NewEventHandler(testServer.URL)
 		err := eventHandler.SendNewImage(fixedID, img)
 		assert.Error(t, err)
-		assert.Contains(t, err.Error(), "eventing returned not expected status")
+		assert.Contains(t, err.Error(), "sending event returned unexpected status")
 	})
 }

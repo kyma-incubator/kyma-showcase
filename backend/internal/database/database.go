@@ -2,8 +2,8 @@ package database
 
 import (
 	"context"
-	"errors"
 	"github.com/go-redis/redis/v8"
+	"github.com/pkg/errors"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -46,7 +46,7 @@ func (d *Database) Connect() error {
 // Insert adds a database entry using provided key(String) and value(String).
 func (d Database) Insert(key string, value string) error {
 	if d.connection == nil {
-		return errors.New("INSERT to db: connection not initialized")
+		return errors.New("connection not initialized")
 	}
 	_, err := d.connection.Set(d.ctx, key, value, 0).Result()
 	return err
@@ -55,18 +55,18 @@ func (d Database) Insert(key string, value string) error {
 // Get requests and receives a value(String) for the given key(String).
 func (d Database) Get(key string) (interface{}, error) {
 	if d.connection == nil {
-		return nil, errors.New("GET from db: connection not initialized")
+		return nil, errors.New("connection not initialized")
 	}
 
 	val, err := d.connection.Get(d.ctx, key).Result()
 
 	switch {
 	case err == redis.Nil:
-		err = errors.New("GET from db:key " + key + " does not exist")
+		err = errors.New("key " + key + " does not exist")
 	case err != nil:
-		err = errors.New("GET from db:error: " + err.Error() + " occurred in getting data from db")
+		err = errors.Wrap(err, "error occurred in getting data from db")
 	case val == "":
-		err = errors.New("GET from db:for key " + key + " value is empty")
+		err = errors.New("for key " + key + " value is empty")
 	}
 	return val, err
 }
@@ -74,7 +74,7 @@ func (d Database) Get(key string) (interface{}, error) {
 // GetAll returns keys([]string containing all the keys in the database.
 func (d Database) GetAll() ([]string, error) {
 	if d.connection == nil {
-		return nil, errors.New("GETALL from db: connection not initialized")
+		return nil, errors.New("connection not initialized")
 	}
 
 	keys, err := d.connection.Keys(d.ctx, "*").Result()

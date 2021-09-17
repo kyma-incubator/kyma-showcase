@@ -3,9 +3,9 @@ package events
 import (
 	"bytes"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/pkg/errors"
 	"net/http"
 	"time"
 )
@@ -57,7 +57,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	event := newEvent(id, img)
 	postBody, err := json.Marshal(event)
 	if err != nil {
-		return errors.New("SENDEVENT: marshal error" + err.Error())
+		return errors.Wrap(err, "marshal error")
 	}
 
 	responseBody := bytes.NewBuffer(postBody)
@@ -73,8 +73,7 @@ func (e EventHandler) SendNewImage(id string, img model.Image) error {
 	}
 
 	if resp.StatusCode != http.StatusNoContent {
-		err = errors.New(fmt.Sprintf("eventing returned not expected status: %s, %v", resp.Status, resp.StatusCode))
-		return errors.New("SENDEVENT: post sending error" + err.Error())
+		return errors.New(fmt.Sprintf("sending event returned unexpected status: %s", resp.Status))
 	}
 
 	return nil
