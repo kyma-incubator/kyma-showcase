@@ -5,6 +5,12 @@ export const fetchAPIConfig = async () => {
   API_CONFIG = await response.json();
 };
 
+export const fetchMapAPIConfig = async () => {
+  const response = await fetch('/config/config.json');
+  API_CONFIG = await response.json();
+  return API_CONFIG.API_KEY;
+};
+
 export const getAllImagesFromAPI = async () => {
   const response = await fetch(API_CONFIG.API_URL);
   return response.json();
