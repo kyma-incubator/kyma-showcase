@@ -16,7 +16,6 @@ export const LandmarksMapTile = ({ landmarks }) => {
         return (y = obj.longitude);
       });
       const finalUrl = mapURL + x[0] + ',' + y[0] + mapKey;
-      console.log(finalUrl);
       setMapUrl(finalUrl);
     };
     getMarks(landmarks);
