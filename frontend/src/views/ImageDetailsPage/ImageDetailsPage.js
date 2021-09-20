@@ -48,7 +48,7 @@ const ImageDetailsPage = () => {
       <Wrapper>
         <Header />
         {isImageLoading && <Loader />}
-        {!isImageLoading && <ImageDetailsArea content={imageDetails.content} />}
+        {!isImageLoading && <ImageDetailsArea content={imageDetails.content} gcp={imageDetails.gcp} />}
         <br />
         {isDescriptionLoading && <h2>Image details are being analyzed.</h2>}
         {!isDescriptionLoading && <ImageDetails gcp={imageDetails.gcp} />}
