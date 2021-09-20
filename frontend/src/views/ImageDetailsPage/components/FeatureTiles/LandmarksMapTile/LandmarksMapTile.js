@@ -9,13 +9,9 @@ export const LandmarksMapTile = ({ landmarks }) => {
     const getMarks = async (landmarks) => {
       let mapURL = 'https://maps.googleapis.com/maps/api/staticmap?&zoom=12&size=250x250&maptype=roadmap&markers=color:red%7Clabel:A%7C';
       const mapKey = '&key=' + await fetchMapAPIConfig();
-      let x = landmarks?.map((obj) => {
-        return (x = obj.latitude);
-      });
-      let y = landmarks?.map((obj) => {
-        return (y = obj.longitude);
-      });
-      const finalUrl = mapURL + x[0] + ',' + y[0] + mapKey;
+      let x = landmarks[0].latitude;
+      let y = landmarks[0].longitude;
+      const finalUrl = mapURL + x + ',' + y + mapKey;
       setMapUrl(finalUrl);
     };
     getMarks(landmarks);
