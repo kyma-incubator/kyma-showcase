@@ -6,7 +6,7 @@ export const fetchAPIConfig = async () => {
 };
 
 export const fetchMapAPIConfig = async () => {
-  return API_CONFIG.API_KEY;
+  return API_CONFIG.API_KEY_PARAM;
 };
 
 export const getAllImagesFromAPI = async () => {

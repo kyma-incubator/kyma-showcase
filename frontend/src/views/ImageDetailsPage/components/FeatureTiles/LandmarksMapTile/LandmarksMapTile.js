@@ -8,7 +8,7 @@ export const LandmarksMapTile = ({ landmarks }) => {
   useEffect(() => {
     const getMarks = async (landmarks) => {
       let mapURL = 'https://maps.googleapis.com/maps/api/staticmap?&zoom=12&size=250x250&maptype=roadmap&markers=color:red%7Clabel:A%7C';
-      const mapKey = await fetchMapAPIConfig();
+      const mapKey = '&key=' + await fetchMapAPIConfig();
       let x = landmarks?.map((obj) => {
         return (x = obj.latitude);
       });
