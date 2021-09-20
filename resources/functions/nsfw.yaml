@@ -1,0 +1,121 @@
+apiVersion: serverless.kyma-project.io/v1alpha1
+kind: Function
+metadata:
+  name: nsfw
+spec:
+  deps: |-
+    { 
+      "name": "nsfw",
+      "version": "1.0.0",
+      "dependencies": {
+        "node-fetch": "2.6.1",
+        "@google-cloud/vision":"2.3.8"
+      }
+    }
+  env:
+    - name: GCP_EMAIL
+      valueFrom:
+        secretKeyRef:
+          key: GCP_EMAIL
+          name: kyma-showcase-secret
+    - name: GCP_API_KEY
+      valueFrom:
+        secretKeyRef:
+          key: GCP_API_KEY
+          name: kyma-showcase-secret
+    - name: API_CONFIG
+      valueFrom:
+        configMapKeyRef:
+          key: config.json
+          name: showcase-functions-config
+  runtime: nodejs14
+  source: |-
+    module.exports = {
+      main: async function (event, context) {
+        async function getBase64(id) {
+          console.log("Getting base64 from DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL);
+          const data = await response.json();
+          const content = data.content;
+          const base64 = content.replace(/data:.*?base64,/, '');
+          console.log("Base64 loaded");
+          return base64;
+        }
+
+        async function getNSFWTag(base64){
+          console.log("Getting NSFW Tag from GCP");
+          const vision = require('@google-cloud/vision');
+          const options = {
+            credentials: {
+              client_email: process.env.GCP_EMAIL,
+              private_key: process.env.GCP_API_KEY.replace(/\\n/gm, '\n'),
+            },
+          };
+
+          const client = new vision.ImageAnnotatorClient(options);
+          const request = {
+            image: {
+              content: Buffer.from(base64, 'base64'),
+            },
+          };
+          const [result] = await client.safeSearchDetection(request);
+          const detections = result.safeSearchAnnotation;
+          console.log("NSFW tag loaded");
+
+          switch(detections.adult){
+            case "LIKELY":
+            return true;
+            case "VERY_LIKELY":
+            return true;
+          }
+          switch(detections.violence){
+            case "LIKELY":
+            return true;
+            case "VERY_LIKELY":
+            return true;
+          }
+          switch(detections.racy){
+            case "LIKELY":
+            return true;
+            case "VERY_LIKELY":
+            return true;
+          }
+          return false;
+        }
+
+        async function putDetailsToDB(id, data){
+          console.log("Putting NSW tag to DB");
+          const fetch = require('node-fetch');
+          const URL = JSON.parse(process.env.API_CONFIG).API_URL + '/' + id;
+          const response = await fetch(URL,{
+            method:'PUT',
+            body: JSON.stringify({
+              nsfw: data
+            }),
+            headers: {
+              'Content-type': 'application/json',
+            },
+          });
+          console.log("NSFW tag put to DB with status: " + response.status);
+          return response.json();
+        }
+
+        try{
+          const imgID = event.data;
+          console.log("Processing image: " + imgID);
+
+          const base64 = await getBase64(imgID);
+          const nsfwTag = await getNSFWTag(base64);
+          if (nsfwTag){
+            await putDetailsToDB(imgID, nsfwTag);
+          }else {
+            console.log("No NSFW Tag present");
+          }
+        }catch(err){
+          console.error(err);
+          return null;
+        }
+      }
+    }
