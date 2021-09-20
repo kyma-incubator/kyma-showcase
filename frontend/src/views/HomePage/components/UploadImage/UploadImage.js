@@ -118,10 +118,10 @@ const UploadImage = () => {
     <>
       <StyledUploadImage>
         <nav>
-          <UploadButton disabled={disabledUpload} className="upload-image" onClick={handleImageClick}>
+          <UploadButton disabled={disabledUpload} onClick={handleImageClick}>
             Upload file
           </UploadButton>
-          <UrlButton disabled={!disabledUpload} className="upload-url" onClick={handleUrlClick}>
+          <UrlButton disabled={!disabledUpload} onClick={handleUrlClick}>
             Upload from URL
           </UrlButton>
         </nav>
@@ -133,7 +133,7 @@ const UploadImage = () => {
               <h5>Accepted file formats: png, gif, jpg</h5>
             </p>
             {fileName && <p className="file-name">{fileName}</p>}
-            <input ref={inputRef} size={0} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
+            <input ref={inputRef} className="file-input" type="file" accept="image/png, image/gif, image/jpg" onChange={handleImageUpload} />
           </form>
         )}
         {!disabledUpload && (
