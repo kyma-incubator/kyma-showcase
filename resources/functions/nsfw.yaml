@@ -62,6 +62,8 @@ spec:
           };
           const [result] = await client.safeSearchDetection(request);
           const detections = result.safeSearchAnnotation;
+          console.log("NSFW tag loaded");
+
           switch(detections.adult){
             case "LIKELY":
             return true;
