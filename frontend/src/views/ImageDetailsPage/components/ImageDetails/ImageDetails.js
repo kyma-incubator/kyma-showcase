@@ -1,6 +1,7 @@
 import { UploadedImagesSection } from './ImageDetails.styles';
 import { TextTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextTile/TextTile';
 import { LandmarksTile } from 'views/ImageDetailsPage/components/FeatureTiles/LandmarksTile/LandmarksTile';
+import { LandmarksMapTile } from 'views/ImageDetailsPage/components/FeatureTiles/LandmarksMapTile/LandmarksMapTile';
 import { FeatureTile } from 'views/ImageDetailsPage/components/FeatureTiles/FeatureTile/FeatureTile';
 import { FaceTile } from 'views/ImageDetailsPage/components/FeatureTiles/FaceTile/FaceTile';
 import { TextCategoryTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextCategoryTile/TextCategoryTile';
@@ -48,6 +49,7 @@ const ImageDetails = ({ gcp }) => {
       {textDetails && <FeatureTile title={'Detected words'} features={textDetails.words} />}
       {logos && <FeatureTile title={'Logos'} features={logos} />}
       {landmarks && <LandmarksTile landmarks={landmarks} />}
+      {landmarks && <LandmarksMapTile landmarks={landmarks} />}
       {faceDetails && <FaceTile faceDetails={faceDetails} />}
       {textEntity && <TextEntityTile entity={textEntity} />}
       {textCategory && <TextCategoryTile categories={textCategory} />}
