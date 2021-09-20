@@ -25,9 +25,7 @@ export const LandmarksMapTile = ({ landmarks }) => {
 
   return (
     <FeatureTemplate>
-      <div class="landmark-map">
         {mapUrl && <img alt="map" src={mapUrl}/>}
-      </div>
     </FeatureTemplate>
   );
 };
