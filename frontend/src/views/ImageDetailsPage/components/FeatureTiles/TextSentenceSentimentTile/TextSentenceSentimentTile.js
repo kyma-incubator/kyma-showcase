@@ -4,7 +4,7 @@ import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
 export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
   return (
     <FeatureTemplate>
-      <p>Sentence analyze</p>
+      <p>Sentence analysis</p>
       <ul>
         {sentenceSentiment?.map((obj, i) => (
           <FeatureItem key={i}>
