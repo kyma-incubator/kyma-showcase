@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: showcase-frontend-config
 data:
-  config.json: '{"API_URL": "https://backend.{YOUR_CLUSTER_DOMAIN}/v1/images","API_KEY":"&key={YOUR_MAP_API_KEY}"}'
+  config.json: '{"API_URL": "https://backend.{YOUR_CLUSTER_DOMAIN}/v1/images","API_KEY_PARAM":"{YOUR_MAP_API_KEY}"}'
