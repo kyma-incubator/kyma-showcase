@@ -8,21 +8,21 @@ import { TextEntityTile } from 'views/ImageDetailsPage/components/FeatureTiles/T
 import { TextDocSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextDocSentimentTile/TextDocSentimentTile';
 import { TextSentenceSentimentTile } from 'views/ImageDetailsPage/components/FeatureTiles/TextSentenceSentimentTile/TextSentenceSentimentTile';
 
-const findObject = (gcp, key) => {
+const findFeature = (gcp, key) => {
   return gcp?.find((obj) => Object.keys(obj).includes(key));
 };
 
 const extractData = (gcp) => {
   gcp = gcp?.map(JSON.parse);
-  const labels = findObject(gcp, 'label')?.label;
-  const textDetails = findObject(gcp, 'font');
-  const objects = findObject(gcp, 'objects')?.objects;
-  const logos = findObject(gcp, 'logo')?.logo;
-  const landmarks = findObject(gcp, 'landmarks')?.landmarks;
-  const faceDetails = findObject(gcp, 'faceDetails')?.faceDetails;
-  const textCategory = findObject(gcp, 'categories')?.categories;
-  const textEntity = findObject(gcp, 'entityDetails')?.entityDetails;
-  const textSentiment = findObject(gcp, 'docLanguage');
+  const labels = findFeature(gcp, 'label')?.label;
+  const textDetails = findFeature(gcp, 'font');
+  const objects = findFeature(gcp, 'objects')?.objects;
+  const logos = findFeature(gcp, 'logo')?.logo;
+  const landmarks = findFeature(gcp, 'landmarks')?.landmarks;
+  const faceDetails = findFeature(gcp, 'faceDetails')?.faceDetails;
+  const textCategory = findFeature(gcp, 'categories')?.categories;
+  const textEntity = findFeature(gcp, 'entityDetails')?.entityDetails;
+  const textSentiment = findFeature(gcp, 'docLanguage');
 
   return {
     labels,

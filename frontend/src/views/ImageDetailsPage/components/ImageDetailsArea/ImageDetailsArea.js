@@ -1,14 +1,13 @@
 import PropTypes from 'prop-types';
 import { ImageArea } from './ImageDetailsArea.styles.js';
 
-const findObject = (gcp, key) => {
+const findNsfwTag = (gcp, key) => {
   return gcp?.find((obj) => Object.keys(obj).includes(key));
 };
+
 const ImageDetailsArea = ({ content, gcp }) => {
   gcp = gcp?.map(JSON.parse);
-  console.log(gcp);
-  const nsfw = findObject(gcp, 'nsfw')?.nsfw;
-  console.log(nsfw);
+  const nsfw = findNsfwTag(gcp, 'nsfw')?.nsfw;
   return (
     <ImageArea nsfw={nsfw}>
       {nsfw && <p>Nsfw</p>}
@@ -19,6 +18,7 @@ const ImageDetailsArea = ({ content, gcp }) => {
 
 ImageDetailsArea.propTypes = {
   content: PropTypes.string.isRequired,
+  gcp: PropTypes.array.isRequired,
 };
 
 export default ImageDetailsArea;
