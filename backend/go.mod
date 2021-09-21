@@ -16,5 +16,5 @@ require (
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/vrischmann/envconfig v1.3.0
-	go.uber.org/zap v1.16.0 // indirect
+	go.uber.org/zap v1.16.0
 )

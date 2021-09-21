@@ -6,7 +6,7 @@ import (
 	"os"
 )
 
-func InitLogger() *logger.Logger{
+func InitLogger() *logger.Logger {
 	level, err := logger.MapLevel("debug")
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to map log level from options: %s", err.Error()); logErr != nil {
@@ -36,5 +36,3 @@ func InitLogger() *logger.Logger{
 	}
 	return log
 }
-
-

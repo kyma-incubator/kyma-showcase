@@ -381,7 +381,7 @@ func TestCreate(t *testing.T) {
 			dbManagerMock.AssertNumberOfCalls(t, "Insert", tt.assertNoOfInsert)
 			assert.Contains(t, recorder.Body.String(), tt.bodyContains)
 			logs := observedLogs.All()
-			if assert.NotEmpty(t,logs) {
+			if assert.NotEmpty(t, logs) {
 				assert.Contains(t, logs[len(logs)-1].Entry.Message, tt.logContains)
 			}
 			assert.Equal(t, tt.statusCode, recorder.Code)
@@ -418,7 +418,7 @@ func TestCreate(t *testing.T) {
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
 		logs := observedLogs.All()
-		if assert.NotEmpty(t,logs) {
+		if assert.NotEmpty(t, logs) {
 			assert.Contains(t, logs[len(logs)-1].Entry.Message, "content is not an image")
 		}
 		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
@@ -452,188 +452,188 @@ func TestCreate(t *testing.T) {
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
 		logs := observedLogs.All()
-		if assert.NotEmpty(t,logs) {
+		if assert.NotEmpty(t, logs) {
 			assert.Contains(t, logs[len(logs)-1].Entry.Message, "content is empty")
 		}
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 }
 
-func TestUpdate(t *testing.T){
-		imgTime := fixedTime()
-		body := `{` +
-			`labels:[labels,moods]` +
-			`}`
-		img := model.Image{
-			ID: fixedID,
+func TestUpdate(t *testing.T) {
+	imgTime := fixedTime()
+	body := `{` +
+		`labels:[labels,moods]` +
+		`}`
+	img := model.Image{
+		ID: fixedID,
 
-			Content: "base64",
-			Time:    imgTime,
-		}
-		imgWithGCP := model.Image{
-			ID:      fixedID,
-			Content: "base64",
-			GCP:     []string{"{labels:[labels,moods]}"},
-			Time:    imgTime,
-		}
+		Content: "base64",
+		Time:    imgTime,
+	}
+	imgWithGCP := model.Image{
+		ID:      fixedID,
+		Content: "base64",
+		GCP:     []string{"{labels:[labels,moods]}"},
+		Time:    imgTime,
+	}
 
-		jsonImg, err := json.Marshal(img)
-		assert.NoError(t, err)
-		jsonImgWithGCP, err := json.Marshal(imgWithGCP)
-		assert.NoError(t, err)
-		idStruct := model.ID{ID: fixedID}
-		jsonID, err := json.Marshal(idStruct)
-		assert.NoError(t, err)
+	jsonImg, err := json.Marshal(img)
+	assert.NoError(t, err)
+	jsonImgWithGCP, err := json.Marshal(imgWithGCP)
+	assert.NoError(t, err)
+	idStruct := model.ID{ID: fixedID}
+	jsonID, err := json.Marshal(idStruct)
+	assert.NoError(t, err)
 
-		tests := []struct {
-			testMessage      string
-			requestURL       string
-			body             io.Reader
-			contentType      string
-			getReturned      string
-			getError         error
-			insertArg        string
-			insertError      error
-			assertNoOfInsert int
-			assertNoOfGet    int
-			bodyContains     string
-			logContains      string
-			statusCode       int
-		}{
-			{
-				testMessage:      "should return error with status code 404 when url is wrong",
-				requestURL:       "/v1/images/{id}/wrong",
-				contentType:      "application/json",
-				assertNoOfGet:    0,
-				assertNoOfInsert: 0,
-				bodyContains:     "404 not found",
-				logContains:      "404 not found",
-				statusCode:       http.StatusNotFound,
-			},
-			{
-				testMessage:      "should return error when key does not exists",
-				requestURL:       "/v1/images/" + fixedID,
-				contentType:      "application/json",
-				getError:         errors.New("GET from db:key " + fixedID + " does not exist"),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 0,
-				bodyContains:     "GET from db:key " + fixedID + " does not exist",
-				logContains:      "GET from db:key " + fixedID + " does not exist",
-				statusCode:       http.StatusNotFound,
-			},
-			{
-				testMessage:      "should return error with status code 500 when database does not respond",
-				requestURL:       "/v1/images/" + fixedID,
-				contentType:      "application/json",
-				getError:         errors.New("GET from db: database not respond error"),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 0,
-				bodyContains:     "GET from db: database not respond error",
-				logContains:      "GET from db: database not respond error",
-				statusCode:       http.StatusInternalServerError,
-			},
-			{
-				testMessage: "should return error while there is an error during unmarshal",
-				requestURL:  "/v1/images/" + fixedID,
-				contentType: "application/json",
-				getReturned: `
+	tests := []struct {
+		testMessage      string
+		requestURL       string
+		body             io.Reader
+		contentType      string
+		getReturned      string
+		getError         error
+		insertArg        string
+		insertError      error
+		assertNoOfInsert int
+		assertNoOfGet    int
+		bodyContains     string
+		logContains      string
+		statusCode       int
+	}{
+		{
+			testMessage:      "should return error with status code 404 when url is wrong",
+			requestURL:       "/v1/images/{id}/wrong",
+			contentType:      "application/json",
+			assertNoOfGet:    0,
+			assertNoOfInsert: 0,
+			bodyContains:     "404 not found",
+			logContains:      "404 not found",
+			statusCode:       http.StatusNotFound,
+		},
+		{
+			testMessage:      "should return error when key does not exists",
+			requestURL:       "/v1/images/" + fixedID,
+			contentType:      "application/json",
+			getError:         errors.New("GET from db:key " + fixedID + " does not exist"),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 0,
+			bodyContains:     "GET from db:key " + fixedID + " does not exist",
+			logContains:      "GET from db:key " + fixedID + " does not exist",
+			statusCode:       http.StatusNotFound,
+		},
+		{
+			testMessage:      "should return error with status code 500 when database does not respond",
+			requestURL:       "/v1/images/" + fixedID,
+			contentType:      "application/json",
+			getError:         errors.New("GET from db: database not respond error"),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 0,
+			bodyContains:     "GET from db: database not respond error",
+			logContains:      "GET from db: database not respond error",
+			statusCode:       http.StatusInternalServerError,
+		},
+		{
+			testMessage: "should return error while there is an error during unmarshal",
+			requestURL:  "/v1/images/" + fixedID,
+			contentType: "application/json",
+			getReturned: `
 			{
 				id":` + fixedID + `,
 				"content":"base64",
 			}`,
-				assertNoOfGet:    1,
-				assertNoOfInsert: 0,
-				bodyContains:     "failed to convert marshal to json",
-				logContains:      "failed to convert marshal to json",
-				statusCode:       http.StatusInternalServerError,
-			},
-			{
-				testMessage:      "should return 400 when Content-Type is incorrect",
-				requestURL:       "/v1/images/" + fixedID,
-				contentType:      "application/golang",
-				getReturned:      string(jsonImgWithGCP),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 0,
-				bodyContains:     "invalid content type",
-				logContains:      "invalid content type",
-				statusCode:       http.StatusBadRequest,
-			},
-			{
-				testMessage:      "should return 500 when is an error during reading request body",
-				requestURL:       "/v1/images/" + fixedID,
-				body:             iotest.ErrReader(errors.New("failed to read")),
-				contentType:      "application/json",
-				getReturned:      string(jsonImg),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 0,
-				bodyContains:     "failed to read",
-				logContains:      "failed to read request body",
-				statusCode:       http.StatusInternalServerError,
-			},
-			{
-				testMessage:      "should return 500 when failed to insert data to database",
-				requestURL:       "/v1/images/" + fixedID,
-				body:             bytes.NewBuffer([]byte(body)),
-				contentType:      "application/json",
-				getReturned:      string(jsonImg),
-				insertArg:        string(jsonImgWithGCP),
-				insertError:      errors.New("failed to insert json to db"),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 1,
-				bodyContains:     "failed to insert json to db",
-				logContains:      "failed to insert json to db",
-				statusCode:       http.StatusInternalServerError,
-			},
-			{
-				testMessage:      "should return 200 code when updating data in database is correct",
-				requestURL:       "/v1/images/" + fixedID,
-				body:             bytes.NewBuffer([]byte(body)),
-				contentType:      "application/json",
-				getReturned:      string(jsonImg),
-				insertArg:        string(jsonImgWithGCP),
-				assertNoOfGet:    1,
-				assertNoOfInsert: 1,
-				bodyContains:     string(jsonID),
-				logContains:      "succeeded",
-				statusCode:       http.StatusOK,
-			},
-		}
-
-		for _, tt := range tests {
-			t.Run(tt.testMessage, func(t *testing.T) {
-				//given
-				core, observedLogs := observer.New(zap.DebugLevel)
-				log, err := logger.New(logger.TEXT, logger.DEBUG, core)
-				assert.NoError(t, err)
-				req, err := http.NewRequest("PUT", tt.requestURL, tt.body)
-				vars := map[string]string{
-					"id": fixedID,
-				}
-				req = mux.SetURLVars(req, vars)
-				assert.NoError(t, err)
-				req.Header.Set("Content-Type", tt.contentType)
-				recorder := httptest.NewRecorder()
-				dbManagerMock := mocks.DBManager{}
-				idMock := mocks.IdGenerator{}
-				idMock.On("NewID").Return(fixedID, nil)
-				eventBusMock := mocks.EventBus{}
-				testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
-
-				dbManagerMock.On("Get", fixedID).Return(tt.getReturned, tt.getError)
-				dbManagerMock.On("Insert", fixedID, tt.insertArg).Return(tt.insertError)
-
-				//when
-				testSubject.Update(recorder, req)
-
-				//then
-				dbManagerMock.AssertNumberOfCalls(t, "Get", tt.assertNoOfGet)
-				dbManagerMock.AssertNumberOfCalls(t, "Insert", tt.assertNoOfInsert)
-				assert.Contains(t, recorder.Body.String(), tt.bodyContains)
-				assert.Equal(t, tt.statusCode, recorder.Code)
-				logs := observedLogs.All()
-				if assert.NotEmpty(t, logs) {
-					assert.Contains(t, logs[len(logs)-1].Entry.Message, tt.logContains)
-				}
-			})
-		}
+			assertNoOfGet:    1,
+			assertNoOfInsert: 0,
+			bodyContains:     "failed to convert marshal to json",
+			logContains:      "failed to convert marshal to json",
+			statusCode:       http.StatusInternalServerError,
+		},
+		{
+			testMessage:      "should return 400 when Content-Type is incorrect",
+			requestURL:       "/v1/images/" + fixedID,
+			contentType:      "application/golang",
+			getReturned:      string(jsonImgWithGCP),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 0,
+			bodyContains:     "invalid content type",
+			logContains:      "invalid content type",
+			statusCode:       http.StatusBadRequest,
+		},
+		{
+			testMessage:      "should return 500 when is an error during reading request body",
+			requestURL:       "/v1/images/" + fixedID,
+			body:             iotest.ErrReader(errors.New("failed to read")),
+			contentType:      "application/json",
+			getReturned:      string(jsonImg),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 0,
+			bodyContains:     "failed to read",
+			logContains:      "failed to read request body",
+			statusCode:       http.StatusInternalServerError,
+		},
+		{
+			testMessage:      "should return 500 when failed to insert data to database",
+			requestURL:       "/v1/images/" + fixedID,
+			body:             bytes.NewBuffer([]byte(body)),
+			contentType:      "application/json",
+			getReturned:      string(jsonImg),
+			insertArg:        string(jsonImgWithGCP),
+			insertError:      errors.New("failed to insert json to db"),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 1,
+			bodyContains:     "failed to insert json to db",
+			logContains:      "failed to insert json to db",
+			statusCode:       http.StatusInternalServerError,
+		},
+		{
+			testMessage:      "should return 200 code when updating data in database is correct",
+			requestURL:       "/v1/images/" + fixedID,
+			body:             bytes.NewBuffer([]byte(body)),
+			contentType:      "application/json",
+			getReturned:      string(jsonImg),
+			insertArg:        string(jsonImgWithGCP),
+			assertNoOfGet:    1,
+			assertNoOfInsert: 1,
+			bodyContains:     string(jsonID),
+			logContains:      "succeeded",
+			statusCode:       http.StatusOK,
+		},
 	}
+
+	for _, tt := range tests {
+		t.Run(tt.testMessage, func(t *testing.T) {
+			//given
+			core, observedLogs := observer.New(zap.DebugLevel)
+			log, err := logger.New(logger.TEXT, logger.DEBUG, core)
+			assert.NoError(t, err)
+			req, err := http.NewRequest("PUT", tt.requestURL, tt.body)
+			vars := map[string]string{
+				"id": fixedID,
+			}
+			req = mux.SetURLVars(req, vars)
+			assert.NoError(t, err)
+			req.Header.Set("Content-Type", tt.contentType)
+			recorder := httptest.NewRecorder()
+			dbManagerMock := mocks.DBManager{}
+			idMock := mocks.IdGenerator{}
+			idMock.On("NewID").Return(fixedID, nil)
+			eventBusMock := mocks.EventBus{}
+			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
+
+			dbManagerMock.On("Get", fixedID).Return(tt.getReturned, tt.getError)
+			dbManagerMock.On("Insert", fixedID, tt.insertArg).Return(tt.insertError)
+
+			//when
+			testSubject.Update(recorder, req)
+
+			//then
+			dbManagerMock.AssertNumberOfCalls(t, "Get", tt.assertNoOfGet)
+			dbManagerMock.AssertNumberOfCalls(t, "Insert", tt.assertNoOfInsert)
+			assert.Contains(t, recorder.Body.String(), tt.bodyContains)
+			assert.Equal(t, tt.statusCode, recorder.Code)
+			logs := observedLogs.All()
+			if assert.NotEmpty(t, logs) {
+				assert.Contains(t, logs[len(logs)-1].Entry.Message, tt.logContains)
+			}
+		})
+	}
+}

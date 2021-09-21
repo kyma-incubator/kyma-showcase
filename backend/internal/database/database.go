@@ -3,8 +3,8 @@ package database
 import (
 	"context"
 	"github.com/go-redis/redis/v8"
+	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 // Database struct contains address(String), password(string), connection, ctx.
@@ -13,21 +13,23 @@ type Database struct {
 	password   string
 	connection *redis.Client
 	ctx        context.Context
+	log        *logger.Logger
 }
 
 // NewDatabaseConnection returns a Database structure using the given arguments.
-func NewDatabaseConnection(address, password string) Database {
+func NewDatabaseConnection(address, password string, log *logger.Logger) Database {
 	return Database{
 		address:  address,
 		password: password,
 		ctx:      context.Background(),
+		log:      log,
 	}
 }
 
 // Connect returns an error if connection already has been initialized, otherwise creates a new connection.
 func (d *Database) Connect() error {
 	if d.connection != nil {
-		log.Info("Connection to database is already initialized")
+		d.log.WithContext().Info("Connection to database is already initialized")
 		return nil
 	}
 

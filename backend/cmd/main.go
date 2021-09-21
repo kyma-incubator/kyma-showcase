@@ -39,7 +39,7 @@ func initEnvConfiguration() (Configuration, error) {
 // initAPIHandler initializes a handler for the API.
 func initAPIHandler(conf Configuration, log *logger.Logger) (api.Handler, error) {
 
-	database := db.NewDatabaseConnection(conf.Redis.URL, conf.Redis.Password)
+	database := db.NewDatabaseConnection(conf.Redis.URL, conf.Redis.Password, log)
 	err := database.Connect()
 	if err != nil {
 		return api.Handler{}, err
@@ -59,8 +59,6 @@ func main() {
 	}
 
 	log := logging.InitLogger()
-	log2 := api.NewLogHandler(log)
-	log2.Log.WithContext()
 	log.WithContext().Info("Logger initialized successfully")
 	router := mux.NewRouter()
 
