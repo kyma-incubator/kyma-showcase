@@ -5,8 +5,9 @@ import (
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api"
 	db "github.com/kyma-incubator/Kyma-Showcase/internal/database"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/events"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/logging"
+	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/rs/cors"
-	log "github.com/sirupsen/logrus"
 	"github.com/vrischmann/envconfig"
 	"net/http"
 )
@@ -36,7 +37,7 @@ func initEnvConfiguration() (Configuration, error) {
 }
 
 // initAPIHandler initializes a handler for the API.
-func initAPIHandler(conf Configuration) (api.Handler, error) {
+func initAPIHandler(conf Configuration, log *logger.Logger) (api.Handler, error) {
 
 	database := db.NewDatabaseConnection(conf.Redis.URL, conf.Redis.Password)
 	err := database.Connect()
@@ -46,7 +47,7 @@ func initAPIHandler(conf Configuration) (api.Handler, error) {
 
 	eventHandler := events.NewEventHandler(conf.Event.URL)
 
-	apiHandler := api.NewHandler(database, api.NewIdGenerator(), eventHandler)
+	apiHandler := api.NewHandler(database, api.NewIdGenerator(), eventHandler, log)
 	return apiHandler, nil
 }
 
@@ -54,14 +55,18 @@ func initAPIHandler(conf Configuration) (api.Handler, error) {
 func main() {
 	conf, err := initEnvConfiguration()
 	if err != nil {
-		log.Fatal("Error when getting environmental variables: " + err.Error())
+		logger.LogFatalError("Error when getting environmental variables: " + err.Error())
 	}
 
+	log := logging.InitLogger()
+	log2 := api.NewLogHandler(log)
+	log2.Log.WithContext()
+	log.WithContext().Info("Logger initialized successfully")
 	router := mux.NewRouter()
 
-	apiHandler, err := initAPIHandler(conf)
+	apiHandler, err := initAPIHandler(conf, log)
 	if err != nil {
-		log.Fatalf("Error connecting to database: %s", err)
+		log.WithContext().Fatalf("Error connecting to database: %s", err)
 	}
 	apiHandler.EndpointInitialize(router)
 
@@ -69,6 +74,6 @@ func main() {
 	port := conf.Backend.Port
 	err = http.ListenAndServe(":"+port, handler)
 	if err != nil {
-		log.Fatalf("Starting server at port %s failed!", port)
+		log.WithContext().Fatalf("Starting server at port %s failed!", port)
 	}
 }
