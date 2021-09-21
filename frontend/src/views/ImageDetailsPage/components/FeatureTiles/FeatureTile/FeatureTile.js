@@ -1,10 +1,10 @@
 import React from 'react';
-import { FeatureTemplate } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
 
 export const FeatureTile = ({ title, features }) => {
   return (
     <FeatureTemplate>
-      <p>{title}</p>
+      <FeatureTitle>{title}</FeatureTitle>
       <ul>
         {features?.map((value, index) => (
           <li key={index}>{value}</li>

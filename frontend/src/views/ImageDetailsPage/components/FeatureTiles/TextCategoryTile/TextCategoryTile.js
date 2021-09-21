@@ -1,10 +1,10 @@
 import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem, FeatureTitle } from 'assets/styles/style';
 
 export const TextCategoryTile = ({ categories }) => {
   return (
     <FeatureTemplate>
-      <p>Text categories</p>
+      <FeatureTitle>Text categories</FeatureTitle>
       <ul>
         {categories?.map((obj, i) => (
           <FeatureItem key={i}>

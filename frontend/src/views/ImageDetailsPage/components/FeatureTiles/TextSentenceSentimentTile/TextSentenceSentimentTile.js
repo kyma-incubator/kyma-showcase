@@ -1,10 +1,10 @@
 import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem, FeatureTitle } from 'assets/styles/style';
 
 export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
   return (
     <FeatureTemplate>
-      <p>Sentence analysis</p>
+      <FeatureTitle>Sentence analysis</FeatureTitle>
       <ul>
         {sentenceSentiment?.map((obj, i) => (
           <FeatureItem key={i}>

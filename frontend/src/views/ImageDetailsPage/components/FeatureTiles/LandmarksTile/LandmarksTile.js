@@ -1,11 +1,11 @@
 import React from 'react';
 import { LandmarkTitle } from './LandmarksTile.styles';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem, FeatureTitle } from 'assets/styles/style';
 
 export const LandmarksTile = ({ landmarks }) => {
   return (
     <FeatureTemplate>
-      <p>Landmarks</p>
+      <FeatureTitle>Landmarks</FeatureTitle>
       <ul>
         {landmarks?.map((obj, i) => (
           <FeatureItem key={i}>

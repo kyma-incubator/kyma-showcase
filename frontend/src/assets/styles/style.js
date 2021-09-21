@@ -108,14 +108,29 @@ export const Loader = styled.div`
   }
 `;
 
+export const FeatureTitle = styled.p`
+  display: block;
+  width: 100%;
+  padding: 3% 0;
+  background: linear-gradient(263.44deg, rgba(37, 175, 68, 0.52) 0%, #3c90e4 47.98%, rgba(105, 106, 209, 0.85) 100%);
+  color: white;
+  font-size: 20px;
+  font-family: 'Helvetica', sans-serif;
+`;
+
 export const FeatureTemplate = styled.article`
   display: flex;
   flex-direction: column;
+  border: 2px solid black;
+  border-radius: 5%;
   align-items: center;
   margin-top: 2%;
   max-height: 260px;
   overflow-x: hidden;
-  overflow-y: auto;
+
+  ul {
+    overflow-y: auto;
+  }
 `;
 
 export const FeatureItem = styled.li`

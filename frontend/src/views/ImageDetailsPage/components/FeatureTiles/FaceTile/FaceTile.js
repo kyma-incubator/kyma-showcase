@@ -1,5 +1,5 @@
 import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem, FeatureTitle } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
@@ -13,7 +13,7 @@ const faceDetailsValues = {
 export const FaceTile = ({ faceDetails }) => {
   return (
     <FeatureTemplate>
-      <p>Face details</p>
+      <FeatureTitle>Face details</FeatureTitle>
       <ul>
         {faceDetails?.map((obj, i) => (
           <FeatureItem key={i}>
