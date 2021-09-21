@@ -110,32 +110,50 @@ export const Loader = styled.div`
 
 export const FeatureTitle = styled.p`
   display: block;
+  border-top-left-radius: 13px;
+  border-top-right-radius: 13px;
   width: 100%;
   padding: 3% 0;
+  height: 10%;
   background: linear-gradient(263.44deg, rgba(37, 175, 68, 0.52) 0%, #3c90e4 47.98%, rgba(105, 106, 209, 0.85) 100%);
   color: white;
   font-size: 20px;
   font-family: 'Helvetica', sans-serif;
+  margin-bottom: 5%;
 `;
 
 export const FeatureTemplate = styled.article`
   display: flex;
-  flex-direction: column;
   border: 2px solid black;
-  border-radius: 5%;
+  flex-direction: column;
+  border-radius: 15px;
   align-items: center;
   margin-top: 2%;
-  max-height: 260px;
-  overflow-x: hidden;
+  height: 260px;
 
-  ul {
-    overflow-y: auto;
+  .rec.rec-arrow {
+    background-color: rgba(37, 175, 68, 0.52);
+    color: #fff;
+    margin: 0 2%;
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    line-height: 38px;
+
+    &:hover:enabled {
+      color: #fff;
+      background-color: rgba(105, 106, 209, 0.85);
+    }
+
+    &:disabled {
+      background-color: rgba(103, 58, 183, 0.1);
+      cursor: not-allowed;
+    }
   }
 `;
 
-export const FeatureItem = styled.li`
+export const FeatureItem = styled.div`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin: 10% 0;
+  align-items: flex-start;
 `;
