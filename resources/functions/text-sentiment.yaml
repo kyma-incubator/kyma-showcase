@@ -81,7 +81,7 @@ spec:
           const docMagnitude = result.documentSentiment.magnitude;
           const docSentiment = calculateSentiment(docScore, docMagnitude, text);
           const sentences = result.sentences;
-          const sentencetDetails = sentences.map((sentence) => ({
+          const sentenceDetails = sentences.map((sentence) => ({
             sentence: sentence.text.content,
             score: sentence.sentiment.score,
             magnitude: sentence.sentiment.magnitude,
@@ -96,7 +96,7 @@ spec:
             docScore,
             docMagnitude,
             docSentiment,
-            sentencetDetails,
+            sentenceDetails,
           });
           console.log("Sentiments loaded");
           return sentimentJSON;
