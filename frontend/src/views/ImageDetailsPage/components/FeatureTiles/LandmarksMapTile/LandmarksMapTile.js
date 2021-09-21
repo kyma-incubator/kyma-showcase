@@ -7,8 +7,8 @@ export const LandmarksMapTile = ({ landmarks }) => {
 
   useEffect(() => {
     const getMarks = async (landmarks) => {
-      let mapURL = 'https://maps.googleapis.com/maps/api/staticmap?&zoom=12&size=250x250&maptype=roadmap&markers=color:red%7Clabel:A%7C';
-      const mapKey = '&key=' + await fetchMapAPIConfig();
+      let mapURL = 'https://maps.googleapis.com/maps/api/staticmap?&zoom=12&size=490x260&maptype=roadmap&markers=color:red%7Clabel:A%7C';
+      const mapKey = '&key=' + (await fetchMapAPIConfig());
       let x = landmarks[0].latitude;
       let y = landmarks[0].longitude;
       const finalUrl = mapURL + x + ',' + y + mapKey;
@@ -18,9 +18,5 @@ export const LandmarksMapTile = ({ landmarks }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return (
-    <FeatureTemplate>
-        {mapUrl && <img alt="map" src={mapUrl}/>}
-    </FeatureTemplate>
-  );
+  return <FeatureTemplate>{mapUrl && <img alt="map" src={mapUrl} />}</FeatureTemplate>;
 };
