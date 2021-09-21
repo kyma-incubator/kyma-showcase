@@ -62,7 +62,7 @@ spec:
         };
         const [classification] = await client.classifyText({document});
         const categories = classification.categories.map(category => ({
-            name: category.name,
+            name: category.name.replace('/', ''),
             confidence: category.confidence,
           })
         );
