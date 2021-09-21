@@ -10,11 +10,9 @@ const getCoordinates = (cords) => {
   const latitudeValue = `${Math.abs(Number.parseFloat(cords.latitude).toFixed(5))} ${latitudeDirection}`;
   const longitudeValue = `${Math.abs(Number.parseFloat(cords.longitude).toFixed(5))} ${longitudeDirection} `;
 
-  return (
-    <p>
-      {latitudeValue}, {longitudeValue}
-    </p>
-  );
+  return `
+        ${latitudeValue}, ${longitudeValue}
+      `;
 };
 
 export const LandmarksTile = ({ landmarks }) => {
@@ -25,7 +23,7 @@ export const LandmarksTile = ({ landmarks }) => {
         {landmarks?.map((obj, i) => (
           <FeatureItem key={i}>
             <LandmarkTitle>{obj.name}</LandmarkTitle>
-            {getCoordinates(obj)}
+            <p>{getCoordinates(obj)}</p>
           </FeatureItem>
         ))}
       </Carousel>
