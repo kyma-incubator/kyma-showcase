@@ -1,11 +1,12 @@
 import React from 'react';
-import { FeatureTemplate ,FeatureTitle} from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
+import { Text } from './TextTile.styles';
 
 export const TextTile = ({ text }) => {
   return (
     <FeatureTemplate>
       <FeatureTitle>Text</FeatureTitle>
-      <p>{text}</p>
+      <Text>{text}</Text>
     </FeatureTemplate>
   );
 };
