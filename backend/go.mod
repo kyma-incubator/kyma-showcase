@@ -8,6 +8,7 @@ require (
 	github.com/go-redis/redis/v8 v8.11.0
 	github.com/go-redis/redismock/v8 v8.0.6
 	github.com/gorilla/mux v1.8.0
+	github.com/kyma-project/kyma/common/logging v0.0.0-20210917141647-88da7809dc2e
 	github.com/matoous/go-nanoid/v2 v2.0.0
 	github.com/pkg/errors v0.9.1
 	github.com/rs/cors v1.8.0
@@ -15,4 +16,5 @@ require (
 	github.com/stretchr/objx v0.1.1 // indirect
 	github.com/stretchr/testify v1.7.0
 	github.com/vrischmann/envconfig v1.3.0
+	go.uber.org/zap v1.16.0 // indirect
 )
