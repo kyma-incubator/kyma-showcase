@@ -24,6 +24,10 @@ type Configuration struct {
 	Event struct {
 		URL string
 	}
+	Log struct {
+		Format string
+		Level  string
+	}
 }
 
 // initEnvConfiguration initialize environmental variables
@@ -58,7 +62,7 @@ func main() {
 		logger.LogFatalError("Error when getting environmental variables: " + err.Error())
 	}
 
-	log := logging.InitLogger()
+	log := logging.InitLogger(conf.Log.Level, conf.Log.Format)
 	log.WithContext().Info("Logger initialized successfully")
 	router := mux.NewRouter()
 

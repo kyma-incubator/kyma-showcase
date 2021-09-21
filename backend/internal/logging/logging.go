@@ -6,8 +6,8 @@ import (
 	"os"
 )
 
-func InitLogger() *logger.Logger {
-	level, err := logger.MapLevel("debug")
+func InitLogger(confLevel, confFormat string) *logger.Logger {
+	level, err := logger.MapLevel(confLevel)
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to map log level from options: %s", err.Error()); logErr != nil {
 			fmt.Printf("Failed to initializie default fatal error logging: %s, Failed to map log level from options: %s", logErr, err)
@@ -15,7 +15,7 @@ func InitLogger() *logger.Logger {
 		os.Exit(2)
 	}
 
-	format, err := logger.MapFormat("text")
+	format, err := logger.MapFormat(confFormat)
 	if err != nil {
 		if logErr := logger.LogFatalError("Failed to map log format from options: %s", err.Error()); logErr != nil {
 			fmt.Printf("Failed to initializie default fatal error logging: %s, Failed to map log format from options: %s", logErr, err)
