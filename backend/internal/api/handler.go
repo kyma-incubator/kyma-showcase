@@ -4,6 +4,11 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"github.com/gabriel-vasile/mimetype"
+	"github.com/gorilla/mux"
+	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/kyma-project/kyma/common/logging/logger"
+	"github.com/pkg/errors"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -12,12 +17,6 @@ import (
 	"runtime"
 	"strings"
 	"time"
-
-	"github.com/gabriel-vasile/mimetype"
-	"github.com/gorilla/mux"
-	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
-	"github.com/pkg/errors"
-	log "github.com/sirupsen/logrus"
 )
 
 //go:generate mockery --name=DBManager
@@ -33,6 +32,7 @@ type Handler struct {
 	dbManager      DBManager
 	idGenerator    IdGenerator
 	eventBus       EventBus
+	log            *logger.Logger
 	getEndpoint    string
 	getAllEndpoint string
 	postEndpoint   string
@@ -54,11 +54,12 @@ type EventBus interface {
 }
 
 // NewHandler returns handler for database manager.
-func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus) Handler {
+func NewHandler(dbManager DBManager, idGenerator IdGenerator, eventBus EventBus, log *logger.Logger) Handler {
 	return Handler{
 		dbManager:      dbManager,
 		idGenerator:    idGenerator,
 		eventBus:       eventBus,
+		log:            log,
 		getEndpoint:    "/v1/images/{id}",
 		getAllEndpoint: "/v1/images",
 		postEndpoint:   "/v1/images",
@@ -75,17 +76,17 @@ func accessControl(w http.ResponseWriter, r *http.Request) {
 }
 
 // handleError wraps error formatting, logging and response sending
-func handleError(w http.ResponseWriter, code int, format string, a ...interface{}) {
+func (h Handler) handleError(w http.ResponseWriter, code int, format string, a ...interface{}) {
 	err := errors.New(fmt.Sprintf(format, a...))
-	log.Error(err)
+	h.log.WithContext().Error(err)
 	http.Error(w, err.Error(), code)
 }
 
 // getFuncName returns current function name in lowercase, used for logs
-func getFuncName() string {
+func (h Handler) getFuncName() string {
 	pc, _, _, ok := runtime.Caller(1)
 	if !ok {
-		log.Error("failed to get function name")
+		h.log.WithContext().Error("failed to get function name")
 		return ""
 	}
 	return strings.ToLower(runtime.FuncForPC(pc).Name()[strings.LastIndex(runtime.FuncForPC(pc).Name(), ".")+1:])
@@ -97,7 +98,7 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 	key := params["id"]
 	url := strings.Replace(h.getEndpoint, "{id}", key, 1)
 	if r.URL.Path != url {
-		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
+		h.handleError(w, http.StatusNotFound, "%s: 404 not found", h.getFuncName())
 		return
 	}
 	accessControl(w, r)
@@ -107,16 +108,16 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if err.Error() == "key "+key+" does not exist" {
-			handleError(w, http.StatusNotFound, "%s: failed to get data from db: %s", getFuncName(), err)
+			h.handleError(w, http.StatusNotFound, "%s: failed to get data from db: %s", h.getFuncName(), err)
 		} else {
-			handleError(w, http.StatusInternalServerError, "%s: failed to get data from db: %s", getFuncName(), err)
+			h.handleError(w, http.StatusInternalServerError, "%s: failed to get data from db: %s", h.getFuncName(), err)
 		}
 		return
 	}
 
 	err = json.Unmarshal([]byte(fromDB.(string)), &img)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert marshal to json: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert marshal to json: %s", h.getFuncName(), err)
 		return
 	}
 
@@ -126,14 +127,14 @@ func (h Handler) Get(w http.ResponseWriter, r *http.Request) {
 //GetAll processes a request and gets all keys using GetAllKeys function, returns all values from database as a string with JSON array.
 func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path != h.getAllEndpoint {
-		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
+		h.handleError(w, http.StatusNotFound, "%s: 404 not found", h.getFuncName())
 		return
 	}
 	accessControl(w, r)
 
 	keys, err := h.dbManager.GetAll()
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to get all keys from db: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to get all keys from db: %s", h.getFuncName(), err)
 		return
 	}
 
@@ -142,19 +143,19 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	for _, key := range keys {
 		fromDB, err := h.dbManager.Get(key)
 		if err != nil {
-			handleError(w, http.StatusInternalServerError, "%s: failed to get value from db: %s", getFuncName(), err)
+			h.handleError(w, http.StatusInternalServerError, "%s: failed to get value from db: %s", h.getFuncName(), err)
 			return
 		}
 		dataStr, ok := fromDB.(string)
 
 		if !ok {
-			handleError(w, http.StatusInternalServerError, "%s: failed to assert a type", getFuncName())
+			h.handleError(w, http.StatusInternalServerError, "%s: failed to assert a type", h.getFuncName())
 			return
 		}
 		err = json.Unmarshal([]byte(dataStr), &img)
 
 		if err != nil {
-			handleError(w, http.StatusInternalServerError, "%s: fail to unmarshal: %s", getFuncName(), err)
+			h.handleError(w, http.StatusInternalServerError, "%s: fail to unmarshal: %s", h.getFuncName(), err)
 			return
 		}
 
@@ -163,7 +164,7 @@ func (h Handler) GetAll(w http.ResponseWriter, r *http.Request) {
 	allImages, err := json.Marshal(result)
 
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: fail to marshal: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: fail to marshal: %s", h.getFuncName(), err)
 		return
 	}
 	fmt.Fprint(w, string(allImages))
@@ -197,7 +198,7 @@ func calculateSize(imgBase64 string) int {
 func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	if r.URL.Path != h.postEndpoint {
-		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
+		h.handleError(w, http.StatusNotFound, "%s: 404 not found", h.getFuncName())
 		return
 	}
 
@@ -206,7 +207,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
-		handleError(w, http.StatusBadRequest, "%s: invalid content type", getFuncName())
+		h.handleError(w, http.StatusBadRequest, "%s: invalid content type", h.getFuncName())
 		return
 	}
 
@@ -215,7 +216,7 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		if err := decoder.Decode(&img); err == io.EOF {
 			break
 		} else if err != nil {
-			handleError(w, http.StatusBadRequest, "%s: invalid input: %s", getFuncName(), err)
+			h.handleError(w, http.StatusBadRequest, "%s: invalid input: %s", h.getFuncName(), err)
 			return
 		}
 	}
@@ -225,27 +226,27 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 	if err == nil && u.Scheme != "" && u.Host != "" {
 		resp, err := http.Get(img.Content)
 		if err != nil {
-			handleError(w, http.StatusNotAcceptable, "%s: could not get image from: %s", getFuncName(), err)
+			h.handleError(w, http.StatusNotAcceptable, "%s: could not get image from: %s", h.getFuncName(), err)
 			return
 		}
 		defer resp.Body.Close()
 
 		imgByte, err := ioutil.ReadAll(resp.Body)
 		if err != nil {
-			handleError(w, http.StatusInternalServerError, "%s: failed to read request body: %s", getFuncName(), err)
+			h.handleError(w, http.StatusInternalServerError, "%s: failed to read request body: %s", h.getFuncName(), err)
 			return
 		}
 
 		imgBase64 := base64.StdEncoding.EncodeToString(imgByte)
 
 		if calculateSize(imgBase64) > 5000000 {
-			handleError(w, http.StatusTeapot, "%s: image from url is too large", getFuncName())
+			h.handleError(w, http.StatusTeapot, "%s: image from url is too large", h.getFuncName())
 			return
 		}
 
 		ext := getExtension(imgByte)
 		if ext == "" {
-			handleError(w, http.StatusUnsupportedMediaType, "%s: extension is not supported", getFuncName())
+			h.handleError(w, http.StatusUnsupportedMediaType, "%s: extension is not supported", h.getFuncName())
 			return
 		}
 
@@ -257,19 +258,19 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 		_, err = base64.StdEncoding.DecodeString(contentBase64)
 
 		if err != nil {
-			handleError(w, http.StatusNotAcceptable, "%s: content is not an image: %s", getFuncName(), err)
+			h.handleError(w, http.StatusNotAcceptable, "%s: content is not an image: %s", h.getFuncName(), err)
 			return
 		}
 	}
 
 	if img.Content == "" {
-		handleError(w, http.StatusInternalServerError, "%s: content is empty", getFuncName())
+		h.handleError(w, http.StatusInternalServerError, "%s: content is empty", h.getFuncName())
 		return
 	}
 
 	id, err := h.idGenerator.NewID()
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to generate id for image: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to generate id for image: %s", h.getFuncName(), err)
 		return
 	}
 
@@ -280,13 +281,13 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", h.getFuncName(), err)
 		return
 	}
 
 	err = h.dbManager.Insert(id, string(jsonImg))
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to insert values to database: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to insert values to database: %s", h.getFuncName(), err)
 		return
 	}
 
@@ -295,23 +296,23 @@ func (h Handler) Create(w http.ResponseWriter, r *http.Request) {
 
 	jsonID, err := json.Marshal(idStruct)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", h.getFuncName(), err)
 		return
 	}
 
 	eventId, err := h.idGenerator.NewID()
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to generate id for event: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to generate id for event: %s", h.getFuncName(), err)
 		return
 	}
 	err = h.eventBus.SendNewImage(eventId, img)
 	if err != nil {
-		handleError(w, http.StatusBadGateway, "%s: failed to send an event: %s", getFuncName(), err)
+		h.handleError(w, http.StatusBadGateway, "%s: failed to send an event: %s", h.getFuncName(), err)
 		return
 	}
 
 	fmt.Fprint(w, string(jsonID))
-	log.Info(getFuncName() + ": succeeded")
+	h.log.WithContext().Info(h.getFuncName() + ": succeeded")
 }
 
 // Update processes a request, that modify values in database with given JSON from GCP API
@@ -320,7 +321,7 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 	key := params["id"]
 	url := strings.Replace(h.putEndpoint, "{id}", key, 1)
 	if r.URL.Path != url {
-		handleError(w, http.StatusNotFound, "%s: 404 not found", getFuncName())
+		h.handleError(w, http.StatusNotFound, "%s: 404 not found", h.getFuncName())
 		return
 	}
 	accessControl(w, r)
@@ -331,27 +332,27 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		if err.Error() == "GET from db:key "+key+" does not exist" {
-			handleError(w, http.StatusNotFound, "%s: failed to get data from db: %s", getFuncName(), err)
+			h.handleError(w, http.StatusNotFound, "%s: failed to get data from db: %s", h.getFuncName(), err)
 		} else {
-			handleError(w, http.StatusInternalServerError, "%s: failed to get data from db: %s", getFuncName(), err)
+			h.handleError(w, http.StatusInternalServerError, "%s: failed to get data from db: %s", h.getFuncName(), err)
 		}
 		return
 	}
 
 	err = json.Unmarshal([]byte(fromDB.(string)), &img)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert marshal to json: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert marshal to json: %s", h.getFuncName(), err)
 		return
 	}
 
 	headerContentType := r.Header.Get("Content-Type")
 	if headerContentType != "application/json" {
-		handleError(w, http.StatusBadRequest, "%s: invalid content type", getFuncName())
+		h.handleError(w, http.StatusBadRequest, "%s: invalid content type", h.getFuncName())
 		return
 	}
 	value, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to read request body: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to read request body: %s", h.getFuncName(), err)
 		return
 	}
 	defer r.Body.Close()
@@ -360,13 +361,13 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	jsonImg, err := json.Marshal(img)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert json into marshal: %s", h.getFuncName(), err)
 		return
 	}
 
 	err = h.dbManager.Insert(img.ID, string(jsonImg))
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to insert values to database: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to insert values to database: %s", h.getFuncName(), err)
 
 		return
 	}
@@ -376,10 +377,10 @@ func (h Handler) Update(w http.ResponseWriter, r *http.Request) {
 
 	jsonID, err := json.Marshal(idStruct)
 	if err != nil {
-		handleError(w, http.StatusInternalServerError, "%s: failed to convert json id into marshal: %s", getFuncName(), err)
+		h.handleError(w, http.StatusInternalServerError, "%s: failed to convert json id into marshal: %s", h.getFuncName(), err)
 		return
 	}
 
 	fmt.Fprint(w, string(jsonID))
-	log.Infof(getFuncName() + ": succeeded")
+	h.log.WithContext().Info(h.getFuncName() + ": succeeded")
 }

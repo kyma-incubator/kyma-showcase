@@ -8,9 +8,11 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/api/mocks"
 	"github.com/kyma-incubator/Kyma-Showcase/internal/model"
+	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/pkg/errors"
-	"github.com/sirupsen/logrus/hooks/test"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -35,9 +37,10 @@ func TestGet(t *testing.T) {
 		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    fixedTime(),
 	}
+	log, err := logger.New(logger.TEXT, logger.DEBUG)
+	assert.NoError(t, err)
 	jsonImg, err := json.Marshal(img)
 	assert.NoError(t, err)
-
 	tests := []struct {
 		testMessage   string
 		requestURL    string
@@ -111,7 +114,7 @@ func TestGet(t *testing.T) {
 			idMock := mocks.IdGenerator{}
 			idMock.On("NewID").Return(fixedID, nil)
 			eventBusMock := mocks.EventBus{}
-			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 			dbManagerMock.On("Get", fixedID).Return(tt.getReturned, tt.getError)
 
 			//when
@@ -132,6 +135,8 @@ func TestGetAll(t *testing.T) {
 		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    fixedTime(),
 	}
+	log, err := logger.New(logger.TEXT, logger.DEBUG)
+	assert.NoError(t, err)
 	jsonImg, err := json.Marshal(img)
 	expected := []model.Image{img, img}
 	jsonExpected, err := json.Marshal(expected)
@@ -243,7 +248,7 @@ func TestGetAll(t *testing.T) {
 			idMock := mocks.IdGenerator{}
 			idMock.On("NewID").Return(fixedID, nil)
 			eventBusMock := mocks.EventBus{}
-			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 			dbManagerMock.On("GetAll").Return(tt.getAllReturned, nil)
 
 			dbManagerMock.On("Get", "1").Return(tt.getFirstReturned, tt.getFirstError)
@@ -355,7 +360,8 @@ func TestCreate(t *testing.T) {
 		t.Run(tt.testMessage, func(t *testing.T) {
 
 			//given
-			hook := test.NewGlobal()
+			core, observedLogs := observer.New(zap.DebugLevel)
+			log, err := logger.New(logger.TEXT, logger.DEBUG, core)
 			req, err := http.NewRequest("POST", tt.requestURL, tt.body)
 			assert.NoError(t, err)
 			req.Header.Set("Content-Type", tt.contentType)
@@ -364,7 +370,7 @@ func TestCreate(t *testing.T) {
 			idMock := mocks.IdGenerator{}
 			idMock.On("NewID").Return(fixedID, nil)
 			eventBusMock := mocks.EventBus{}
-			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 			dbManagerMock.On("Insert", fixedID, tt.insertArg).Return(tt.insertError)
 			eventBusMock.On("SendNewImage", fixedID, img).Return(tt.eventError)
 
@@ -374,7 +380,10 @@ func TestCreate(t *testing.T) {
 			//then
 			dbManagerMock.AssertNumberOfCalls(t, "Insert", tt.assertNoOfInsert)
 			assert.Contains(t, recorder.Body.String(), tt.bodyContains)
-			assert.Contains(t, hook.LastEntry().Message, tt.logContains)
+			logs := observedLogs.All()
+			if assert.NotEmpty(t, logs) {
+				assert.Contains(t, logs[len(logs)-1].Entry.Message, tt.logContains)
+			}
 			assert.Equal(t, tt.statusCode, recorder.Code)
 		})
 	}
@@ -382,6 +391,8 @@ func TestCreate(t *testing.T) {
 	t.Run("should return error with status code 406 when request content is corrupted", func(t *testing.T) {
 
 		//given
+		core, observedLogs := observer.New(zap.DebugLevel)
+		log, err := logger.New(logger.TEXT, logger.DEBUG, core)
 		img := model.Image{
 			ID:      fixedID,
 			Content: "notAnImage",
@@ -389,7 +400,6 @@ func TestCreate(t *testing.T) {
 		}
 		jsonImg, err := json.Marshal(img)
 		assert.NoError(t, err)
-		hook := test.NewGlobal()
 		req, err := http.NewRequest("POST", "/v1/images", bytes.NewBuffer(jsonImg))
 		assert.NoError(t, err)
 		req.Header.Set("Content-Type", "application/json")
@@ -398,7 +408,7 @@ func TestCreate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
-		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 		dbManagerMock.On("Insert", fixedID, string(jsonImg)).Return(nil)
 		eventBusMock.On("SendNewImage", fixedID, img).Return(nil)
 
@@ -407,14 +417,18 @@ func TestCreate(t *testing.T) {
 
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
-		assert.Contains(t, hook.LastEntry().Message, "content is not an image")
+		logs := observedLogs.All()
+		if assert.NotEmpty(t, logs) {
+			assert.Contains(t, logs[len(logs)-1].Entry.Message, "content is not an image")
+		}
 		assert.Equal(t, http.StatusNotAcceptable, recorder.Code)
 	})
 
 	t.Run("should return error with status code 500 when content in unmarshaled struct is empty", func(t *testing.T) {
 
-		//given
-		hook := test.NewGlobal()
+		//give
+		core, observedLogs := observer.New(zap.DebugLevel)
+		log, err := logger.New(logger.TEXT, logger.DEBUG, core)
 		img := model.Image{
 			ID:      fixedID,
 			Content: "",
@@ -430,14 +444,17 @@ func TestCreate(t *testing.T) {
 		idMock := mocks.IdGenerator{}
 		idMock.On("NewID").Return(fixedID, nil)
 		eventBusMock := mocks.EventBus{}
-		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+		testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 
 		//when
 		testSubject.Create(recorder, req)
 
 		//then
 		dbManagerMock.AssertNotCalled(t, "Insert")
-		assert.Contains(t, hook.LastEntry().Message, "content is empty")
+		logs := observedLogs.All()
+		if assert.NotEmpty(t, logs) {
+			assert.Contains(t, logs[len(logs)-1].Entry.Message, "content is empty")
+		}
 		assert.Equal(t, http.StatusInternalServerError, recorder.Code)
 	})
 }
@@ -459,6 +476,7 @@ func TestUpdate(t *testing.T) {
 		GCP:     []string{"{labels:[labels,moods]}"},
 		Time:    imgTime,
 	}
+
 	jsonImg, err := json.Marshal(img)
 	assert.NoError(t, err)
 	jsonImgWithGCP, err := json.Marshal(imgWithGCP)
@@ -584,7 +602,9 @@ func TestUpdate(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.testMessage, func(t *testing.T) {
 			//given
-			hook := test.NewGlobal()
+			core, observedLogs := observer.New(zap.DebugLevel)
+			log, err := logger.New(logger.TEXT, logger.DEBUG, core)
+			assert.NoError(t, err)
 			req, err := http.NewRequest("PUT", tt.requestURL, tt.body)
 			vars := map[string]string{
 				"id": fixedID,
@@ -597,7 +617,7 @@ func TestUpdate(t *testing.T) {
 			idMock := mocks.IdGenerator{}
 			idMock.On("NewID").Return(fixedID, nil)
 			eventBusMock := mocks.EventBus{}
-			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock)
+			testSubject := NewHandler(&dbManagerMock, &idMock, &eventBusMock, log)
 
 			dbManagerMock.On("Get", fixedID).Return(tt.getReturned, tt.getError)
 			dbManagerMock.On("Insert", fixedID, tt.insertArg).Return(tt.insertError)
@@ -610,7 +630,10 @@ func TestUpdate(t *testing.T) {
 			dbManagerMock.AssertNumberOfCalls(t, "Insert", tt.assertNoOfInsert)
 			assert.Contains(t, recorder.Body.String(), tt.bodyContains)
 			assert.Equal(t, tt.statusCode, recorder.Code)
-			assert.Contains(t, hook.LastEntry().Message, tt.logContains)
+			logs := observedLogs.All()
+			if assert.NotEmpty(t, logs) {
+				assert.Contains(t, logs[len(logs)-1].Entry.Message, tt.logContains)
+			}
 		})
 	}
 }
