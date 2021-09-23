@@ -1,13 +1,13 @@
-import React from 'react';
-import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
-import Carousel from 'react-elastic-carousel';
+import { FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
 import { SentenceAnalysis } from './TextSentenceSentimentTile.styles';
 
 export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
+  const isNotMany = sentenceSentiment.length > 2 ? false : true;
+
   return (
     <FeatureTemplate>
       <FeatureTitle>Sentence analysis</FeatureTitle>
-      <Carousel>
+      <ModifiedCarousel isNotMany={isNotMany}>
         {sentenceSentiment?.map((obj) => (
           <SentenceAnalysis>
             <p>
@@ -18,7 +18,7 @@ export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
             </p>
           </SentenceAnalysis>
         ))}
-      </Carousel>
+      </ModifiedCarousel>
     </FeatureTemplate>
   );
 };

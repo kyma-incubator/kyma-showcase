@@ -18,6 +18,7 @@ export const UploadedImagesSection = styled.section`
     text-align: center;
   }
 `;
+
 export const DetailTitle = styled.p`
   font-size: 20px;
   font-weight: bold;

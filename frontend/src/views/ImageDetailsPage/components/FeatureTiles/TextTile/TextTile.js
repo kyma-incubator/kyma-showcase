@@ -1,4 +1,3 @@
-import React from 'react';
 import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
 import { TextWrapper } from './TextTile.styles';
 

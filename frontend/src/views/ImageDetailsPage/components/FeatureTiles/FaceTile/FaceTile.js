@@ -1,6 +1,4 @@
-import React from 'react';
-import { FeatureItem, FeatureTemplate, FeatureTitle } from 'assets/styles/style';
-import Carousel from 'react-elastic-carousel';
+import { FeatureItem, FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
@@ -12,11 +10,12 @@ const faceDetailsValues = {
 };
 
 export const FaceTile = ({ faceDetails }) => {
-  const isMany = faceDetails.length > 2 ? true : false;
+  const isNotMany = faceDetails.length > 2 ? false : true;
+
   return (
-    <FeatureTemplate isMany={isMany}>
+    <FeatureTemplate>
       <FeatureTitle>Face details</FeatureTitle>
-      <Carousel>
+      <ModifiedCarousel isNotMany={isNotMany}>
         {faceDetails?.map((obj, i) => (
           <FeatureItem key={i}>
             {Object.keys(obj).map((k, i) => (
@@ -26,7 +25,7 @@ export const FaceTile = ({ faceDetails }) => {
             ))}
           </FeatureItem>
         ))}
-      </Carousel>
+      </ModifiedCarousel>
     </FeatureTemplate>
   );
 };

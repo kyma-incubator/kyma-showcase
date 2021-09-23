@@ -1,8 +1,6 @@
-import React from 'react';
 import { FeatureTemplate, FeatureTitle, TextAnalysis } from 'assets/styles/style';
 
 export const TextDocSentimentTile = ({ docSentiment }) => {
-  console.log(docSentiment);
   return (
     <FeatureTemplate>
       <FeatureTitle>Document analysis</FeatureTitle>

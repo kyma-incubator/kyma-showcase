@@ -9,4 +9,4 @@ export const SentenceAnalysis = styled(TextAnalysis)`
   span {
     font-size: 1.2rem;
   }
-`
+`;

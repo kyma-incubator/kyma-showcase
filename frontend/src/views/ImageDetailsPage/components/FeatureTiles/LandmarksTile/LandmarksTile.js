@@ -1,7 +1,5 @@
-import React from 'react';
 import { LandmarkTitle } from './LandmarksTile.styles';
-import { FeatureItem, FeatureTemplate, FeatureTitle } from 'assets/styles/style';
-import Carousel from 'react-elastic-carousel';
+import { FeatureItem, FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
 
 const getCoordinates = (cords) => {
   const latitudeDirection = cords.latitude > 0 ? 'N' : 'S';
@@ -16,17 +14,18 @@ const getCoordinates = (cords) => {
 };
 
 export const LandmarksTile = ({ landmarks }) => {
+  const isNotMany = landmarks.length > 2 ? false : true;
   return (
     <FeatureTemplate>
       <FeatureTitle>Landmarks</FeatureTitle>
-      <Carousel>
+      <ModifiedCarousel isNotMany={isNotMany}>
         {landmarks?.map((obj, i) => (
           <FeatureItem key={i}>
             <LandmarkTitle>{obj.name}</LandmarkTitle>
             <p>{getCoordinates(obj)}</p>
           </FeatureItem>
         ))}
-      </Carousel>
+      </ModifiedCarousel>
     </FeatureTemplate>
   );
 };

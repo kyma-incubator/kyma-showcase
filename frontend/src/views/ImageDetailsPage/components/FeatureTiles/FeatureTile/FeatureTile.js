@@ -1,10 +1,8 @@
-import React from 'react';
-import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
-import Carousel from 'react-elastic-carousel';
+import { FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
 
 export const featuresToChunks = (array) => {
   const coppiedArray = [...array];
-  if (coppiedArray.length < 7) {
+  if (coppiedArray.length < 8) {
     return {
       chunks: [coppiedArray],
       isNotMany: true,
@@ -32,9 +30,9 @@ export const featuresToChunks = (array) => {
 export const FeatureTile = ({ title, features, offDots }) => {
   const { chunks, isNotMany } = featuresToChunks(features);
   return (
-    <FeatureTemplate isNotMany={isNotMany} offDots={offDots}>
+    <FeatureTemplate>
       <FeatureTitle>{title}</FeatureTitle>
-      <Carousel>
+      <ModifiedCarousel isNotMany={isNotMany} offDots={offDots}>
         {chunks.map((array) => (
           <div>
             {array.map((element, i) => (
@@ -42,7 +40,7 @@ export const FeatureTile = ({ title, features, offDots }) => {
             ))}
           </div>
         ))}
-      </Carousel>
+      </ModifiedCarousel>
     </FeatureTemplate>
   );
 };
