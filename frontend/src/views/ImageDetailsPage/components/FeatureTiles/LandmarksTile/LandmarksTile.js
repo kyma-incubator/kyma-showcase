@@ -1,5 +1,5 @@
 import { LandmarkTitle } from './LandmarksTile.styles';
-import { FeatureItem, FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
+import { FeatureItem, FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 
 const getCoordinates = (cords) => {
   const latitudeDirection = cords.latitude > 0 ? 'N' : 'S';
@@ -18,14 +18,14 @@ export const LandmarksTile = ({ landmarks }) => {
   return (
     <FeatureTemplate>
       <FeatureTitle>Landmarks</FeatureTitle>
-      <ModifiedCarousel isNotMany={isNotMany}>
+      <FeatureCarousel isNotMany={isNotMany}>
         {landmarks?.map((obj, i) => (
           <FeatureItem key={i}>
             <LandmarkTitle>{obj.name}</LandmarkTitle>
             <p>{getCoordinates(obj)}</p>
           </FeatureItem>
         ))}
-      </ModifiedCarousel>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };

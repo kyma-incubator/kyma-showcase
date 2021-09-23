@@ -1,4 +1,4 @@
-import { FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 import { SentenceAnalysis } from './TextSentenceSentimentTile.styles';
 
 export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
@@ -7,7 +7,7 @@ export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
   return (
     <FeatureTemplate>
       <FeatureTitle>Sentence analysis</FeatureTitle>
-      <ModifiedCarousel isNotMany={isNotMany}>
+      <FeatureCarousel isNotMany={isNotMany}>
         {sentenceSentiment?.map((obj) => (
           <SentenceAnalysis>
             <p>
@@ -18,7 +18,7 @@ export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
             </p>
           </SentenceAnalysis>
         ))}
-      </ModifiedCarousel>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };

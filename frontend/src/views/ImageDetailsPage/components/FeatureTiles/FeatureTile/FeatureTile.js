@@ -1,4 +1,4 @@
-import { FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 
 export const featuresToChunks = (array) => {
   const coppiedArray = [...array];
@@ -32,7 +32,7 @@ export const FeatureTile = ({ title, features, offDots }) => {
   return (
     <FeatureTemplate>
       <FeatureTitle>{title}</FeatureTitle>
-      <ModifiedCarousel isNotMany={isNotMany} offDots={offDots}>
+      <FeatureCarousel isNotMany={isNotMany} offDots={offDots}>
         {chunks.map((array) => (
           <div>
             {array.map((element, i) => (
@@ -40,7 +40,7 @@ export const FeatureTile = ({ title, features, offDots }) => {
             ))}
           </div>
         ))}
-      </ModifiedCarousel>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };

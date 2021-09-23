@@ -133,7 +133,7 @@ export const FeatureTemplate = styled.article`
   height: 260px;
 `;
 
-export const ModifiedCarousel = styled(Carousel)`
+export const FeatureCarousel = styled(Carousel)`
   overflow-y: auto;
   overflow-x: hidden;
   height: 90%;

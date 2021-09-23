@@ -1,4 +1,4 @@
-import { FeatureItem, FeatureTemplate, FeatureTitle, ModifiedCarousel } from 'assets/styles/style';
+import { FeatureItem, FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
@@ -15,7 +15,7 @@ export const FaceTile = ({ faceDetails }) => {
   return (
     <FeatureTemplate>
       <FeatureTitle>Face details</FeatureTitle>
-      <ModifiedCarousel isNotMany={isNotMany}>
+      <FeatureCarousel isNotMany={isNotMany}>
         {faceDetails?.map((obj, i) => (
           <FeatureItem key={i}>
             {Object.keys(obj).map((k, i) => (
@@ -25,7 +25,7 @@ export const FaceTile = ({ faceDetails }) => {
             ))}
           </FeatureItem>
         ))}
-      </ModifiedCarousel>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };
