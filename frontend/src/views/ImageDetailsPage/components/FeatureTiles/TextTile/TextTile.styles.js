@@ -1,8 +1,13 @@
 import styled from 'styled-components';
 
-export const Text = styled.p`
-  line-height: 1.3;
+export const TextWrapper = styled.div`
   display: block;
-  overflow-y: auto;
   margin: 15px;
+  padding: 0 30px;
+  overflow-y: auto;
+
+  p {
+    line-height: 1.4;
+    text-align: justify;
+  }
 `;

@@ -1,6 +1,6 @@
 import React from 'react';
 import { LandmarkTitle } from './LandmarksTile.styles';
-import { FeatureTemplate, FeatureItem, FeatureTitle } from 'assets/styles/style';
+import { FeatureItem, FeatureTemplate, FeatureTitle } from 'assets/styles/style';
 import Carousel from 'react-elastic-carousel';
 
 const getCoordinates = (cords) => {

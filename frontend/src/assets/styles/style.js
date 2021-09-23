@@ -1,5 +1,4 @@
 import styled from 'styled-components';
-
 export const Wrapper = styled.div`
   display: flex;
   align-items: center;
@@ -70,7 +69,7 @@ export const UrlButton = styled.button`
   cursor: pointer;
   border: 2px solid ${({ theme }) => theme.colors.primary};
   background-color: ${({ theme }) => theme.colors.primary};
-  color: rgb(255, 255, 255);
+  color: #fff;
   height: 30px;
 
   &:hover {
@@ -112,14 +111,14 @@ export const FeatureTitle = styled.p`
   display: block;
   border-top-left-radius: 13px;
   border-top-right-radius: 13px;
+  height: 10%;
   width: 100%;
   padding: 3% 0;
-  height: 10%;
-  background: linear-gradient(263.44deg, rgba(37, 175, 68, 0.52) 0%, #3c90e4 47.98%, rgba(105, 106, 209, 0.85) 100%);
-  color: white;
-  font-size: 20px;
-  font-family: 'Helvetica', sans-serif;
   margin-bottom: 5%;
+  background: rgb(32, 104, 223);
+  background-image: linear-gradient(244deg, rgba(0, 232, 51, 0.5), rgba(60, 144, 228, 0));
+  font-size: 20px;
+  color: #fff;
 `;
 
 export const FeatureTemplate = styled.article`
@@ -131,24 +130,82 @@ export const FeatureTemplate = styled.article`
   margin-top: 2%;
   height: 260px;
 
-  .rec.rec-arrow {
-    background-color: rgba(37, 175, 68, 0.52);
-    color: #fff;
-    margin: 0 2%;
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    line-height: 38px;
+  .rec.rec-carousel-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+    height: 90%;
+    justify-content: center;
 
-    &:hover:enabled {
+    .rec.rec-dot_active {
+      background-color: rgba(32, 104, 223, 0.5);
+      box-shadow: 0 0 1px 3px rgb(32, 104, 223);
+    }
+
+    .rec.rec-dot {
+      &:hover {
+        box-shadow: 0 0 1px 3px rgb(32, 104, 223);
+      }
+    }
+
+    .rec.rec-arrow {
+      background-color: #1da697;
+      margin: 0 2%;
+      width: 38px;
+      height: 38px;
+      min-width: 38px;
+      line-height: 38px;
       color: #fff;
-      background-color: rgba(105, 106, 209, 0.85);
+      display: ${({ isNotMany }) => (isNotMany ? 'none' : 'block')};
+
+      &:hover:enabled {
+        background-color: rgb(32, 104, 223);
+      }
+
+      &:disabled {
+        background-color: rgba(103, 58, 183, 0.1);
+        cursor: not-allowed;
+      }
+
+      &:checked {
+        background-color: rgb(32, 104, 223);
+      }
     }
 
-    &:disabled {
-      background-color: rgba(103, 58, 183, 0.1);
-      cursor: not-allowed;
+    .rec.rec-arrow {
     }
+
+    .rec-pagination {
+      display: ${({ offDots }) => (offDots ? 'none' : 'flex')};
+    }
+
+    .rec.rec-dot {
+      display: ${({ offDots, isNotMany }) => {
+        if (offDots && isNotMany) return 'none';
+        else if (offDots) return 'none';
+        else if (isNotMany) return 'none';
+      }};
+    }
+  }
+`;
+
+export const TextAnalysis = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 20px;
+  overflow-y: auto;
+  height: 90%;
+  justify-content: center;
+
+  p {
+    line-height: 1.3;
+    text-align: left;
+    font-size: 1.3rem;
+  }
+
+  span {
+    font-weight: 600;
+    font-size: 1.4rem;
+    color: rgb(72, 87, 102);
   }
 `;
 

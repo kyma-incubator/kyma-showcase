@@ -46,7 +46,7 @@ const ImageDetails = ({ gcp }) => {
       {labels && <FeatureTile title={'Labels'} features={labels} />}
       {objects && <FeatureTile title={'Objects'} features={objects} />}
       {textDetails && <TextTile text={textDetails.font} />}
-      {textDetails && <FeatureTile title={'Detected words'} features={textDetails.words} />}
+      {textDetails && <FeatureTile title={'Detected words'} features={textDetails.words} offDots/>}
       {logos && <FeatureTile title={'Logos'} features={logos} />}
       {landmarks && <LandmarksTile landmarks={landmarks} />}
       {landmarks && <LandmarksMapTile landmarks={landmarks} />}

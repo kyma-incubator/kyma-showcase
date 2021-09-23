@@ -1,46 +1,47 @@
 import React from 'react';
 import { FeatureTemplate, FeatureTitle } from 'assets/styles/style';
 import Carousel from 'react-elastic-carousel';
-import styled from 'styled-components';
 
-export const FeatureTile = ({ title, features }) => {
-  const ten = features.slice(0, 7);
-  const twenty = features?.slice(8, 15);
-  const thrity = features?.slice(16, 23);
-  const forty = features?.slice(24, 31);
+export const featuresToChunks = (array) => {
+  const coppiedArray = [...array];
+  if (coppiedArray.length < 7) {
+    return {
+      chunks: [coppiedArray],
+      isNotMany: true,
+    };
+  }
 
+  const dividedLength = parseInt(coppiedArray.length / 7, 10);
+  const helperIterator = 8;
+  let displayedFeatures = 7;
+  let result = [];
+
+  for (let i = 0; i < dividedLength + 1; i++) {
+    const featuresChunk = coppiedArray.slice(i * helperIterator, displayedFeatures);
+    if (featuresChunk.length) {
+      result = [...result, featuresChunk];
+      displayedFeatures += helperIterator;
+    }
+  }
+  return {
+    chunks: result,
+    isNotMany: false,
+  };
+};
+
+export const FeatureTile = ({ title, features, offDots }) => {
+  const { chunks, isNotMany } = featuresToChunks(features);
   return (
-    <FeatureTemplate>
+    <FeatureTemplate isNotMany={isNotMany} offDots={offDots}>
       <FeatureTitle>{title}</FeatureTitle>
       <Carousel>
-        {ten?.length !== 0 && (
+        {chunks.map((array) => (
           <div>
-            {ten.map((f) => (
-              <p>{f}</p>
+            {array.map((element, i) => (
+              <p key={i}>{element}</p>
             ))}
           </div>
-        )}
-        {twenty?.length !== 0 && (
-          <div>
-            {twenty.map((f) => (
-              <p>{f}</p>
-            ))}
-          </div>
-        )}
-        {thrity?.length !== 0 && (
-          <div>
-            {thrity.map((f) => (
-              <p>{f}</p>
-            ))}
-          </div>
-        )}
-        {forty?.length !== 0 && (
-          <div>
-            {forty.map((f) => (
-              <p>{f}</p>
-            ))}
-          </div>
-        )}
+        ))}
       </Carousel>
     </FeatureTemplate>
   );
