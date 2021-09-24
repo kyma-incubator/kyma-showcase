@@ -2,7 +2,6 @@ import { FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/st
 
 export const featuresToChunks = (array) => {
   const copiedArray = [...array];
-  console.log(copiedArray);
 
   if (copiedArray.length < 8) {
     return {
@@ -24,7 +23,6 @@ export const featuresToChunks = (array) => {
     }
   }
 
-  console.log(result);
   return {
     chunks: result,
     isNotMany: false,
