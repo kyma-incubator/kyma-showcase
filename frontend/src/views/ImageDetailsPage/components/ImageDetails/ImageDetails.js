@@ -24,6 +24,8 @@ const extractData = (gcp) => {
   const textCategory = findFeature(gcp, 'categories')?.categories;
   const textEntity = findFeature(gcp, 'entityDetails')?.entityDetails;
   const textSentiment = findFeature(gcp, 'docLanguage');
+  let sentenceDetails = findFeature(gcp, 'docLanguage')?.sentenceDetails;
+  if (findFeature(gcp, 'docLanguage')?.sentenceDetails.length === 0) sentenceDetails = null;
 
   return {
     labels,
@@ -35,11 +37,12 @@ const extractData = (gcp) => {
     textCategory,
     textEntity,
     textSentiment,
+    sentenceDetails,
   };
 };
 
 const ImageDetails = ({ gcp }) => {
-  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment } = extractData(gcp);
+  const { labels, textDetails, logos, landmarks, objects, faceDetails, textCategory, textEntity, textSentiment, sentenceDetails } = extractData(gcp);
 
   return (
     <UploadedImagesSection>
@@ -54,7 +57,7 @@ const ImageDetails = ({ gcp }) => {
       {textEntity && <TextEntityTile entity={textEntity} />}
       {textCategory && <TextCategoryTile categories={textCategory} />}
       {textSentiment && <TextDocSentimentTile docSentiment={textSentiment} />}
-      {textSentiment && <TextSentenceSentimentTile sentenceSentiment={textSentiment.sentenceDetails} />}
+      {sentenceDetails && <TextSentenceSentimentTile sentenceSentiment={sentenceDetails} />}
     </UploadedImagesSection>
   );
 };

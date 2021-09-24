@@ -14,7 +14,7 @@ The diagram presents the basic workflow of Kyma Showcase.
 8. Depending on the details content, a new event may be sent triggering next Functions.
 9. Upon clicking a single image in the Frontend UI, a details page is displayed listing all the information received from the GCP.
 
-The initial event triggers `Multiple object detection`, `Landmark detection` and `General labels` Functions. The remaining ones get triggered based on the content of the response recieved from the GCP.
+The initial event triggers `Multiple object detection`, `Landmark detection`, `Explicit content filter` and `General labels` Functions. The remaining ones get triggered based on the content of the response recieved from the GCP.
 
 | Content required | Information type | Serverless Functions triggered |
 |-----------|-------------|-------------|

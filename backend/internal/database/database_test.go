@@ -4,20 +4,29 @@ import (
 	"context"
 	"errors"
 	"github.com/go-redis/redismock/v8"
+	"github.com/kyma-project/kyma/common/logging/logger"
 	"github.com/stretchr/testify/assert"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zaptest/observer"
 	"testing"
 )
 
 func TestConnect(t *testing.T) {
 	t.Run("should return nil when connection is already initialized", func(t *testing.T) {
 		//given
+		core, observedLogs := observer.New(zap.DebugLevel)
+		log, err := logger.New(logger.TEXT, logger.DEBUG, core)
 		client, _ := redismock.NewClientMock()
-		d := Database{address: "localhost:8081", password: "", connection: client, ctx: context.Background()}
+		d := Database{address: "localhost:8081", password: "", connection: client, ctx: context.Background(), log: log}
 
 		//when
-		err := d.Connect()
+		err = d.Connect()
 
 		//then
+		logs := observedLogs.All()
+		if assert.NotEmpty(t, logs) {
+			assert.Contains(t, logs[len(logs)-1].Entry.Message, "Connection to database is already initialized")
+		}
 		assert.NoError(t, err)
 	})
 	t.Run("should return error when trying to ping database", func(t *testing.T) {

@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: showcase-backend
-          image: raccoonsteam/backend:0.1
+          image: raccoonsteam/backend:zap
           imagePullPolicy: Always
           ports:
             - containerPort: 8081
@@ -30,3 +30,7 @@ spec:
               value: "8081"
             - name: APP_EVENT_URL
               value: "http://eventing-event-publisher-proxy.kyma-system/publish"
+            - name: APP_LOG_FORMAT
+              value: "text"
+            - name: APP_LOG_LEVEL
+              value: "warn"
