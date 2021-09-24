@@ -32,7 +32,7 @@ export const Button = styled.button`
     border: 1px solid #999999;
     background-color: #cccccc;
     color: #666666;
-    cursor: default;
+    cursor: not-allowed;
   }
 `;
 
@@ -169,9 +169,7 @@ export const FeatureCarousel = styled(Carousel)`
 
   .rec.rec-dot {
     display: ${({ offDots, isNotMany }) => {
-      if (offDots && isNotMany) return 'none';
-      else if (offDots) return 'none';
-      else if (isNotMany) return 'none';
+      if (offDots || isNotMany) return 'none';
     }};
 
     &:hover {

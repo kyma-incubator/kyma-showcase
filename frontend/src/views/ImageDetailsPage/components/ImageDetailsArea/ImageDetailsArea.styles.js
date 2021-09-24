@@ -22,13 +22,6 @@ export const ImageArea = styled.div`
   img {
     height: 50%;
     max-width: 80%;
+    filter: ${({ nsfw }) => (nsfw ? 'blur(14px)' : 'none')};
   }
-
-  ${({ nsfw }) =>
-    nsfw &&
-    `
-     img{
-       filter: blur(8px) ;
-     }
-    `}
 `;

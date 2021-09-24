@@ -11,7 +11,6 @@ const faceDetailsValues = {
 
 export const FaceTile = ({ faceDetails }) => {
   const isNotMany = faceDetails.length > 2 ? false : true;
-
   return (
     <FeatureTemplate>
       <FeatureTitle>Face details</FeatureTitle>
