@@ -1,18 +1,24 @@
-import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
+import { SentenceAnalysis } from './TextSentenceSentimentTile.styles';
 
 export const TextSentenceSentimentTile = ({ sentenceSentiment }) => {
+  const isNotMany = sentenceSentiment.length > 2 ? false : true;
+
   return (
     <FeatureTemplate>
-      <p>Sentence analysis</p>
-      <ul>
-        {sentenceSentiment?.map((obj, i) => (
-          <FeatureItem key={i}>
-            <p>Sentence: {obj.sentence}</p>
-            <p>Sentiment: {obj.sentiment}</p>
-          </FeatureItem>
+      <FeatureTitle>Sentence analysis</FeatureTitle>
+      <FeatureCarousel isNotMany={isNotMany}>
+        {sentenceSentiment?.map((obj) => (
+          <SentenceAnalysis>
+            <p>
+              <span>Sentence</span>: {obj.sentence}
+            </p>
+            <p>
+              <span>Sentiment</span>: {obj.sentiment}
+            </p>
+          </SentenceAnalysis>
         ))}
-      </ul>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };

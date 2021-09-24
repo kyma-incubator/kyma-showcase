@@ -1,18 +1,21 @@
-import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, TextAnalysis, FeatureTitle } from 'assets/styles/style';
+
+const getConfidence = (confidence) => Number.parseFloat(confidence).toFixed(4);
 
 export const TextCategoryTile = ({ categories }) => {
   return (
     <FeatureTemplate>
-      <p>Text categories</p>
-      <ul>
-        {categories?.map((obj, i) => (
-          <FeatureItem key={i}>
-            <p>Name: {obj.name}</p>
-            <p>Confidence: {obj.confidence}</p>
-          </FeatureItem>
-        ))}
-      </ul>
+      <FeatureTitle>Text categories</FeatureTitle>
+      {categories?.map((obj, i) => (
+        <TextAnalysis key={i}>
+          <p>
+            <span>Name</span>: {obj.name}
+          </p>
+          <p>
+            <span>Confidence</span>: {getConfidence(obj.confidence)}
+          </p>
+        </TextAnalysis>
+      ))}
     </FeatureTemplate>
   );
 };

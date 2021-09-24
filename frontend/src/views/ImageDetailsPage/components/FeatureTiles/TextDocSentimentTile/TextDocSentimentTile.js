@@ -1,12 +1,17 @@
-import React from 'react';
-import { FeatureTemplate } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, TextAnalysis } from 'assets/styles/style';
 
 export const TextDocSentimentTile = ({ docSentiment }) => {
   return (
     <FeatureTemplate>
-      <p>Document analysis</p>
-      <p>Language: {docSentiment.docLanguage}</p>
-      <p>Sentiment: {docSentiment.docSentiment}</p>
+      <FeatureTitle>Document analysis</FeatureTitle>
+      <TextAnalysis>
+        <p>
+          <span>Language</span>: {docSentiment.docLanguage.toUpperCase()}
+        </p>
+        <p>
+          <span>Sentiment</span>: {docSentiment.docSentiment}
+        </p>
+      </TextAnalysis>
     </FeatureTemplate>
   );
 };

@@ -1,11 +1,10 @@
-import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureTemplate, FeatureItem, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 
 export const TextEntityTile = ({ entity }) => {
   return (
     <FeatureTemplate>
-      <p>Text Entity Details</p>
-      <ul>
+      <FeatureTitle>Text Entity Details</FeatureTitle>
+      <FeatureCarousel>
         {entity?.map((obj, i) => (
           <FeatureItem key={i}>
             <p>{obj.name}</p>
@@ -13,7 +12,7 @@ export const TextEntityTile = ({ entity }) => {
             <p>Sentiment: {obj.sentiment}</p>
           </FeatureItem>
         ))}
-      </ul>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };

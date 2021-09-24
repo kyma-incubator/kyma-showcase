@@ -1,5 +1,4 @@
-import React from 'react';
-import { FeatureTemplate, FeatureItem } from 'assets/styles/style';
+import { FeatureItem, FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 
 const faceDetailsValues = {
   VERY_UNLIKELY: 'Very Unlikely',
@@ -11,10 +10,11 @@ const faceDetailsValues = {
 };
 
 export const FaceTile = ({ faceDetails }) => {
+  const isNotMany = faceDetails.length > 2 ? false : true;
   return (
     <FeatureTemplate>
-      <p>Face details</p>
-      <ul>
+      <FeatureTitle>Face details</FeatureTitle>
+      <FeatureCarousel isNotMany={isNotMany}>
         {faceDetails?.map((obj, i) => (
           <FeatureItem key={i}>
             {Object.keys(obj).map((k, i) => (
@@ -24,7 +24,7 @@ export const FaceTile = ({ faceDetails }) => {
             ))}
           </FeatureItem>
         ))}
-      </ul>
+      </FeatureCarousel>
     </FeatureTemplate>
   );
 };
