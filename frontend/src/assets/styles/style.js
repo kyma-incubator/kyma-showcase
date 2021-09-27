@@ -116,7 +116,6 @@ export const FeatureTitle = styled.p`
   height: 10%;
   width: 100%;
   padding: 3% 0;
-  margin-bottom: 5%;
   background: rgb(32, 104, 223);
   background-image: linear-gradient(244deg, rgba(0, 232, 51, 0.5), rgba(60, 144, 228, 0));
   font-size: 20px;

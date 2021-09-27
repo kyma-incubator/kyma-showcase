@@ -1,12 +1,32 @@
 import { FeatureItem, FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
+import EmotionsCard from './EmotionsCard';
 
-const faceDetailsValues = {
-  VERY_UNLIKELY: 'Very Unlikely',
-  UNLIKELY: 'Unlikely',
-  VERY_LIKELY: 'Very Likely',
-  LIKELY: 'Likely',
-  UNKNOWN: 'Unknown',
-  POSSIBLE: 'Possible',
+const getEmotionsWithValues = (obj) => {
+  const emotionsObject = { ...obj };
+
+  const faceDetailsValues = {
+    VERY_LIKELY: 5,
+    LIKELY: 4,
+    POSSIBLE: 3,
+    UNLIKELY: 2,
+    VERY_UNLIKELY: 1,
+    UNKNOWN: 0,
+  };
+
+  const emotionNames = Object.keys(emotionsObject);
+  const emotionsMap = emotionNames.map((emotion) => {
+    return {
+      emotion,
+      emotionValue: faceDetailsValues[emotionsObject[emotion]],
+    };
+  });
+  return emotionsMap;
+};
+
+const extractEmotions = (faceDetails) => {
+  const copiedArray = [...faceDetails];
+
+  return copiedArray?.map(getEmotionsWithValues);
 };
 
 export const FaceTile = ({ faceDetails }) => {
@@ -15,14 +35,8 @@ export const FaceTile = ({ faceDetails }) => {
     <FeatureTemplate>
       <FeatureTitle>Face details</FeatureTitle>
       <FeatureCarousel isNotMany={isNotMany}>
-        {faceDetails?.map((obj, i) => (
-          <FeatureItem key={i}>
-            {Object.keys(obj).map((k, i) => (
-              <p key={i}>
-                {k}: {faceDetailsValues[obj[k]]}
-              </p>
-            ))}
-          </FeatureItem>
+        {extractEmotions(faceDetails).map((emotionsArray) => (
+          <EmotionsCard emotionsArray={emotionsArray} />
         ))}
       </FeatureCarousel>
     </FeatureTemplate>
