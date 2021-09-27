@@ -138,6 +138,13 @@ export const FeatureCarousel = styled(Carousel)`
   height: 90%;
   justify-content: center;
 
+  .rec.rec-item-wrapper {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+
   .rec.rec-arrow {
     background-color: #1da697;
     margin: 0 2%;

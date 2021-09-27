@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 
 export const EmotionsTemplate = styled.div`
+  height: 100%;
   display: grid;
   grid-template-columns: 1fr 3fr;
   grid-row-gap: 1%;
@@ -12,7 +13,7 @@ export const EmotionsTemplate = styled.div`
 
 export const EmotionBar = styled.div`
   display: block;
-
+  align-self: center;
   width: ${({ emotionValue }) => {
     switch (emotionValue) {
       case 5:
