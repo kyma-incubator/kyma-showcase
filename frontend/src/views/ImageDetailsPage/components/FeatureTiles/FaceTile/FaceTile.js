@@ -1,4 +1,4 @@
-import { FeatureItem, FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
 import EmotionsCard from './EmotionsCard';
 
 const getEmotionsWithValues = (obj) => {
@@ -35,8 +35,8 @@ export const FaceTile = ({ faceDetails }) => {
     <FeatureTemplate>
       <FeatureTitle>Face details</FeatureTitle>
       <FeatureCarousel isNotMany={isNotMany}>
-        {extractEmotions(faceDetails).map((emotionsArray) => (
-          <EmotionsCard emotionsArray={emotionsArray} />
+        {extractEmotions(faceDetails).map((emotionsArray, i) => (
+          <EmotionsCard key={i}emotionsArray={emotionsArray} />
         ))}
       </FeatureCarousel>
     </FeatureTemplate>

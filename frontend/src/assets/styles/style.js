@@ -187,6 +187,14 @@ export const FeatureCarousel = styled(Carousel)`
     background-color: rgba(32, 104, 223, 0.5);
     box-shadow: 0 0 1px 3px rgb(32, 104, 223);
   }
+
+  ul {
+    align-self: center;
+    list-style: none;
+  }
+  li {
+    text-align: center;
+  }
 `;
 
 export const TextAnalysis = styled.div`

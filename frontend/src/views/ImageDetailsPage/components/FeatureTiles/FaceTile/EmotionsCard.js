@@ -3,12 +3,12 @@ import { EmotionsTemplate, EmotionBar } from './EmotionsCard.styles';
 const EmotionsCard = ({ emotionsArray }) => {
   return (
     <EmotionsTemplate>
-      {emotionsArray.map((obj) => {
+      {emotionsArray.map((obj, i) => {
         return (
-          <>
-            <p>{obj.emotion}</p>
-            {obj.emotionValue === 'Unknown' ? <p>'Unknown'</p> : <EmotionBar emotionValue={obj.emotionValue} />}
-          </>
+          <div key={i}>
+            <p key={obj}>{obj.emotion}</p>
+            {obj.emotionValue === 'Unknown' ? <p key={i}>Unknown</p> : <EmotionBar emotionValue={obj.emotionValue} key={i} />}
+          </div>
         );
       })}
     </EmotionsTemplate>
