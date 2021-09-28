@@ -7,7 +7,7 @@ const EmotionsCard = ({ emotionsArray }) => {
         return (
           <div key={i}>
             <p key={obj}>{obj.emotion}</p>
-            {obj.emotionValue === 'Unknown' ? <p key={i}>Unknown</p> : <EmotionBar emotionValue={obj.emotionValue} key={i} />}
+            {obj.emotionValue === 0 ? <p key={i}>Unknown</p> : <EmotionBar emotionValue={obj.emotionValue} key={i} />}
           </div>
         );
       })}
