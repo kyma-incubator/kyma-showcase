@@ -22,7 +22,7 @@
 
 # These are the default owners for the whole content of the repository, including the content for which no owners are specified in the file.
 
-* @Lyczeq @mvshao @mwisnia97 @hanngos @Kaktusowy500 @Cortey
+* @Lyczeq @mvshao @mrCherry97 @hanngos @Kaktusowy500 @Cortey
 
 # The following rule indicates that if a pull request affects folder1 at the root of the repository and any content in that folder, only this owner is requested for a review.
 /folder1/ @testuser1
