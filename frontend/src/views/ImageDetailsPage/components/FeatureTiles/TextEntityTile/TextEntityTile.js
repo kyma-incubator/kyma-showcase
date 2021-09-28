@@ -1,4 +1,4 @@
-import { FeatureTemplate, FeatureItem, FeatureTitle, FeatureCarousel } from 'assets/styles/style';
+import { FeatureTemplate, FeatureTitle, FeatureCarousel, TextAnalysis } from 'assets/styles/style';
 
 export const TextEntityTile = ({ entity }) => {
   return (
@@ -6,11 +6,13 @@ export const TextEntityTile = ({ entity }) => {
       <FeatureTitle>Text Entity Details</FeatureTitle>
       <FeatureCarousel>
         {entity?.map((obj, i) => (
-          <FeatureItem key={i}>
+          <TextAnalysis key={i}>
             <p>{obj.name}</p>
-            <p>Type: {obj.type}</p>
-            <p>Sentiment: {obj.sentiment}</p>
-          </FeatureItem>
+            <p>
+              <span>Type</span>: {obj.type}
+            </p>
+            <p><span>Sentiment</span>: {obj.sentiment}</p>
+          </TextAnalysis>
         ))}
       </FeatureCarousel>
     </FeatureTemplate>

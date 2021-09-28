@@ -116,7 +116,6 @@ export const FeatureTitle = styled.p`
   height: 10%;
   width: 100%;
   padding: 3% 0;
-  margin-bottom: 5%;
   background: rgb(32, 104, 223);
   background-image: linear-gradient(244deg, rgba(0, 232, 51, 0.5), rgba(60, 144, 228, 0));
   font-size: 20px;
@@ -138,6 +137,13 @@ export const FeatureCarousel = styled(Carousel)`
   overflow-x: hidden;
   height: 90%;
   justify-content: center;
+
+  .rec.rec-item-wrapper {
+    height: 150px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
 
   .rec.rec-arrow {
     background-color: #1da697;
@@ -180,6 +186,14 @@ export const FeatureCarousel = styled(Carousel)`
   .rec.rec-dot_active {
     background-color: rgba(32, 104, 223, 0.5);
     box-shadow: 0 0 1px 3px rgb(32, 104, 223);
+  }
+
+  ul {
+    align-self: center;
+    list-style: none;
+  }
+  li {
+    text-align: center;
   }
 `;
 

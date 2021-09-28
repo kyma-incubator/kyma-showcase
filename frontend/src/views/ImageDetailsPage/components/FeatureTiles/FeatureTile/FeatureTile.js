@@ -35,12 +35,12 @@ export const FeatureTile = ({ title, features, offDots }) => {
     <FeatureTemplate>
       <FeatureTitle>{title}</FeatureTitle>
       <FeatureCarousel isNotMany={isNotMany} offDots={offDots}>
-        {chunks.map((array) => (
-          <div>
+        {chunks.map((array, i) => (
+          <ul key={i}>
             {array.map((element, i) => (
-              <p key={i}>{element}</p>
+              <li key={i}>{element}</li>
             ))}
-          </div>
+          </ul>
         ))}
       </FeatureCarousel>
     </FeatureTemplate>
