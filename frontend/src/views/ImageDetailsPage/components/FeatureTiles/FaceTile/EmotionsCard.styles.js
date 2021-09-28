@@ -30,10 +30,8 @@ export const EmotionBar = styled.div`
         return '60%';
       case 2:
         return '40%';
-      case 1:
-        return '15%';
       default:
-        return '0%';
+        return '15%';
     }
   }};
   max-width: 80%;

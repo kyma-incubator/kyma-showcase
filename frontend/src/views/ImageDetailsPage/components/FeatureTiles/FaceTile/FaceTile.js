@@ -36,7 +36,7 @@ export const FaceTile = ({ faceDetails }) => {
       <FeatureTitle>Face details</FeatureTitle>
       <FeatureCarousel isNotMany={isNotMany}>
         {extractEmotions(faceDetails).map((emotionsArray, i) => (
-          <EmotionsCard key={i}emotionsArray={emotionsArray} />
+          <EmotionsCard key={i} emotionsArray={emotionsArray} />
         ))}
       </FeatureCarousel>
     </FeatureTemplate>
